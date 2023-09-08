@@ -21,7 +21,7 @@ pub struct Kingdom {
 }
 
 impl Kingdom {
-    pub fn roll(&self, skill: Skill, context: RollContext) -> RollResult {
+    pub fn roll(&self, skill: Skill, context: &RollContext) -> RollResult {
         let attribute = skill.attribute();
         let attribute_mod = self.attributes[attribute];
 
@@ -29,11 +29,21 @@ impl Kingdom {
         
         let proficiency = self.skills[skill].modifier(self.level);
 
+        let applicable_bonuses = &context.bonuses;
+        let mut bonuses_mod: i8 = 0;
+        let mut bonuses_desc = String::new();
+        for bonus in applicable_bonuses.iter() {
+            bonuses_mod += bonus.modifier;
+            bonuses_desc.push_str(
+                format!(" + {} ({})", bonus.modifier, bonus.reason).as_str()
+            );
+        }
+
         let natural = context.d20;
-        let total = natural + attribute_mod + invested_mod + proficiency;
+        let total = natural + attribute_mod + invested_mod + proficiency + bonuses_mod;
 
         // TODO: the "trained" should be replaced, maybe split up
-        let description = format!("{natural} (nat) + {attribute_mod} (culture) + {invested_mod} (invested) + {proficiency} (arts: trained)");
+        let description = format!("{natural} (nat) + {attribute_mod} (culture) + {invested_mod} (invested) + {proficiency} (arts: trained){bonuses_desc}");
 
         RollResult { total, natural, description }
     }
