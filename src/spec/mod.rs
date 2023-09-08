@@ -29,8 +29,12 @@ impl Kingdom {
         
         let proficiency = self.skills[skill].modifier(self.level);
 
-        let total = context.0 + attribute_mod + invested_mod + proficiency;
+        let natural = context.d20;
+        let total = natural + attribute_mod + invested_mod + proficiency;
 
-        RollResult { total, natural: context.0 }
+        // TODO: the "trained" should be replaced, maybe split up
+        let description = format!("{natural} (nat) + {attribute_mod} (culture) + {invested_mod} (invested) + {proficiency} (arts: trained)");
+
+        RollResult { total, natural, description }
     }
 }

@@ -47,6 +47,9 @@ fn create_aryc(world: &mut AnimalWorld) {
 }
 
 #[given(expr="a die roll of {int}")]
-fn set_roll(world: &mut AnimalWorld, d20:i32) {
-    world.roll_context = Some(RollContext(d20.try_into().unwrap()));
+fn set_roll(world: &mut AnimalWorld, d20: i32) {
+    let ctx = RollContext {
+        d20: d20.try_into().unwrap()
+    };
+    world.roll_context = Some(ctx);
 }
