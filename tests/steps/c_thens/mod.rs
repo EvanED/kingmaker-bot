@@ -1,9 +1,9 @@
 use cucumber::then;
 use assert2::assert;
-use crate::context::AnimalWorld;
+use crate::context::TestContext;
 
 #[then(expr = "I get a result of {int} \\(natural {int}\\)")]
-fn check_roll_total(world: &mut AnimalWorld, total_expected: i32, natural_expected: i32) {
+fn check_roll_total(world: &mut TestContext, total_expected: i32, natural_expected: i32) {
     let total_actual: i32   = world.roll_result.as_ref().unwrap().total.into();
     let natural_actual: i32 = world.roll_result.as_ref().unwrap().natural.into();
 
@@ -12,6 +12,6 @@ fn check_roll_total(world: &mut AnimalWorld, total_expected: i32, natural_expect
 }
 
 #[then(expr = "the roll description is {string}")]
-fn check_roll_description(world: &mut AnimalWorld, description_expected: String) {
+fn check_roll_description(world: &mut TestContext, description_expected: String) {
     assert!(description_expected == world.roll_result.as_ref().unwrap().description);
 }

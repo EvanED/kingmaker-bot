@@ -1,5 +1,5 @@
 use cucumber::{World, writer, WriterExt};
-use context::AnimalWorld;
+use context::TestContext;
 use std::io;
 
 mod context;
@@ -11,7 +11,7 @@ mod steps {
 
 fn main() {
     futures::executor::block_on(
-        AnimalWorld::cucumber()
+        TestContext::cucumber()
         .with_writer(
             writer::Basic::raw(io::stdout(), writer::Coloring::Never, 0)
                 .summarized()

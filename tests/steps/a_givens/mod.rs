@@ -1,12 +1,12 @@
 use cucumber::given;
 use kingdom::roll_context::RollContext;
-use crate::context::AnimalWorld;
+use crate::context::TestContext;
 use kingdom::spec::{self, enum_map};
 use kingdom::spec::attributes::Attribute;
 use kingdom::spec::skills::{TrainingLevel, Skill};
 
 #[given("the kingdom Aryc at level 1")]
-fn create_aryc(world: &mut AnimalWorld) {
+fn create_aryc(world: &mut TestContext) {
     use Attribute::*;
     use Skill::*;
     use TrainingLevel::*;
@@ -47,7 +47,7 @@ fn create_aryc(world: &mut AnimalWorld) {
 }
 
 #[given(expr="a die roll of {int}")]
-fn set_roll(world: &mut AnimalWorld, d20: i32) {
+fn set_roll(world: &mut TestContext, d20: i32) {
     let ctx = RollContext {
         d20: d20.try_into().unwrap()
     };
