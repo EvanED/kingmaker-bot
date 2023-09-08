@@ -1,5 +1,6 @@
 use enum_map::EnumMap;
 use crate::roll_result::RollResult;
+use crate::roll_context::RollContext;
 
 pub mod attributes;
 use self::attributes::Attribute;
@@ -19,10 +20,8 @@ pub struct Kingdom {
     pub level: i8,
 }
 
-
-
 impl Kingdom {
-    pub fn roll(&self, skill: Skill, d20: i8) -> RollResult {
+    pub fn roll(&self, skill: Skill, context: RollContext) -> RollResult {
         let attribute = skill.attribute();
         let attribute_mod = self.attributes[attribute];
 
@@ -30,8 +29,8 @@ impl Kingdom {
         
         let proficiency = self.skills[skill].modifier(self.level);
 
-        let total = d20 + attribute_mod + invested_mod + proficiency;
+        let total = context.0 + attribute_mod + invested_mod + proficiency;
 
-        RollResult { total, natural: d20 }
+        RollResult { total, natural: context.0 }
     }
 }

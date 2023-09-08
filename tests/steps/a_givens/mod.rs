@@ -1,4 +1,5 @@
 use cucumber::given;
+use kingdom::roll_context::RollContext;
 use crate::context::AnimalWorld;
 use kingdom::spec::{self, enum_map};
 use kingdom::spec::attributes::Attribute;
@@ -47,5 +48,5 @@ fn create_aryc(world: &mut AnimalWorld) {
 
 #[given(expr="a die roll of {int}")]
 fn set_roll(world: &mut AnimalWorld, d20:i32) {
-    world.roll = d20.try_into().unwrap();
+    world.roll_context = Some(RollContext(d20.try_into().unwrap()));
 }
