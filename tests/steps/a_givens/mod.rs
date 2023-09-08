@@ -1,5 +1,5 @@
 use cucumber::given;
-use crate::myworld::AnimalWorld;
+use crate::context::AnimalWorld;
 
 #[given("a hungry cat")]
 fn hungry_cat(world: &mut AnimalWorld) {

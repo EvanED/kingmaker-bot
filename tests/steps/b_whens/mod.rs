@@ -1,5 +1,5 @@
 use cucumber::when;
-use crate::myworld::AnimalWorld;
+use crate::context::AnimalWorld;
 
 #[when("I feed the cat")]
 fn feed_cat(world: &mut AnimalWorld) {

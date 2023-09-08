@@ -1,5 +1,5 @@
 use cucumber::then;
-use crate::myworld::AnimalWorld;
+use crate::context::AnimalWorld;
 
 #[then("the cat is not hungry")]
 fn cat_is_fed(world: &mut AnimalWorld) {

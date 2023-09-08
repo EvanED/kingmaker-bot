@@ -1,7 +1,7 @@
 use cucumber::World;
-use myworld::AnimalWorld;
+use context::AnimalWorld;
 
-mod myworld;
+mod context;
 mod steps {
     mod a_givens;
     mod b_whens;
