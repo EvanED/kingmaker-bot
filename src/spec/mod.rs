@@ -109,8 +109,6 @@ impl Kingdom {
         
         let proficiency = self.skills[skill].modifier(self.level);
 
-        println!("Roll: {d20} + {attribute_mod} + {proficiency}");
-        
         let roll = d20 + attribute_mod + invested_mod + proficiency;
 
         RollResult(roll)

@@ -47,8 +47,3 @@ fn create_aryc(world: &mut AnimalWorld) {
 fn set_roll(world: &mut AnimalWorld) {
     world.roll = 10;
 }
-
-#[given("a hungry cat")]
-fn hungry_cat(world: &mut AnimalWorld) {
-    world.cat.hungry = true;
-}
