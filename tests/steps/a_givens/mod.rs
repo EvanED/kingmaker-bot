@@ -45,7 +45,7 @@ fn create_aryc(world: &mut AnimalWorld) {
     world.kingdom = Some(aryc);
 }
 
-#[given("a die roll of 10")]
-fn set_roll(world: &mut AnimalWorld) {
-    world.roll = 10;
+#[given(expr="a die roll of {int}")]
+fn set_roll(world: &mut AnimalWorld, d20:i32) {
+    world.roll = d20.try_into().unwrap();
 }
