@@ -1,4 +1,4 @@
-use kingdom::Cat;
+use kingdom::{Cat, spec::{Kingdom, RollResult}};
 use cucumber::World;
 
 // `World` is your shared, likely mutable state.
@@ -6,4 +6,7 @@ use cucumber::World;
 #[derive(Debug, Default, World)]
 pub struct AnimalWorld {
     pub cat: Cat,
+    pub kingdom: Option<Kingdom>,
+    pub roll: i8,
+    pub roll_result: Option<RollResult>,
 }

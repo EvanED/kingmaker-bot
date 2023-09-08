@@ -1,3 +1,5 @@
+pub mod spec;
+
 #[derive(Debug, Default)]
 pub struct Cat {
     pub hungry: bool,
