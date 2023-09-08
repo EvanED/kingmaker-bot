@@ -1,4 +1,5 @@
-use kingdom::{Cat, spec::{Kingdom, RollResult}};
+use kingdom::{Cat, spec::Kingdom};
+use kingdom::roll_result::RollResult;
 use cucumber::World;
 
 // `World` is your shared, likely mutable state.

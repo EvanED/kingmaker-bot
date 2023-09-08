@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::spec::Skill;
+use kingdom::spec::skills::Skill;
 use crate::context::AnimalWorld;
 
 #[when("I roll Arts")]

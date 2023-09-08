@@ -1,6 +1,8 @@
 use cucumber::given;
 use crate::context::AnimalWorld;
-use kingdom::spec::{self, enum_map, TrainingLevel, Attribute, Skill};
+use kingdom::spec::{self, enum_map};
+use kingdom::spec::attributes::Attribute;
+use kingdom::spec::skills::{TrainingLevel, Skill};
 
 #[given("the kingdom Aryc at level 1")]
 fn create_aryc(world: &mut AnimalWorld) {

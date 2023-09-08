@@ -1,4 +1,5 @@
 pub mod spec;
+pub mod roll_result;
 
 #[derive(Debug, Default)]
 pub struct Cat {
