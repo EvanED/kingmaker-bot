@@ -1,2 +1,5 @@
 #[derive(Debug)]
-pub struct RollResult(pub i8);
+pub struct RollResult {
+    pub natural: i8,
+    pub total: i8,
+}
