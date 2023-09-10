@@ -33,10 +33,12 @@ impl Kingdom {
         let mut bonuses_mod: i8 = 0;
         let mut bonuses_desc = String::new();
         for bonus in applicable_bonuses.iter() {
-            bonuses_mod += bonus.modifier;
-            bonuses_desc.push_str(
-                format!(" + {} ({})", bonus.modifier, bonus.reason).as_str()
-            );
+            if bonus.applies(attribute, skill) {
+                bonuses_mod += bonus.modifier;
+                bonuses_desc.push_str(
+                    format!(" + {} ({})", bonus.modifier, bonus.reason).as_str()
+                );
+            }
         }
 
         let natural = context.d20;

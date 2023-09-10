@@ -23,7 +23,7 @@ impl TrainingLevel {
     }
 }
 
-#[derive(Debug, Enum, Clone, Copy)]
+#[derive(Debug, Enum, Clone, Copy, PartialEq, Eq)]
 pub enum Skill {
     // Culture
     Arts,
