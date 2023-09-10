@@ -1,5 +1,5 @@
 use cucumber::given;
-use kingdom::bonus::{Bonus, BonusType, AppliesTo};
+use kingdom::bonus::{Bonus, BonusType, AppliesTo, AppliesUntil};
 use kingdom::roll_context::RollContext;
 use crate::context::TestContext;
 use kingdom::spec::{self, enum_map};
@@ -61,6 +61,19 @@ fn add_bonus(world: &mut TestContext, modifier: i32, reason: String) {
     let bonus = Bonus {
         type_: BonusType::Circumstance,
         applies_to: AppliesTo::Attribute(Attribute::Culture),
+        applies_until: AppliesUntil::NextApplicableRoll,
+        modifier: modifier.try_into().unwrap(),
+        reason,
+    };
+    world.roll_context.as_mut().unwrap().bonuses.push(bonus);
+}
+
+#[given(expr="a circumstance bonus of +{int} to Culture, lasting until the next turn, because {string}")]
+fn add_longer_bonus(world: &mut TestContext, modifier: i32, reason: String) {
+    let bonus = Bonus {
+        type_: BonusType::Circumstance,
+        applies_to: AppliesTo::Attribute(Attribute::Culture),
+        applies_until: AppliesUntil::StartOfTheNextTurn,
         modifier: modifier.try_into().unwrap(),
         reason,
     };

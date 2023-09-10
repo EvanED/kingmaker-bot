@@ -15,3 +15,9 @@ Feature: Bonus Tracking
     Then there this is 1 remaining bonus
     And "I feel like it" is in remaining bonuses
 
+  Scenario: A bonus that lasts until the next turn is not removed
+    Given a circumstance bonus of +5 to Culture, lasting until the next turn, because "I feel like it"
+    When I roll Arts
+    Then there this is 1 remaining bonus
+    And "I feel like it" is in remaining bonuses
+
