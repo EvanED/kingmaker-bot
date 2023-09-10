@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::{spec::{skills::Skill, attributes::Attribute}, bonus::filter_from_roll};
+use kingdom::{spec::{skills::Skill, attributes::Attribute}, rolls::bonus::filter_from_roll};
 use crate::context::TestContext;
 
 #[when("I roll Arts")]

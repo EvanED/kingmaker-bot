@@ -1,7 +1,7 @@
-use kingdom::bonus::Bonus;
-use kingdom::roll_context::RollContext;
+use kingdom::rolls::bonus::Bonus;
+use kingdom::rolls::roll_context::RollContext;
 use kingdom::spec::Kingdom;
-use kingdom::roll_result::RollResult;
+use kingdom::rolls::roll_result::RollResult;
 use cucumber::World;
 
 // `World` is your shared, likely mutable state.

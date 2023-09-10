@@ -1,6 +1,6 @@
 use cucumber::given;
-use kingdom::bonus::{Bonus, BonusType, AppliesTo, AppliesUntil};
-use kingdom::roll_context::RollContext;
+use kingdom::rolls::bonus::{Bonus, BonusType, AppliesTo, AppliesUntil};
+use kingdom::rolls::roll_context::RollContext;
 use crate::context::TestContext;
 use kingdom::spec::{self, enum_map};
 use kingdom::spec::attributes::Attribute;

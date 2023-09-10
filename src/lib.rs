@@ -1,4 +1,2 @@
 pub mod spec;
-pub mod roll_context;
-pub mod roll_result;
-pub mod bonus;
+pub mod rolls;

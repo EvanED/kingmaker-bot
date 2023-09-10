@@ -1,6 +1,6 @@
 use enum_map::EnumMap;
-use crate::roll_result::RollResult;
-use crate::roll_context::RollContext;
+use crate::rolls::roll_result::RollResult;
+use crate::rolls::roll_context::RollContext;
 
 pub mod attributes;
 use self::attributes::Attribute;

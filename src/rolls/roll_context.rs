@@ -1,4 +1,4 @@
-use crate::bonus::Bonus;
+use super::bonus::Bonus;
 
 #[derive(Debug)]
 pub struct RollContext {
