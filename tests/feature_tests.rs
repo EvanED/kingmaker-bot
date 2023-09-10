@@ -1,6 +1,7 @@
-use cucumber::{World, writer, WriterExt};
+use cucumber::World;
+//use cucumber::{writer, WriterExt};
+//use std::io;
 use context::TestContext;
-use std::io;
 
 mod context;
 mod steps {
@@ -12,10 +13,10 @@ mod steps {
 fn main() {
     futures::executor::block_on(
         TestContext::cucumber()
-        .with_writer(
-            writer::Basic::raw(io::stdout(), writer::Coloring::Never, 0)
-                .summarized()
-                .assert_normalized(),
-        )
+        //.with_writer(
+        //    writer::Basic::raw(io::stdout(), writer::Coloring::Never, 0)
+        //        .summarized()
+        //        .assert_normalized(),
+        //)
         .run("tests/features"));
 }

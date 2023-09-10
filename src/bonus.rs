@@ -13,7 +13,7 @@ pub enum AppliesTo {
     Skill(skills::Skill),
 }
 
-#[derive(Debug)]
+#[derive(Debug, Clone)]
 pub struct Bonus {
     pub type_: BonusType,
     pub applies_to: AppliesTo,
@@ -28,4 +28,13 @@ impl Bonus {
             AppliesTo::Skill(s) => s == skill,
         }
     }
+}
+
+pub fn filter_from_roll(bonuses: &Vec<Bonus>, attribute: attributes::Attribute, skill: skills::Skill) -> Vec<Bonus> {
+    bonuses.iter()
+        .filter(
+            |bonus| !bonus.applies(attribute, skill)
+        )
+        .map(|bonus| bonus.clone())
+        .collect()
 }
