@@ -43,7 +43,7 @@ impl Kingdom {
         let total = natural + attribute_mod + invested_mod + proficiency + bonuses_mod;
 
         // TODO: the "trained" should be replaced, maybe split up
-        let description = format!("{natural} (nat) + {attribute_mod} (culture) + {invested_mod} (invested) + {proficiency} (arts: trained){bonuses_desc}");
+        let description = format!("{natural} (nat) + {attribute_mod} (culture) + {invested_mod} (invested) + {proficiency} (training){bonuses_desc}");
 
         RollResult { total, natural, description }
     }
