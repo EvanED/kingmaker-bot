@@ -34,23 +34,31 @@ pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, 
     );
 
     let the_bonus = match degree {
-        DegreeOfSuccess::CriticalSuccess => crit_success_bonus,
-        DegreeOfSuccess::Success         => success_bonus,
-        DegreeOfSuccess::Failure         => failure_bonus,
-        _                                => panic!("Blahblah")
+        DegreeOfSuccess::CriticalSuccess => Some(crit_success_bonus),
+        DegreeOfSuccess::Success         => Some(success_bonus),
+        DegreeOfSuccess::Failure         => Some(failure_bonus),
+        DegreeOfSuccess::CriticalFailure => None,
     };
 
     let unrest_change = match degree {
         DegreeOfSuccess::CriticalSuccess => 0,
         DegreeOfSuccess::Success         => if turn.collected_taxes {1} else {0},
         DegreeOfSuccess::Failure         => if turn.collected_taxes {2} else {1},
-        _                                => panic!("Blahblah")
+        DegreeOfSuccess::CriticalFailure => 2,
     };
     
 
     let mut next_turn_state = turn.clone();
-    next_turn_state.bonuses.push(the_bonus);
+    match the_bonus {
+        Some(the_bonus) => next_turn_state.bonuses.push(the_bonus),
+        None => (),
+    };
+    match degree {
+        DegreeOfSuccess::CriticalFailure => next_turn_state.requirements.push("increase any Ruin".to_string()),
+        _ => (),
+    };
     next_turn_state.collected_taxes = true;
+
 
     let mut next_kingdom_state = state.clone();
     next_kingdom_state.unrest += unrest_change;    

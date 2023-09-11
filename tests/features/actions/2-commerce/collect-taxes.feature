@@ -61,12 +61,12 @@ Feature: Commerce Phase, Step 1 -- Collect Taxes
         And Unrest went up to 3
         And we collected taxes this turn
 
-    # Scenario: The collection of taxes is critically unsuccessful
-    #     Given the kingdom Aryc at level 1
-    #     And we have 1 Unrest
-    #     And a die roll of 11
-    #     When I collect taxes
-    #     Then there is no bonus
-    #     And Unrest went up to 3
-    #     And we are required to increase any Ruin
+    Scenario: The collection of taxes is critically unsuccessful
+        Given the kingdom Aryc at level 1
+        And we have 1 Unrest
+        And a die roll of 1
+        When I collect taxes
+        Then there is no bonus
+        And Unrest went up to 3
+        And we are required to increase any Ruin
 

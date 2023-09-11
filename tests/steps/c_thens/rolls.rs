@@ -48,3 +48,8 @@ fn check_there_is_plus2_circumstance_bonus_to_economy_until_end_of_the_turn(worl
     assert!(bonus.modifier as i32 == modifier);
     assert!(bonus.reason == reason);
 }
+
+#[then("there is no bonus")]
+fn check_there_is_no_bonus(world: &mut TestContext) {
+    assert!(0 == world.next_turn_state.bonuses.len());
+}
