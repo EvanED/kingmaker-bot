@@ -1,11 +1,12 @@
 use cucumber::then;
 use assert2::assert;
+use kingdom::{rolls::bonus::{BonusType, AppliesTo, AppliesUntil}, spec::attributes::Attribute};
 use crate::context::TestContext;
 
 #[then(expr = "I get a result of {int} \\(natural {int}\\)")]
 fn check_roll_total(world: &mut TestContext, total_expected: i32, natural_expected: i32) {
-    let total_actual: i32   = world.roll_result.as_ref().unwrap().total.into();
-    let natural_actual: i32 = world.roll_result.as_ref().unwrap().natural.into();
+    let total_actual: i32   = world.roll_result.as_ref().unwrap().total.0.into();
+    let natural_actual: i32 = world.roll_result.as_ref().unwrap().natural.0.into();
 
     assert_eq!(total_expected, total_actual);
     assert_eq!(natural_expected, natural_actual);
@@ -34,4 +35,16 @@ fn check_containing_bonus(world: &mut TestContext, desc: String) {
         }
     }
     assert!(false, "could not find required bonus")
+}
+
+#[then(expr = "there is a +2 circumstance bonus to Economy until the end of the turn, because {string}")]
+fn check_there_is_plus2_circumstance_bonus_to_economy_until_end_of_the_turn(world: &mut TestContext, reason: String) {
+    assert!(1 == world.next_turn_state.bonuses.len());
+
+    let bonus = &world.next_turn_state.bonuses[0];
+    assert!(bonus.type_ == BonusType::Circumstance);
+    assert!(bonus.applies_to == AppliesTo::Attribute(Attribute::Economy));
+    assert!(bonus.applies_until == AppliesUntil::StartOfTheNextTurn);
+    assert!(bonus.modifier == 2);
+    assert!(bonus.reason == reason);
 }

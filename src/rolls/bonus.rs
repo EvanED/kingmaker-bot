@@ -1,25 +1,25 @@
 use crate::spec::{attributes, skills};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum BonusType {
     Circumstance,
     Item,
     Status,
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AppliesTo {
     Attribute(attributes::Attribute),
     Skill(skills::Skill),
 }
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AppliesUntil {
     NextApplicableRoll,
     StartOfTheNextTurn,
 }
 
-#[derive(Debug, Clone)]
+#[derive(Debug, Clone, PartialEq, Eq)]
 pub struct Bonus {
     pub type_: BonusType,
     pub applies_to: AppliesTo,

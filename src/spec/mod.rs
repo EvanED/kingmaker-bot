@@ -1,5 +1,5 @@
 use enum_map::EnumMap;
-use crate::rolls::roll_result::RollResult;
+use crate::rolls::roll_result::{RollResult, NaturalRoll, TotalRoll};
 use crate::rolls::roll_context::RollContext;
 
 pub mod attributes;
@@ -42,11 +42,11 @@ impl Kingdom {
         }
 
         let natural = context.d20;
-        let total = natural + attribute_mod + invested_mod + proficiency + bonuses_mod;
+        let total = TotalRoll(natural + attribute_mod + invested_mod + proficiency + bonuses_mod);
 
         // TODO: the "trained" should be replaced, maybe split up
         let description = format!("{natural} (nat) + {attribute_mod} (culture) + {invested_mod} (invested) + {proficiency} (training){bonuses_desc}");
 
-        RollResult { total, natural, description }
+        RollResult { total, natural: NaturalRoll(natural), description }
     }
 }
