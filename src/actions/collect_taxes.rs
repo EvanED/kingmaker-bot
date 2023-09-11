@@ -15,6 +15,13 @@ pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, 
         modifier: 1,
         reason: "success collecting taxes".to_string(),
     };
+    let failure_bonus: Bonus = Bonus {
+        type_: BonusType::Circumstance,
+        applies_to: AppliesTo::Attribute(Attribute::Economy),
+        applies_until: AppliesUntil::StartOfTheNextTurn,  // FIXME: End of this turn vs start of next?
+        modifier: 1,
+        reason: "failure collecting taxes".to_string(),
+    };
     
 
     let the_roll = kingdom.roll(Skill::Trade, context);
@@ -29,12 +36,14 @@ pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, 
     let the_bonus = match degree {
         DegreeOfSuccess::CriticalSuccess => crit_success_bonus,
         DegreeOfSuccess::Success         => success_bonus,
+        DegreeOfSuccess::Failure         => failure_bonus,
         _                                => panic!("Blahblah")
     };
 
     let unrest_change = match degree {
         DegreeOfSuccess::CriticalSuccess => 0,
-        DegreeOfSuccess::Success         => if turn.collected_taxes {1} else {0}
+        DegreeOfSuccess::Success         => if turn.collected_taxes {1} else {0},
+        DegreeOfSuccess::Failure         => if turn.collected_taxes {2} else {1},
         _                                => panic!("Blahblah")
     };
     
