@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::actions::collect_taxes;
+use kingdom::actions::b_commerce::collect_taxes;
 
 use crate::context::TestContext;
 
