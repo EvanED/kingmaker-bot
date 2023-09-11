@@ -37,14 +37,14 @@ fn check_containing_bonus(world: &mut TestContext, desc: String) {
     assert!(false, "could not find required bonus")
 }
 
-#[then(expr = "there is a +2 circumstance bonus to Economy until the end of the turn, because {string}")]
-fn check_there_is_plus2_circumstance_bonus_to_economy_until_end_of_the_turn(world: &mut TestContext, reason: String) {
+#[then(expr = "there is a +{int} circumstance bonus to Economy until the end of the turn, because {string}")]
+fn check_there_is_plus2_circumstance_bonus_to_economy_until_end_of_the_turn(world: &mut TestContext, modifier: i32, reason: String) {
     assert!(1 == world.next_turn_state.bonuses.len());
 
     let bonus = &world.next_turn_state.bonuses[0];
     assert!(bonus.type_ == BonusType::Circumstance);
     assert!(bonus.applies_to == AppliesTo::Attribute(Attribute::Economy));
     assert!(bonus.applies_until == AppliesUntil::StartOfTheNextTurn);
-    assert!(bonus.modifier == 2);
+    assert!(bonus.modifier as i32 == modifier);
     assert!(bonus.reason == reason);
 }
