@@ -9,6 +9,16 @@ fn when_i_collect_taxes(world: &mut TestContext) {
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
-        &world.roll_context.as_ref().unwrap()
+        &world.roll_context.as_ref().unwrap(),
     );
+}
+
+#[when("I do not collect taxes")]
+fn when_i_do_not_collect_taxes(world: &mut TestContext) {
+    (world.next_turn_state, world.kingdom_state) = collect_taxes::decline_to_collect(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+    )
 }

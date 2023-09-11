@@ -1,4 +1,13 @@
 use crate::{state::KingdomState, rolls::{roll_context::RollContext, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
+use std::cmp;
+
+pub fn decline_to_collect(_kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
+    let unrest_change = if context.d20 >= 11 {-1} else {0};
+    let unrest = cmp::max(0, state.unrest + unrest_change);
+    let new_kingdom_state = KingdomState { unrest };
+
+    (turn.clone(), new_kingdom_state)
+}
 
 pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
     let crit_success_bonus: Bonus = Bonus {
