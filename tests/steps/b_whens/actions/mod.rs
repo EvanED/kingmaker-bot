@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::actions::b_commerce::{collect_taxes, improve_lifestyle};
+use kingdom::{actions::b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, state::Commodity};
 
 use crate::context::TestContext;
 
@@ -30,5 +30,17 @@ fn when_i_improve_lifestyle(world: &mut TestContext) {
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
+    );
+}
+
+#[when(expr = "I Trade Commodities of {int} Lumber")]
+fn when_i_trade_commodities(world: &mut TestContext, volume: i32) {
+    (world.next_turn_state, world.kingdom_state) = trade_commodities::trade_commodities(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        Commodity::Lumber,
+        volume as i8,
     );
 }

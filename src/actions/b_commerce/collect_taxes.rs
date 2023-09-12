@@ -4,7 +4,7 @@ use std::cmp;
 pub fn decline_to_collect(_kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
     let unrest_change = if context.d20 >= 11 {-1} else {0};
     let unrest = cmp::max(0, state.unrest + unrest_change);
-    let new_kingdom_state = KingdomState { unrest };
+    let new_kingdom_state = KingdomState { unrest, ..state.clone() }; // .clone() ??
 
     (turn.clone(), new_kingdom_state)
 }
