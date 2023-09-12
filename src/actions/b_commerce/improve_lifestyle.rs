@@ -50,21 +50,21 @@ pub fn improve_lifestyle(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSta
     let bonuses = match degree {
         DegreeOfSuccess::CriticalSuccess => vec![crit_success_bonus],
         DegreeOfSuccess::Success         => vec![success_bonus],
-        DegreeOfSuccess::Failure         => Vec::new(), //vec![failure_bonus, failure_penalty],
-        DegreeOfSuccess::CriticalFailure => Vec::new(), //vec![crit_failure_penalty],
+        DegreeOfSuccess::Failure         => vec![failure_bonus, failure_penalty],
+        DegreeOfSuccess::CriticalFailure => vec![crit_failure_penalty],
     };
 
     let unrest_change = match degree {
-    //    DegreeOfSuccess::CriticalFailure => 1,
+        DegreeOfSuccess::CriticalFailure => 1,
         _                                => 0,
     };
     
     let mut next_turn_state = turn.clone();
     next_turn_state.bonuses.extend(bonuses);
-    //match degree {
-    //    DegreeOfSuccess::CriticalFailure => next_turn_state.requirements.push("increase any Ruin".to_string()),
-    //    _                                => (),
-    //};
+    match degree {
+        DegreeOfSuccess::CriticalFailure => next_turn_state.requirements.push("increase any Ruin".to_string()),
+        _                                => (),
+    };
 
     let mut next_kingdom_state = state.clone();
     next_kingdom_state.unrest += unrest_change;    

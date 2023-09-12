@@ -1,6 +1,6 @@
 use cucumber::then;
 use assert2::assert;
-use kingdom::{rolls::bonus::{BonusType, AppliesTo, AppliesUntil}, spec::attributes::Attribute};
+use kingdom::{rolls::bonus::{BonusType, AppliesTo, AppliesUntil, Bonus}, spec::attributes::Attribute};
 use crate::context::TestContext;
 
 #[then(expr = "I get a result of {int} \\(natural {int}\\)")]
@@ -37,8 +37,35 @@ fn check_containing_bonus(world: &mut TestContext, desc: String) {
     assert!(false, "could not find required bonus")
 }
 
+#[then("there is no bonus")]
+fn check_there_is_no_bonus(world: &mut TestContext) {
+    assert!(0 == world.next_turn_state.bonuses.len());
+}
+
+#[then("there is one bonus")]
+fn check_there_is_one_bonus(world: &mut TestContext) {
+    assert!(1 == world.next_turn_state.bonuses.len());
+}
+
+#[then("there are two bonuses")]
+fn check_there_are_two_bonuses(world: &mut TestContext) {
+    assert!(1 == world.next_turn_state.bonuses.len());
+}
+
 #[then(expr = "there is a +{int} circumstance bonus to Economy until the end of the turn, because {string}")]
 fn check_there_is_plus2_circumstance_bonus_to_economy_until_end_of_the_turn(world: &mut TestContext, modifier: i32, reason: String) {
+    assert!(1 == world.next_turn_state.bonuses.len());
+
+    let bonus = &world.next_turn_state.bonuses[0];
+    assert!(bonus.type_ == BonusType::Circumstance);
+    assert!(bonus.applies_to == AppliesTo::Attribute(Attribute::Economy));
+    assert!(bonus.applies_until == AppliesUntil::StartOfTheNextTurn);
+    assert!(bonus.modifier as i32 == modifier);
+    assert!(bonus.reason == reason);
+}
+
+#[then(expr = "there is a {int} circumstance penalty to Economy until the end of the turn, because {string}")]
+fn check_there_is_circumstance_penalty_to_economy_until_end_of_the_turn(world: &mut TestContext, modifier: i32, reason: String) {
     assert!(1 == world.next_turn_state.bonuses.len());
 
     let bonus = &world.next_turn_state.bonuses[0];
@@ -61,7 +88,32 @@ fn check_there_is_plus2_circumstance_bonus_to_culture_until_end_of_the_turn(worl
     assert!(bonus.reason == reason);
 }
 
-#[then("there is no bonus")]
-fn check_there_is_no_bonus(world: &mut TestContext) {
-    assert!(0 == world.next_turn_state.bonuses.len());
+#[then(expr = "there exists a +{int} circumstance bonus to Culture until the end of the turn, because {string}")]
+fn check_there_exists_bonus(world: &mut TestContext, modifier: i32, reason: String) {
+    let found = world.next_turn_state.bonuses.iter().filter(
+        |bonus| {
+            (bonus.type_ == BonusType::Circumstance)
+            && (bonus.applies_to == AppliesTo::Attribute(Attribute::Culture))
+            && (bonus.applies_until == AppliesUntil::StartOfTheNextTurn)
+            && (bonus.modifier as i32 == modifier)
+            && (bonus.reason == reason)
+        }
+    ).count();
+
+    assert!(1 == found, "Bonuses: {:?}", world.next_turn_state.bonuses);
+}
+
+#[then(expr = "there exists a {int} circumstance penalty to Economy until the end of the turn, because {string}")]
+fn check_there_exists_bonus2(world: &mut TestContext, modifier: i32, reason: String) {
+    let found = world.next_turn_state.bonuses.iter().filter(
+        |bonus| {
+            (bonus.type_ == BonusType::Circumstance)
+            && (bonus.applies_to == AppliesTo::Attribute(Attribute::Economy))
+            && (bonus.applies_until == AppliesUntil::StartOfTheNextTurn)
+            && (bonus.modifier as i32 == modifier)
+            && (bonus.reason == reason)
+        }
+    ).count();
+
+    assert!(1 == found, "Bonuses: {:?}", world.next_turn_state.bonuses);
 }
