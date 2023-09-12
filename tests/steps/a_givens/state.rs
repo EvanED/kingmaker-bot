@@ -15,5 +15,5 @@ fn given_we_have_n_lumber(world: &mut TestContext, lumber: i32) {
 
 #[given(expr = "next turn will have {int} bonus RP")]
 fn given_next_turn_will_have_x_bonus_rp(world: &mut TestContext, volume: i32) {
-    world.next_turn_state.bonus_rp = volume as i8;
+    world.turn_state.bonus_rp = volume as i8;
 }

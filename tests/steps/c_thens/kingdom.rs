@@ -1,5 +1,6 @@
 use cucumber::then;
 use assert2::assert;
+use kingdom::state::Commodity;
 use crate::context::TestContext;
 
 #[then(expr = "Unrest is still {int}")]
@@ -17,4 +18,9 @@ fn then_we_are_required_to_increase_any_ruin(world: &mut TestContext) {
 #[then(expr = "next turn will have {int} bonus RP")]
 fn given_next_turn_will_have_x_bonus_rp(world: &mut TestContext, volume: i32) {
     assert!(volume == world.next_turn_state.bonus_rp as i32);
+}
+
+#[then(expr = "I have {int} Lumber")]
+fn given_next_turn_will_have_x_lumber(world: &mut TestContext, volume: i32) {
+    assert!(volume == world.kingdom_state.commodity_stores[Commodity::Lumber] as i32);
 }
