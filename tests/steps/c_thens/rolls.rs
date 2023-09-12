@@ -1,6 +1,6 @@
 use cucumber::then;
 use assert2::assert;
-use kingdom::{rolls::bonus::{BonusType, AppliesTo, AppliesUntil, Bonus}, spec::attributes::Attribute};
+use kingdom::{rolls::bonus::{BonusType, AppliesTo, AppliesUntil}, spec::attributes::Attribute};
 use crate::context::TestContext;
 
 #[then(expr = "I get a result of {int} \\(natural {int}\\)")]
