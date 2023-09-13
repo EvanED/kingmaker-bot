@@ -10,6 +10,13 @@ fn then_unrest_is_n(world: &mut TestContext, unrest: i32) {
     assert!(world.kingdom_state.unrest as i32 == unrest);
 }
 
+#[then(expr = "RP is still {int}")]
+#[then(expr = "RP went up to {int}")]
+#[then(expr = "RP went down to {int}")]
+fn then_rp_is_n(world: &mut TestContext, rp: i32) {
+    assert!(world.kingdom_state.resource_points as i32 == rp);
+}
+
 #[then("we are required to increase any Ruin")]
 fn then_we_are_required_to_increase_any_ruin(world: &mut TestContext) {
     assert!(world.next_turn_state.requirements == vec!["increase any Ruin"]);

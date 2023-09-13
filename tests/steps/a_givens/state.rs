@@ -17,3 +17,8 @@ fn given_we_have_n_lumber(world: &mut TestContext, lumber: i32) {
 fn given_next_turn_will_have_x_bonus_rp(world: &mut TestContext, volume: i32) {
     world.turn_state.bonus_rp = volume as i8;
 }
+
+#[given(expr = "the kingdom has {int} RP")]
+fn given_we_have_x_rp(world: &mut TestContext, rp: i32) {
+    world.kingdom_state.resource_points = rp as i8;
+}

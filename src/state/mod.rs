@@ -12,5 +12,6 @@ pub enum Commodity {
 #[derive(Debug, Default, Clone)]
 pub struct KingdomState {
     pub unrest: i8,
+    pub resource_points: i8,  // More?
     pub commodity_stores: EnumMap<Commodity, i8>,
 }
