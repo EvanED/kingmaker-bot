@@ -1,4 +1,4 @@
-Feature: Celebrate Holiday
+Feature: Activity Phase, Step 1 (Leadership) -- Celebrate Holiday
 
     Scenario: Celebrate Holiday critically succeeds
         Given the kingdom Aryc at level 1

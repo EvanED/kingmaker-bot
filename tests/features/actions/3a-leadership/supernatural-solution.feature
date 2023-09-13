@@ -1,4 +1,4 @@
-Feature: Supernatural Solution
+Feature: Activity Phase, Step 1 (Leadership) -- Supernatural Solution
 
     # TODO: what happens in failure-to-pay cases?
 

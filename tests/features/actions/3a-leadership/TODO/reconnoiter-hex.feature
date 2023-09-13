@@ -1,4 +1,4 @@
-Feature: Reconnoiter Hex
+Feature: Activity Phase, Step 1 (Leadership) -- Reconnoiter Hex
 
 # I'm leaving this unimplemented for now.
 #

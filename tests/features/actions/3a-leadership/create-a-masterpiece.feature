@@ -1,4 +1,4 @@
-Feature: Create a Masterpiece
+Feature: Activity Phase, Step 1 (Leadership) -- Create a Masterpiece
 
     Scenario: Create a Masterpiece critically succeeds
         Given the kingdom Aryc at level 1

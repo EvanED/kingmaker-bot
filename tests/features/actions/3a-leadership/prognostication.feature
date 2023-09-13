@@ -1,4 +1,4 @@
-Feature: Prognostication
+Feature: Activity Phase, Step 1 (Leadership) -- Prognostication
 
     # TODO: Multiple attempts
 

@@ -1,4 +1,4 @@
-Feature: Purchase Commodities
+Feature: Activity Phase, Step 1 (Leadership) -- Purchase Commodities
 
     Scenario: Purchase Commodities critically succeeds (non-luxury)
         Given the kingdom Aryc at level 1

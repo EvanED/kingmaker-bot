@@ -1,4 +1,4 @@
-Feature: Take Charge
+Feature: Activity Phase, Step 1 (Leadership) -- Take Charge
 
     Scenario: Take Charge (Arts) critically succeeds
         Given the kingdom Aryc at level 1
