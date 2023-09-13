@@ -9,8 +9,14 @@ fn given_we_have_x_unrest(world: &mut TestContext, unrest: i32) {
 }
 
 #[given(expr = "we have {int} Lumber")]
+#[given(expr = "the kingdom has {int} Lumber")]
 fn given_we_have_n_lumber(world: &mut TestContext, lumber: i32) {
     world.kingdom_state.commodity_stores[Commodity::Lumber] = lumber as i8;
+}
+
+#[given(expr = "the kingdom has {int} Food")]
+fn given_we_have_n_food(world: &mut TestContext, food: i32) {
+    world.kingdom_state.commodity_stores[Commodity::Food] = food as i8;
 }
 
 #[given(expr = "next turn will have {int} bonus RP")]
