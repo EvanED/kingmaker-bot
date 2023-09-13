@@ -7,4 +7,5 @@ pub struct TurnState {
     pub bonuses: Vec<Bonus>,
     pub requirements: Vec<String>,
     pub bonus_rp: i8,
+    pub additional_fame_points_scheduled: i8,
 }

@@ -33,3 +33,8 @@ fn given_next_turn_will_have_x_bonus_rp(world: &mut TestContext, volume: i32) {
 fn given_we_have_x_rp(world: &mut TestContext, rp: i32) {
     world.kingdom_state.resource_points = rp as i8;
 }
+
+#[given(expr = "the kingdom has {int} Fame point")]
+fn given_we_have_x_fame(world: &mut TestContext, fame: i32) {
+    world.kingdom_state.fame_points = fame as i8;
+}

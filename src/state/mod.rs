@@ -13,5 +13,6 @@ pub enum Commodity {
 pub struct KingdomState {
     pub unrest: i8,
     pub resource_points: i8,  // More?
+    pub fame_points: i8,
     pub commodity_stores: EnumMap<Commodity, i8>,
 }

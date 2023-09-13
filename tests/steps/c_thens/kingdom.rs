@@ -17,6 +17,13 @@ fn then_rp_is_n(world: &mut TestContext, rp: i32) {
     assert!(world.kingdom_state.resource_points as i32 == rp);
 }
 
+#[then(expr = "Fame points is still {int}")]
+#[then(expr = "Fame points went up to {int}")]
+#[then(expr = "Fame points went down to {int}")]
+fn then_fame_points_is_n(world: &mut TestContext, fame: i32) {
+    assert!(world.kingdom_state.fame_points as i32 == fame);
+}
+
 #[then("we are required to increase any Ruin")]
 fn then_we_are_required_to_increase_any_ruin(world: &mut TestContext) {
     assert!(world.next_turn_state.requirements == vec!["increase any Ruin"]);

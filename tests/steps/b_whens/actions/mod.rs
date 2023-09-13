@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities}}, state::Commodity, spec::skills::Skill};
+use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday}}, state::Commodity, spec::skills::Skill};
 
 use crate::context::TestContext;
 
@@ -77,5 +77,15 @@ fn when_i_purchase_commodities2(world: &mut TestContext) {
         &world.roll_context.as_ref().unwrap(),
         Commodity::Luxuries,
         Commodity::Lumber,
+    );
+}
+
+#[when("I Celebrate Holiday")]
+fn when_i_celebrate_holiday(world: &mut TestContext) {
+    (world.next_turn_state, world.kingdom_state) = celebrate_holiday::celebrate_holiday(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
     );
 }
