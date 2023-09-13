@@ -1,0 +1,18 @@
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+
+pub fn go_fishing(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
+    let the_roll = kingdom.roll(Skill::Industry, context);
+    let dc = DC(14); // TODO
+
+    let degree = roll_result::rate_success(
+        the_roll.natural,
+        the_roll.total,
+        dc,
+    );
+
+
+    let next_turn_state = turn.clone();
+    let next_kingdom_state = state.clone();
+
+    (next_turn_state, next_kingdom_state)
+}
