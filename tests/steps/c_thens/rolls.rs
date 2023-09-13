@@ -130,3 +130,15 @@ fn there_is_bonus_arts(world: &mut TestContext, modifier: i32, reason: String) {
     assert!(bonus.modifier as i32 == modifier);
     assert!(bonus.reason == reason);
 }
+
+#[then(expr = "there is a -1 circumstance penalty to Arts on the next check, because {string}")]
+fn there_is_penalty_arts(world: &mut TestContext, reason: String) {
+    assert!(1 == world.next_turn_state.bonuses.len());
+
+    let bonus = &world.next_turn_state.bonuses[0];
+    assert!(bonus.type_ == BonusType::Circumstance);
+    assert!(bonus.applies_to == AppliesTo::Skill(Skill::Arts));
+    assert!(bonus.applies_until == AppliesUntil::NextApplicableRoll);
+    assert!(bonus.modifier == -1);
+    assert!(bonus.reason == reason);
+}
