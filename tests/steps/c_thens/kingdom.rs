@@ -36,3 +36,8 @@ fn given_next_turn_will_have_x_lumber(world: &mut TestContext, volume: i32) {
 fn given_next_turn_will_have_x_food(world: &mut TestContext, volume: i32) {
     assert!(volume == world.kingdom_state.commodity_stores[Commodity::Food] as i32);
 }
+
+#[then(expr = "I have {int} Luxuries")]
+fn given_next_turn_will_have_x_luxuries(world: &mut TestContext, volume: i32) {
+    assert!(volume == world.kingdom_state.commodity_stores[Commodity::Luxuries] as i32);
+}

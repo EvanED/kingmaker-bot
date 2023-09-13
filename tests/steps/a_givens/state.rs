@@ -19,6 +19,11 @@ fn given_we_have_n_food(world: &mut TestContext, food: i32) {
     world.kingdom_state.commodity_stores[Commodity::Food] = food as i8;
 }
 
+#[given(expr = "the kingdom has {int} Luxury")]
+fn given_we_have_n_luxury(world: &mut TestContext, luxury: i32) {
+    world.kingdom_state.commodity_stores[Commodity::Luxuries] = luxury as i8;
+}
+
 #[given(expr = "next turn will have {int} bonus RP")]
 fn given_next_turn_will_have_x_bonus_rp(world: &mut TestContext, volume: i32) {
     world.turn_state.bonus_rp = volume as i8;

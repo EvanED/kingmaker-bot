@@ -67,3 +67,15 @@ fn when_i_purchase_commodities(world: &mut TestContext) {
         Commodity::Lumber,
     );
 }
+
+#[when("I Purchase Commodities of Luxuries (secondary Lumber)")]
+fn when_i_purchase_commodities2(world: &mut TestContext) {
+    (world.next_turn_state, world.kingdom_state) = purchase_commodities::purchase_commodities(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        Commodity::Luxuries,
+        Commodity::Lumber,
+    );
+}
