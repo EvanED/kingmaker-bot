@@ -58,3 +58,13 @@ fn given_next_turn_will_have_x_luxuries(world: &mut TestContext, volume: i32) {
 fn then_the_players_have_advantage_on_random_event_selection(world: &mut TestContext) {
     assert!(world.next_turn_state.random_event_selection_method == Some(RandomEventSelectionMethod::AdvantagePlayers));
 }
+
+#[then("random kingdom event selection is normal")]
+fn then_kingdom_selection_is_normal(world: &mut TestContext) {
+    assert!(world.next_turn_state.random_event_selection_method == None);
+}
+
+#[then("the GM has advantage on selection of a random kingdom event this turn")]
+fn then_the_gm_has_advantage_on_random_event_selection(world: &mut TestContext) {
+    assert!(world.next_turn_state.random_event_selection_method == Some(RandomEventSelectionMethod::AdvantageGM));
+}
