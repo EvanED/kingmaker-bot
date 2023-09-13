@@ -13,4 +13,5 @@ pub struct TurnState {
     pub traded_commodities: bool,
     pub bonus_rp: i8,
     pub additional_fame_points_scheduled: i8,
+    pub supernatural_solution_blocked_for_x_turns: Option<i8>,
 }
