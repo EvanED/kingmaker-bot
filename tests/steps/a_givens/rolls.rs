@@ -6,8 +6,9 @@ use kingdom::spec::attributes::Attribute;
 
 fn set_roll_context(world: &mut TestContext) {
     let ctx = RollContext {
-        d4: 0,
-        d20: 0,
+        d4: -10,
+        d6: -10,
+        d20: -10,
         bonuses: Vec::new(),
     };
     world.roll_context = Some(ctx);
@@ -52,4 +53,12 @@ fn given_next_d4s(world: &mut TestContext, d4: i32) {
         set_roll_context(world);
     }
     world.roll_context.as_mut().unwrap().d4 = d4 as i8;
+}
+
+#[given(expr="the next d6 rolls are {int}")]
+fn given_next_d6s(world: &mut TestContext, d6: i32) {
+    if world.roll_context.is_none() {
+        set_roll_context(world);
+    }
+    world.roll_context.as_mut().unwrap().d6 = d6 as i8;
 }

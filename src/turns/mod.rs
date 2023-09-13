@@ -2,6 +2,7 @@ use crate::rolls::bonus::Bonus;
 
 #[derive(Debug, Default, Clone)]
 pub struct TurnState {
+    // Gives 10 XP if still true at end of turn
     pub supernatural_solution_available: bool,  // TODO: Or count?
 
     pub bonuses: Vec<Bonus>,
