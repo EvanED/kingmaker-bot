@@ -20,6 +20,7 @@ pub struct TurnState {
     pub bonus_rp: i8,
     pub additional_fame_points_scheduled: i8,
     pub supernatural_solution_blocked_for_x_turns: Option<i8>,
+    pub create_a_masterpiece_attempted: bool,
 
     pub random_event_selection_method: Option<RandomEventSelectionMethod>,
 }

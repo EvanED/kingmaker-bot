@@ -1,1 +1,0 @@
-Feature: Create a Masterpiece

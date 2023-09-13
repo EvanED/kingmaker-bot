@@ -34,3 +34,8 @@ fn given_the_supernatural_solution_is_not_available(world: &mut TestContext) {
 fn given_random_kingdom_event_selection_will_be_normal(world: &mut TestContext) {
     world.turn_state.random_event_selection_method = None;
 }
+
+#[given("the kingdom has not Created a Masterpiece this turn")]
+fn given_the_kingdom_has_not_created_a_masteripiece_this_turn(world: &mut TestContext) {
+    world.turn_state.create_a_masterpiece_attempted = false;
+}
