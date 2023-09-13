@@ -11,6 +11,7 @@ pub enum BonusType {
 pub enum AppliesTo {
     Attribute(attributes::Attribute),
     Skill(skills::Skill),
+    RandomEventResolutions,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
@@ -32,7 +33,8 @@ impl Bonus {
     pub fn applies(&self, attribute: attributes::Attribute, skill: skills::Skill) -> bool {
         match self.applies_to {
             AppliesTo::Attribute(a) => a == attribute,
-            AppliesTo::Skill(s) => s == skill,
+            AppliesTo::Skill(s)         => s == skill,
+            AppliesTo::RandomEventResolutions  => false,            // TODO... what?
         }
     }
 

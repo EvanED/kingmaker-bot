@@ -142,3 +142,15 @@ fn there_is_penalty_arts(world: &mut TestContext, reason: String) {
     assert!(bonus.modifier == -1);
     assert!(bonus.reason == reason);
 }
+
+#[then(expr = "there is a +{int} circumstance bonus to The Event until the end of the turn, because {string}")]
+fn there_is_event_bonus(world: &mut TestContext, modifier: i32, reason: String) {
+    assert!(1 == world.next_turn_state.bonuses.len());
+
+    let bonus = &world.next_turn_state.bonuses[0];
+    assert!(bonus.type_ == BonusType::Circumstance);
+    assert!(bonus.applies_to == AppliesTo::RandomEventResolutions);
+    assert!(bonus.applies_until == AppliesUntil::StartOfTheNextTurn); // TODO: End of turn, technically
+    assert!(bonus.modifier as i32 == modifier);
+    assert!(bonus.reason == reason);
+}

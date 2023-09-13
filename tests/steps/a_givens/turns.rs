@@ -29,3 +29,8 @@ fn given_the_kingdom_is_not_scheduled_to_gain_a_fame_point_at_the_start_of_next_
 fn given_the_supernatural_solution_is_not_available(world: &mut TestContext) {
     world.turn_state.supernatural_solution_available = false;
 }
+
+#[given("random kingdom event selection will be normal")]
+fn given_random_kingdom_event_selection_will_be_normal(world: &mut TestContext) {
+    world.turn_state.random_event_selection_method = None;
+}

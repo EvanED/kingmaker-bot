@@ -1,6 +1,6 @@
 use cucumber::then;
 use assert2::assert;
-use kingdom::state::Commodity;
+use kingdom::{state::Commodity, turns::RandomEventSelectionMethod};
 use crate::context::TestContext;
 
 #[then(expr = "Unrest is still {int}")]
@@ -52,4 +52,9 @@ fn given_next_turn_will_have_x_food(world: &mut TestContext, volume: i32) {
 #[then(expr = "I have {int} Luxuries")]
 fn given_next_turn_will_have_x_luxuries(world: &mut TestContext, volume: i32) {
     assert!(volume == world.kingdom_state.commodity_stores[Commodity::Luxuries] as i32);
+}
+
+#[then("the players have advantage on selection of a random kingdom event this turn")]
+fn then_the_players_have_advantage_on_random_event_selection(world: &mut TestContext) {
+    assert!(world.next_turn_state.random_event_selection_method == Some(RandomEventSelectionMethod::AdvantagePlayers));
 }

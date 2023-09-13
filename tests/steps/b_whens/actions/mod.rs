@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday, supernatural_solution}}, state::Commodity, spec::skills::Skill};
+use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday, supernatural_solution, prognostication}}, state::Commodity, spec::skills::Skill};
 
 use crate::context::TestContext;
 
@@ -93,6 +93,16 @@ fn when_i_celebrate_holiday(world: &mut TestContext) {
 #[when("I search for a Supernatural Solution")]
 fn when_i_search_for_a_supernatural_solution(world: &mut TestContext) {
     (world.next_turn_state, world.kingdom_state) = supernatural_solution::supernatural_solution(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+    );
+}
+
+#[when("I Prognosticate")]
+fn when_i_prognosticate(world: &mut TestContext) {
+    (world.next_turn_state, world.kingdom_state) = prognostication::prognosticate(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
