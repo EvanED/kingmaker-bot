@@ -24,6 +24,11 @@ fn then_fame_points_is_n(world: &mut TestContext, fame: i32) {
     assert!(world.kingdom_state.fame_points as i32 == fame);
 }
 
+#[then("the kingdom will not gain one additional Fame point next turn")]
+fn then_the_kingdom_will_not_gain_one_additional_fame_point_next_turn(world: &mut TestContext) {
+    assert!(world.next_turn_state.additional_fame_points_scheduled == 0);
+}
+
 #[then("we are required to increase any Ruin")]
 fn then_we_are_required_to_increase_any_ruin(world: &mut TestContext) {
     assert!(world.next_turn_state.requirements == vec!["increase any Ruin"]);

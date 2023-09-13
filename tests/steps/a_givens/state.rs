@@ -35,6 +35,7 @@ fn given_we_have_x_rp(world: &mut TestContext, rp: i32) {
 }
 
 #[given(expr = "the kingdom has {int} Fame point")]
+#[given(expr = "the kingdom has {int} Fame points")]
 fn given_we_have_x_fame(world: &mut TestContext, fame: i32) {
     world.kingdom_state.fame_points = fame as i8;
 }
