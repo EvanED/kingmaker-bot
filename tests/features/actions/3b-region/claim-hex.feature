@@ -17,32 +17,58 @@ Feature: Activity Phase, Step 2 (Region) -- Claim Hex
     # TODO: Size tracking
     # TODO: Better turn tracking
 
-    Scenario: Claim Hex critically succeds
+    Scenario: Claim Hex critically succeeds
         Given the kingdom Aryc at level 1
         And the kingdom has 2 RP
         And a die roll of 20
         When I Claim Hex with Magic
-        Then there are 2 requirements
+        Then there are 3 requirements
         And "mark the hex as claimed" is a requirement
+        And "gain XP from the claimed hex" is a requirement
         And "you may take another region activity" is a requirement
         And RP went down to 1
 
-#
 # Success
 #     You claim the hex and add it to your territory,
 #     increasing your kingdom's Size by 1 (this affects
 #     all statistics determined by Size; see page 532).
-#
+
+    Scenario: Claim Hex succeeds
+        Given the kingdom Aryc at level 1
+        And the kingdom has 2 RP
+        And a die roll of 15
+        When I Claim Hex with Magic
+        Then there are 2 requirements
+        And "mark the hex as claimed" is a requirement
+        And "gain XP from the claimed hex" is a requirement
+        And RP went down to 1
+
 # Failure
 #     You fail to claim the hex.
-#
+
+    Scenario: Claim Hex fails
+        Given the kingdom Aryc at level 1
+        And the kingdom has 2 RP
+        And a die roll of 5
+        When I Claim Hex with Magic
+        Then there are no requirements
+        And RP went down to 1
+
 # Critical Failure
 #     You fail to claim the hex, and a number of early
 #     settlers and explorers are lost, causing you to
 #     take a –1 circumstance penalty to Stability-based
 #      checks until the end of your next Kingdom turn.
-#
-#
+
+    Scenario: Claim Hex critically fails
+        Given the kingdom Aryc at level 1
+        And the kingdom has 2 RP
+        And a die roll of 1
+        When I Claim Hex with Magic
+        Then there are no requirements
+        And RP went down to 1
+        And there is a -1 circumstance penalty to Stability until the end of the next turn, because "critical failure in Claim Hex"
+
 # Special:
 #
 # At 1st level, when selecting the three activities you take

@@ -18,6 +18,7 @@ pub enum AppliesTo {
 pub enum AppliesUntil {
     NextApplicableRoll,
     StartOfTheNextTurn,
+    EndOfTheNextTurn,
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -42,6 +43,7 @@ impl Bonus {
         match self.applies_until {
             AppliesUntil::NextApplicableRoll => self.applies(attribute, skill),
             AppliesUntil::StartOfTheNextTurn => false,
+            AppliesUntil::EndOfTheNextTurn   => false,
         }
     }
 }
