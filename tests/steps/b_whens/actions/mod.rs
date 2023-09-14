@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday, supernatural_solution, prognostication, create_a_masterpiece}, c2_region::{go_fishing, establish_farmland}}, state::Commodity, spec::skills::Skill};
+use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday, supernatural_solution, prognostication, create_a_masterpiece}, c2_region::{go_fishing, establish_farmland, claim_hex}}, state::Commodity, spec::skills::Skill};
 
 use crate::context::TestContext;
 
@@ -149,5 +149,16 @@ fn when_i_establish_farmland_on_hills(world: &mut TestContext) {
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         establish_farmland::HexType::Hills,
+    );
+}
+
+#[when("I Claim Hex with Magic")]
+fn when_i_claim_hex_with_magic(world: &mut TestContext) {
+    (world.next_turn_state, world.kingdom_state) = claim_hex::claim_hex(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        Skill::Magic,
     );
 }
