@@ -29,24 +29,48 @@ Feature: Activity Phase, Step 3 (Civic) -- Build Structure
 
     Scenario: Build Structure critically succeeds
         Given the kingdom Aryc at level 1
-        And the kingdom has 6 RP
+        And the kingdom has 10 RP
         And the kingdom has 5 Stone
         And a die roll of 20
-        When I Build a Cemetery Structure 
+        When I Build a Shrine Structure 
         Then there are 2 requirements
         And "mark the urban grid with the new stucture" is a requirement
         And "adjust kingdom item bonuses accordingly" is a requirement
         And RP went down to 2
-        And the kingdom's Stone is still 5
+        And the kingdom's Stone went down to 3
+        And next turn can not re-attempt building a Shrine at no resource cost
 
 # Success
 #     You construct or repair the structure.
+
+    Scenario: Build Structure critically succeeds
+        Given the kingdom Aryc at level 1
+        And the kingdom has 10 RP
+        And the kingdom has 5 Stone
+        And a die roll of 15
+        When I Build a Shrine Structure 
+        Then there are 2 requirements
+        And "mark the urban grid with the new stucture" is a requirement
+        And "adjust kingdom item bonuses accordingly" is a requirement
+        And RP went down to 2
+        And the kingdom's Stone went down to 2
+        And next turn can not re-attempt building a Shrine at no resource cost
 
 # Failure
 #     You fail to construct or repair the structure.
 #     You can try to complete it next Kingdom turn; if
 #     you do so, you do not need to re-pay the RP and
 #     Commodity cost.
+
+    Scenario: Build Structure fails
+        Given the kingdom Aryc at level 1
+        And the kingdom has 10 RP
+        And the kingdom has 5 Stone
+        And a die roll of 5
+        When I Build a Shrine Structure 
+        Then RP went down to 2
+        And the kingdom's Stone went down to 2
+        And next turn can re-attempt building a Shrine at no resource cost
 
 # Critical Failure
 #     You fail to construct the structure; if you were
@@ -57,3 +81,15 @@ Feature: Activity Phase, Step 3 (Civic) -- Build Structure
 #     lots, which must be cleared with the Demolish
 #     activity before you can attempt to Build a
 #     Structure in them again.
+
+    Scenario: Build Structure critically fails
+        Given the kingdom Aryc at level 1
+        And the kingdom has 10 RP
+        And the kingdom has 5 Stone
+        And a die roll of 1
+        When I Build a Shrine Structure 
+        Then there is 1 requirement
+        And "fill the lot(s) in the Urban Grid with rubble" is a requirement
+        And RP went down to 2
+        And the kingdom's Stone went down to 2
+        And next turn can not re-attempt building a Shrine at no resource cost

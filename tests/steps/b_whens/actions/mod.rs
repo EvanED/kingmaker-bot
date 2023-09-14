@@ -163,13 +163,13 @@ fn when_i_claim_hex_with_magic(world: &mut TestContext) {
     );
 }
 
-#[when("I Build a Cemetery Structure")]
-fn when_i_build_a_cemetery(world: &mut TestContext) {
+#[when("I Build a Shrine Structure")]
+fn when_i_build_a_shrine(world: &mut TestContext) {
     (world.next_turn_state, world.kingdom_state) = build_structure::build_structure(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
-        build_structure::Structure::Cemetery,
+        build_structure::Structure::Shrine,
     );
 }

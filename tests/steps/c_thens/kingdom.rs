@@ -1,6 +1,6 @@
 use cucumber::then;
 use assert2::assert;
-use kingdom::{state::Commodity, turns::RandomEventSelectionMethod};
+use kingdom::{state::Commodity, turns::RandomEventSelectionMethod, actions::c3_civic::build_structure::Structure};
 use crate::context::TestContext;
 
 #[then(expr = "Unrest is still {int}")]
@@ -51,6 +51,7 @@ fn given_next_turn_will_have_x_food(world: &mut TestContext, volume: i32) {
     assert!(volume == world.kingdom_state.commodity_stores[Commodity::Food] as i32);
 }
 
+#[then(expr = "the kingdom's Stone went down to {int}")]
 #[then(expr = "the kingdom's Stone went up to {int}")]
 #[then(expr = "the kingdom's Stone is still {int}")]
 fn given_next_turn_will_have_x_stone(world: &mut TestContext, volume: i32) {
@@ -96,4 +97,14 @@ fn then_x_is_a_requirements(world: &mut TestContext, requirement: String) {
 #[then(expr = "there is a Crop Failure potential for next {int} turns")]
 fn then_there_is_a_crop_failure_potential_for_next_x_turns(world: &mut TestContext, nturns: i32) {
     assert!(nturns == world.next_turn_state.dc6_crop_failure_potential_for_x_turns as i32);
+}
+
+#[then("next turn can re-attempt building a Shrine at no resource cost")]
+fn then_next_turn_can_reattempt_building_a_shrine_at_no_resource_cost(world: &mut TestContext) {
+    assert!(Some(Structure::Shrine) == world.next_turn_state.can_build_this_structure_for_no_resource_cost);
+}
+
+#[then("next turn can not re-attempt building a Shrine at no resource cost")]
+fn then_next_turn_can_not_reattempt_building_a_shrine_at_no_resource_cost(world: &mut TestContext) {
+    assert!(None == world.next_turn_state.can_build_this_structure_for_no_resource_cost);
 }
