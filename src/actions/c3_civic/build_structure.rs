@@ -4,16 +4,114 @@ use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext,
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Enum)]
 pub enum Structure {
+    // CAUTION: This order MUST be kept in sync with STRUCTURE_STATS below
+    
+    // Level 0
+    Tenement,
+    Houses,
+    Orphange,
+
+    // Level 1
+    Brewery,
+    Cemetery,
+    GeneralStore,
+    Granary,
+    Herbalist,
+    Inn,
     Shrine,
+    TavernDive,
+    WallWooden,
+
+    // Level 2
+    Bridge,
+    Dump,
+    Jail,
+    Library,
+    Mill,
+    TownHall,
+
+    // Level 3
+    AlchemyLab,
+    Barracks,
+    Keep,
+    FestivalHall,
+    Lumberyard,
+    Monument,
+    Park,
+    Pier,
+    Smithy,
+    Stable,
+    Stockyard,
+    Stonemason,
+    Tannery,
+    TavernPopular,
+    TradeShop,
+    Watchtower,
 }
 
-pub fn build_structure(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, structure: Structure) -> (TurnState, KingdomState) {
-    let skill = Skill::Folklore;
-    let dc = 15;
-    let rp_cost = 8;
-    let stone_cost = 3; // actually others, for Shrine
+type StructureStatsTableRow = (Skill, i8, i8, i8, i8, i8, i8, i8);
 
-    build_structure_from_stats(kingdom, turn, state, context, structure, skill, dc, rp_cost, stone_cost)
+const STRUCTURE_STATS: &'static [StructureStatsTableRow] = &[
+    // CAUTION: This order must be kept in sync with the definition of Structure above
+    //
+    //                               Housing
+    //                      Skill             DC  RP   FD  LU  LX  OR  ST
+    /* Tenement      */ (Skill::Industry    , 14,   1,  0,  1,  0,  0,  0),
+    /* Houses        */ (Skill::Industry    , 15,   3,  0,  1,  0,  0,  0),
+    /* Orphange      */ (Skill::Industry    , 16,   6,  0,  2,  0,  0,  0),
+
+    //                              Level 1
+    //                      Skill             DC  RP   FD  LU  LX  OR  ST
+    /* Brewery       */ (Skill::Agriculture , 15,   6,  0,  2,  0,  0,  0),
+    /* Cemetery      */ (Skill::Folklore    , 15,   4,  0,  0,  0,  0,  1),
+    /* GeneralStore  */ (Skill::Trade       , 15,   8,  0,  1,  0,  0,  0),
+    /* Granary       */ (Skill::Agriculture , 15,  12,  0,  2,  0,  0,  0),
+    /* Herbalist     */ (Skill::Wilderness  , 15,  10,  0,  1,  0,  0,  0),
+    /* Inn           */ (Skill::Trade       , 15,  10,  0,  2,  0,  0,  0),
+    /* Shrine        */ (Skill::Folklore    , 15,   8,  0,  0,  0,  0,  3), // FIXME: should be 3 others, not stone
+    /* TavernDive    */ (Skill::Trade       , 15,  12,  0,  1,  0,  0,  0),
+    /* WallWooden    */ (Skill::Defense     , 15,   2,  0,  4,  0,  0,  0),
+    //                      Skill             DC  RP   FD  LU  LX  OR  ST
+
+    //                               Level 2
+    //                      Skill             DC  RP   FD  LU  LX  OR  ST
+    /* Bridge        */ (Skill::Engineering , 16,   6,  0,  0,  0,  0,  0), //  1 lumber or stone
+    /* Dump          */ (Skill::Industry    , 16,   4,  0,  0,  0,  0,  0),
+    /* Jail          */ (Skill::Defense     , 16,  14,  0,  0,  0,  0,  0), // 10 others
+    /* Library       */ (Skill::Scholarship , 16,   6,  0,  0,  0,  0,  0), //  7 others
+    /* Mill          */ (Skill::Industry    , 16,   6,  0,  2,  0,  0,  1),
+    /* TownHall      */ (Skill::Industry    ,  0,  22,  0,  0,  0,  0,  0), // TODO: handle "varies"; 8 others
+    //                      Skill             DC  RP   FD  LU  LX  OR  ST
+
+    //                              Level 3
+    //                      Skill             DC  RP   FD  LU  LX  OR  ST
+    /* AlchemyLab    */ (Skill::Industry    , 16,  18,  0,  0,  0,  2,  5), // TODO: verify DC
+    /* Barracks      */ (Skill::Defense     , 16,   6,  0,  2,  0,  0,  1), // TODO: verify DC
+    /* Keep          */ (Skill::Defense     , 18,  32,  0,  0,  0,  0,  0), // 16 others
+    /* FestivalHall  */ (Skill::Arts        , 18,   7,  0,  3,  0,  0,  0),
+    /* Lumberyard    */ (Skill::Industry    , 18,  16,  0,  0,  0,  0,  0), //  6 others
+    /* Monument      */ (Skill::Arts        , 18,   6,  0,  0,  0,  0,  1),
+    /* Park          */ (Skill::Wilderness  , 18,   5,  0,  0,  0,  0,  0),
+    /* Pier          */ (Skill::Boating     , 18,  16,  0,  2,  0,  0,  0),
+    /* Smithy        */ (Skill::Industry    , 18,   8,  0,  0,  0,  0,  0), //  4 others
+    /* Stable        */ (Skill::Wilderness  , 18,  10,  0,  2,  0,  0,  0),
+    /* Stockyard     */ (Skill::Industry    , 18,  20,  0,  4,  0,  0,  0),
+    /* Stonemason    */ (Skill::Industry    , 18,  16,  0,  2,  0,  0,  0),
+    /* Tannery       */ (Skill::Industry    , 18,   6,  0,  2,  0,  0,  0),
+    /* TavernPopular */ (Skill::Trade       , 18,  24,  0,  0,  0,  0,  0), //  8 others
+    /* TradeShop     */ (Skill::Trade       , 18,  10,  0,  2,  0,  0,  0),
+    /* Watchtower    */ (Skill::Defense     , 18,  12,  0,  0,  0,  0,  0), //  8 others
+    //                      Skill             DC  RP   FD  LU  LX  OR  ST
+];
+
+
+pub fn build_structure(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, structure: Structure) -> (TurnState, KingdomState) {
+    let stats = STRUCTURE_STATS[structure as usize];
+    let (skill, dc, rp, food, lumber, luxury, ore, stone) = stats;
+
+    assert_eq!(stone, 3);
+
+    build_structure_from_stats(kingdom, turn, state, context, structure, skill, dc, rp, stone)
 }
 
 pub fn build_structure_from_stats(
