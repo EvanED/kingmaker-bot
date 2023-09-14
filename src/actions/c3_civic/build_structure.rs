@@ -117,8 +117,6 @@ pub fn build_structure(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState
     let stats = STRUCTURE_STATS[structure as usize];
     let (skill, dc, rp, food, lumber, luxury, ore, stone, others) = stats;
 
-    assert_eq!(stone, 3);
-
     build_structure_from_stats(
         kingdom,
         turn,
@@ -149,10 +147,11 @@ pub fn build_structure_from_stats(
     turn: &TurnState,
     state: &KingdomState,
     context: &RollContext,
-    // structure stats:
+    // structure building
     structure: Structure,
     skill: Skill,
     dc: DC,
+    // costs
     rp_cost: RpCost,
     food_cost: FoodCost,
     lumber_cost: LumberCost,

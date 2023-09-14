@@ -163,6 +163,17 @@ fn when_i_claim_hex_with_magic(world: &mut TestContext) {
     );
 }
 
+#[when("I Build an Alchemy Lab Structure")]
+fn when_i_build_an_alchemy_lab(world: &mut TestContext) {
+    (world.next_turn_state, world.kingdom_state) = build_structure::build_structure(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        build_structure::Structure::AlchemyLab,
+    );
+}
+
 #[when("I Build a Shrine Structure")]
 fn when_i_build_a_shrine(world: &mut TestContext) {
     (world.next_turn_state, world.kingdom_state) = build_structure::build_structure(

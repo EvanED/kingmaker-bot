@@ -51,6 +51,13 @@ fn given_next_turn_will_have_x_food(world: &mut TestContext, volume: i32) {
     assert!(volume == world.kingdom_state.commodity_stores[Commodity::Food] as i32);
 }
 
+#[then(expr = "the kingdom's Ore went down to {int}")]
+#[then(expr = "the kingdom's Ore went up to {int}")]
+#[then(expr = "the kingdom's Ore is still {int}")]
+fn given_next_turn_will_have_x_ore(world: &mut TestContext, volume: i32) {
+    assert!(volume == world.kingdom_state.commodity_stores[Commodity::Ore] as i32);
+}
+
 #[then(expr = "the kingdom's Stone went down to {int}")]
 #[then(expr = "the kingdom's Stone went up to {int}")]
 #[then(expr = "the kingdom's Stone is still {int}")]
@@ -104,7 +111,12 @@ fn then_next_turn_can_reattempt_building_a_shrine_at_no_resource_cost(world: &mu
     assert!(Some(Structure::Shrine) == world.next_turn_state.can_build_this_structure_for_no_resource_cost);
 }
 
-#[then("next turn can not re-attempt building a Shrine at no resource cost")]
+#[then("next turn can re-attempt building an Alchemy Lab at no resource cost")]
+fn then_next_turn_can_reattempt_building_an_alchemy_lab_at_no_resource_cost(world: &mut TestContext) {
+    assert!(Some(Structure::AlchemyLab) == world.next_turn_state.can_build_this_structure_for_no_resource_cost);
+}
+
+#[then("next turn can not re-attempt building anything at no resource cost")]
 fn then_next_turn_can_not_reattempt_building_a_shrine_at_no_resource_cost(world: &mut TestContext) {
     assert!(None == world.next_turn_state.can_build_this_structure_for_no_resource_cost);
 }
