@@ -68,17 +68,17 @@ const STRUCTURE_STATS: &'static [StructureStatsTableRow] = &[
     /* Granary       */ (Skill::Agriculture , 15,  12,  0,  2,  0,  0,  0,  0),
     /* Herbalist     */ (Skill::Wilderness  , 15,  10,  0,  1,  0,  0,  0,  0),
     /* Inn           */ (Skill::Trade       , 15,  10,  0,  2,  0,  0,  0,  0),
-    /* Shrine        */ (Skill::Folklore    , 15,   8,  0,  0,  0,  0,  3,  0), // FIXME: should be 3 others, not stone
+    /* Shrine        */ (Skill::Folklore    , 15,   8,  0,  2,  0,  0,  1,  0),
     /* TavernDive    */ (Skill::Trade       , 15,  12,  0,  1,  0,  0,  0,  0),
     /* WallWooden    */ (Skill::Defense     , 15,   2,  0,  4,  0,  0,  0,  0),
     //                      Skill             DC  RP   FD  LU  LX  OR  ST  More
 
     //                               Level 2
     //                      Skill             DC  RP   FD  LU  LX  OR  ST  More
-    /* Bridge        */ (Skill::Engineering , 16,   6,  0,  0,  0,  0,  0,  1),
+    /* Bridge        */ (Skill::Engineering , 16,   6,  0,  0,  0,  0,  0,  1), // 1 Lumber or Stone
     /* Dump          */ (Skill::Industry    , 16,   4,  0,  0,  0,  0,  0,  0),
-    /* Jail          */ (Skill::Defense     , 16,  14,  0,  0,  0,  0,  0, 10),
-    /* Library       */ (Skill::Scholarship , 16,   6,  0,  0,  0,  0,  0,  7),
+    /* Jail          */ (Skill::Defense     , 16,  14,  0,  4,  0,  2,  4,  0),
+    /* Library       */ (Skill::Scholarship , 16,   6,  0,  4,  0,  0,  2,  0),
     /* Mill          */ (Skill::Industry    , 16,   6,  0,  2,  0,  0,  1,  0),
     /* TownHall      */ (Skill::Industry    ,  0,  22,  0,  4,  0,  0,  4,  0), // TODO: handle "varies"
     //                      Skill             DC  RP   FD  LU  LX  OR  ST  More
@@ -87,20 +87,20 @@ const STRUCTURE_STATS: &'static [StructureStatsTableRow] = &[
     //                      Skill             DC  RP   FD  LU  LX  OR  ST  More
     /* AlchemyLab    */ (Skill::Industry    , 16,  18,  0,  0,  0,  2,  5,  0), // TODO: verify DC
     /* Barracks      */ (Skill::Defense     , 16,   6,  0,  2,  0,  0,  1,  0), // TODO: verify DC
-    /* Keep          */ (Skill::Defense     , 18,  32,  0,  0,  0,  0,  0, 16),
+    /* Keep          */ (Skill::Defense     , 18,  32,  0,  8,  0,  0,  8,  0),
     /* FestivalHall  */ (Skill::Arts        , 18,   7,  0,  3,  0,  0,  0,  0),
-    /* Lumberyard    */ (Skill::Industry    , 18,  16,  0,  0,  0,  0,  0,  6),
+    /* Lumberyard    */ (Skill::Industry    , 18,  16,  0,  5,  0,  1,  0,  0),
     /* Monument      */ (Skill::Arts        , 18,   6,  0,  0,  0,  0,  1,  0),
     /* Park          */ (Skill::Wilderness  , 18,   5,  0,  0,  0,  0,  0,  0),
     /* Pier          */ (Skill::Boating     , 18,  16,  0,  2,  0,  0,  0,  0),
-    /* Smithy        */ (Skill::Industry    , 18,   8,  0,  0,  0,  0,  0,  4),
+    /* Smithy        */ (Skill::Industry    , 18,   8,  0,  2,  0,  1,  1,  0),
     /* Stable        */ (Skill::Wilderness  , 18,  10,  0,  2,  0,  0,  0,  0),
     /* Stockyard     */ (Skill::Industry    , 18,  20,  0,  4,  0,  0,  0,  0),
     /* Stonemason    */ (Skill::Industry    , 18,  16,  0,  2,  0,  0,  0,  0),
     /* Tannery       */ (Skill::Industry    , 18,   6,  0,  2,  0,  0,  0,  0),
-    /* TavernPopular */ (Skill::Trade       , 18,  24,  0,  0,  0,  0,  0,  8),
+    /* TavernPopular */ (Skill::Trade       , 18,  24,  0,  6,  0,  0,  2,  0),
     /* TradeShop     */ (Skill::Trade       , 18,  10,  0,  2,  0,  0,  0,  0),
-    /* Watchtower    */ (Skill::Defense     , 18,  12,  0,  0,  0,  0,  0,  8),
+    /* Watchtower    */ (Skill::Defense     , 18,  12,  0,  0,  0,  0,  0,  4), // 4 Lumber or Stone
     //                      Skill             DC  RP   FD  LU  LX  OR  ST  More
 ];
 
