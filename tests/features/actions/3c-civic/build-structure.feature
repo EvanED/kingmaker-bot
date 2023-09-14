@@ -60,6 +60,22 @@ Feature: Activity Phase, Step 3 (Civic) -- Build Structure
         And the kingdom's Stone went down to 1
         And next turn can not re-attempt building anything at no resource cost
 
+    Scenario: Build Structure succeeds, when structure commodity costs can vary
+        Given the kingdom Aryc at level 1
+        And the kingdom has 7 RP
+        And the kingdom has 2 Lumber
+        And the kingdom has 3 Stone
+        And a die roll of 15
+        When I Build a Bridge Structure
+        Then there are 3 requirements
+        And "mark the urban grid with the new stucture" is a requirement
+        And "adjust kingdom item bonuses accordingly" is a requirement
+        And "the structure has commodity costs that have not been deducted" is a requirement
+        And RP went down to 1
+        And the kingdom's Lumber is still 2
+        And the kingdom's Stone is still 3
+        And next turn can not re-attempt building anything at no resource cost
+
 # Failure
 #     You fail to construct or repair the structure.
 #     You can try to complete it next Kingdom turn; if

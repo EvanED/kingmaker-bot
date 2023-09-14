@@ -192,6 +192,9 @@ pub fn build_structure_from_stats(
     if degree == DegreeOfSuccess::CriticalFailure {
         next_turn_state.requirements.push("fill the lot(s) in the Urban Grid with rubble".to_string());
     }
+    if other_commodity_cost.0 >= 1 {
+        next_turn_state.requirements.push("the structure has commodity costs that have not been deducted".to_string());
+    }
 
     let mut next_kingdom_state = state.clone();
     next_kingdom_state.resource_points -= rp_cost.0;

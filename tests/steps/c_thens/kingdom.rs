@@ -40,6 +40,9 @@ fn given_next_turn_will_have_x_bonus_rp(world: &mut TestContext, volume: i32) {
 }
 
 #[then(expr = "I have {int} Lumber")]
+#[then(expr = "the kingdom's Lumber is still {int}")]
+#[then(expr = "the kingdom's Lumber went up to {int}")]
+#[then(expr = "the kingdom's Lumber went down to {int}")]
 fn given_next_turn_will_have_x_lumber(world: &mut TestContext, volume: i32) {
     assert!(volume == world.kingdom_state.commodity_stores[Commodity::Lumber] as i32);
 }
