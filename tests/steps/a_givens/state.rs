@@ -19,6 +19,11 @@ fn given_we_have_n_food(world: &mut TestContext, food: i32) {
     world.kingdom_state.commodity_stores[Commodity::Food] = food as i8;
 }
 
+#[given(expr = "the kingdom has {int} Stone")]
+fn given_we_have_n_stone(world: &mut TestContext, stone: i32) {
+    world.kingdom_state.commodity_stores[Commodity::Stone] = stone as i8;
+}
+
 #[given(expr = "the kingdom has {int} Luxury")]
 fn given_we_have_n_luxury(world: &mut TestContext, luxury: i32) {
     world.kingdom_state.commodity_stores[Commodity::Luxuries] = luxury as i8;

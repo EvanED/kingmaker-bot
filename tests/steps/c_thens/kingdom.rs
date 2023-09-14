@@ -51,6 +51,12 @@ fn given_next_turn_will_have_x_food(world: &mut TestContext, volume: i32) {
     assert!(volume == world.kingdom_state.commodity_stores[Commodity::Food] as i32);
 }
 
+#[then(expr = "the kingdom's Stone went up to {int}")]
+#[then(expr = "the kingdom's Stone is still {int}")]
+fn given_next_turn_will_have_x_stone(world: &mut TestContext, volume: i32) {
+    assert!(volume == world.kingdom_state.commodity_stores[Commodity::Stone] as i32);
+}
+
 #[then(expr = "I have {int} Luxuries")]
 fn given_next_turn_will_have_x_luxuries(world: &mut TestContext, volume: i32) {
     assert!(volume == world.kingdom_state.commodity_stores[Commodity::Luxuries] as i32);
