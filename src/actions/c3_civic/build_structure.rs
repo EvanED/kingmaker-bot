@@ -80,13 +80,13 @@ const STRUCTURE_STATS: &'static [StructureStatsTableRow] = &[
     /* Jail          */ (Skill::Defense     , 16,  14,  0,  4,  0,  2,  4,  0),
     /* Library       */ (Skill::Scholarship , 16,   6,  0,  4,  0,  0,  2,  0),
     /* Mill          */ (Skill::Industry    , 16,   6,  0,  2,  0,  0,  1,  0),
-    /* TownHall      */ (Skill::Industry    ,  0,  22,  0,  4,  0,  0,  4,  0), // TODO: handle "varies"
+    /* TownHall      */ (Skill::Industry    ,  0,  22,  0,  4,  0,  0,  4,  0), // TODO: handle "varies" skill (Town Hall -> Castle -> Palace)
     //                      Skill             DC  RP   FD  LU  LX  OR  ST  More
 
     //                              Level 3
     //                      Skill             DC  RP   FD  LU  LX  OR  ST  More
-    /* AlchemyLab    */ (Skill::Industry    , 16,  18,  0,  0,  0,  2,  5,  0), // TODO: verify DC
-    /* Barracks      */ (Skill::Defense     , 16,   6,  0,  2,  0,  0,  1,  0), // TODO: verify DC
+    /* AlchemyLab    */ (Skill::Industry    , 16,  18,  0,  0,  0,  2,  5,  0),
+    /* Barracks      */ (Skill::Defense     , 16,   6,  0,  2,  0,  0,  1,  0),
     /* Keep          */ (Skill::Defense     , 18,  32,  0,  8,  0,  0,  8,  0),
     /* FestivalHall  */ (Skill::Arts        , 18,   7,  0,  3,  0,  0,  0,  0),
     /* Lumberyard    */ (Skill::Industry    , 18,  16,  0,  5,  0,  1,  0,  0),
