@@ -70,3 +70,24 @@ fn then_kingdom_selection_is_normal(world: &mut TestContext) {
 fn then_the_gm_has_advantage_on_random_event_selection(world: &mut TestContext) {
     assert!(world.next_turn_state.random_event_selection_method == Some(RandomEventSelectionMethod::AdvantageGM));
 }
+
+#[then(expr = "there are {int} requirements")]
+#[then(expr = "there is {int} requirement")]
+fn then_there_are_x_requirements(world: &mut TestContext, expected_count: i32) {
+    assert!(world.next_turn_state.requirements.len() == expected_count as usize);
+}
+
+#[then(expr = "there are no requirements")]
+fn then_there_are_no_requirements(world: &mut TestContext) {
+    assert!(Vec::<String>::new() == world.next_turn_state.requirements);
+}
+
+#[then(expr = "{string} is a requirement")]
+fn then_x_is_a_requirements(world: &mut TestContext, requirement: String) {
+    assert!(world.next_turn_state.requirements.contains(&requirement));
+}
+
+#[then(expr = "there is a Crop Failure potential for next {int} turns")]
+fn then_there_is_a_crop_failure_potential_for_next_x_turns(world: &mut TestContext, nturns: i32) {
+    assert!(nturns == world.next_turn_state.dc6_crop_failure_potential_for_x_turns as i32);
+}

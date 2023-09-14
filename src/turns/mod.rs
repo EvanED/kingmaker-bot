@@ -23,4 +23,5 @@ pub struct TurnState {
     pub create_a_masterpiece_attempted: bool,
 
     pub random_event_selection_method: Option<RandomEventSelectionMethod>,
+    pub dc6_crop_failure_potential_for_x_turns: i8,
 }

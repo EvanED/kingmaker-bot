@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday, supernatural_solution, prognostication, create_a_masterpiece}, c2_region::go_fishing}, state::Commodity, spec::skills::Skill};
+use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday, supernatural_solution, prognostication, create_a_masterpiece}, c2_region::{go_fishing, establish_farmland}}, state::Commodity, spec::skills::Skill};
 
 use crate::context::TestContext;
 
@@ -127,5 +127,27 @@ fn when_i_go_fishing(world: &mut TestContext) {
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
+    );
+}
+
+#[when("I Establish Farmland on plains")]
+fn when_i_establish_farmland_on_plains(world: &mut TestContext) {
+    (world.next_turn_state, world.kingdom_state) = establish_farmland::establish_farmland(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        establish_farmland::HexType::Plains,
+    );
+}
+
+#[when("I Establish Farmland on hills")]
+fn when_i_establish_farmland_on_hills(world: &mut TestContext) {
+    (world.next_turn_state, world.kingdom_state) = establish_farmland::establish_farmland(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        establish_farmland::HexType::Hills,
     );
 }
