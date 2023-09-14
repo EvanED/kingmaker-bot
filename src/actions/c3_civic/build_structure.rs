@@ -128,8 +128,20 @@ pub fn build_structure(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState
         skill,
         DC(dc),
         RpCost(rp),
+        FoodCost(food),
+        LumberCost(lumber),
+        LuxuryCost(luxury),
+        OreCost(ore),
         StoneCost(stone),
+        OtherCommodityCost(others),
     )
+}
+
+fn commodity_cost(degree: DegreeOfSuccess, commodity: i8) -> i8 {
+    match degree {
+        DegreeOfSuccess::CriticalSuccess => commodity - commodity / 2,  // Get half back
+        _                                => commodity,
+    }
 }
 
 pub fn build_structure_from_stats(
@@ -142,7 +154,12 @@ pub fn build_structure_from_stats(
     skill: Skill,
     dc: DC,
     rp_cost: RpCost,
+    food_cost: FoodCost,
+    lumber_cost: LumberCost,
+    luxury_cost: LuxuryCost,
+    ore_cost: OreCost,
     stone_cost: StoneCost,
+    other_commodity_cost: OtherCommodityCost,
 ) -> (TurnState, KingdomState)
 {
     let the_roll = kingdom.roll(skill, context);
@@ -161,10 +178,11 @@ pub fn build_structure_from_stats(
         _                                => vec![],
     };
 
-    let stone_cost = match degree {
-        DegreeOfSuccess::CriticalSuccess => stone_cost.0 - stone_cost.0 / 2,  // Get half back
-        _                                => stone_cost.0,
-    };
+    let food_cost  = commodity_cost(degree, food_cost.0);
+    let lumber_cost= commodity_cost(degree, lumber_cost.0);
+    let luxury_cost= commodity_cost(degree, luxury_cost.0);
+    let ore_cost   = commodity_cost(degree, ore_cost.0);
+    let stone_cost = commodity_cost(degree, stone_cost.0);
 
     let mut next_turn_state = turn.clone();
     next_turn_state.requirements.extend(new_requirements);
@@ -178,7 +196,12 @@ pub fn build_structure_from_stats(
 
     let mut next_kingdom_state = state.clone();
     next_kingdom_state.resource_points -= rp_cost.0;
-    next_kingdom_state.commodity_stores[Commodity::Stone] -= stone_cost;
+
+    next_kingdom_state.commodity_stores[Commodity::Food]     -= food_cost;
+    next_kingdom_state.commodity_stores[Commodity::Lumber]   -= lumber_cost;
+    next_kingdom_state.commodity_stores[Commodity::Luxuries] -= luxury_cost;
+    next_kingdom_state.commodity_stores[Commodity::Ore]      -= ore_cost;
+    next_kingdom_state.commodity_stores[Commodity::Stone]    -= stone_cost;
 
     (next_turn_state, next_kingdom_state)
 }
