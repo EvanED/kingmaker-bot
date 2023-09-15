@@ -3,3 +3,5 @@ pub mod rolls;
 pub mod turns;
 pub mod state;
 pub mod actions;
+
+pub mod discord;

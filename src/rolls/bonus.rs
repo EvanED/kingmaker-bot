@@ -1,6 +1,9 @@
+use strum_macros::AsRefStr;
+use std::fmt::Write;
+
 use crate::spec::{attributes, skills};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr)]
 pub enum BonusType {
     Circumstance,
     Item,
@@ -14,11 +17,31 @@ pub enum AppliesTo {
     RandomEventResolutions,
 }
 
+impl AppliesTo {
+    fn to_markdown(self) -> &'static str {
+        match self {
+            AppliesTo::Attribute(a) => a.to_markdown(),
+            AppliesTo::Skill(s)         => s.to_markdown(),
+            AppliesTo::RandomEventResolutions  => "random event rolls",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum AppliesUntil {
     NextApplicableRoll,
     StartOfTheNextTurn,
     EndOfTheNextTurn,
+}
+
+impl AppliesUntil {
+    fn to_markdown(self) -> &'static str {
+        match self {
+            AppliesUntil::NextApplicableRoll => "the next such roll",
+            AppliesUntil::StartOfTheNextTurn => "the start of the next kingdom turn",
+            AppliesUntil::EndOfTheNextTurn   => "the end of the next kingdom turn",
+        }
+    }
 }
 
 #[derive(Debug, Clone, PartialEq, Eq)]
@@ -31,6 +54,22 @@ pub struct Bonus {
 }
 
 impl Bonus {
+    pub fn to_markdown(&self, app_string: &mut String) {
+        write!(
+            app_string,
+            //+1 circ bonus to arts rolls ...
+            //1 2  3  4     5              6           7
+            "{}{} {} {} to {} rolls until {}, because {}",
+            /*1*/ if self.modifier >= 0 {'+'} else {'-'},
+            /*2*/ self.modifier,
+            /*3*/ self.type_.as_ref(),
+            /*4*/ if self.modifier >= 0 {"bonus"} else {"penalty"},
+            /*5*/ self.applies_to.to_markdown(),
+            /*6*/ self.applies_until.to_markdown(),
+            /*7*/ self.reason,
+        ).unwrap();
+    }
+
     pub fn applies(&self, attribute: attributes::Attribute, skill: skills::Skill) -> bool {
         match self.applies_to {
             AppliesTo::Attribute(a) => a == attribute,

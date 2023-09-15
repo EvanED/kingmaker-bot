@@ -21,6 +21,53 @@ pub struct Kingdom {
 }
 
 impl Kingdom {
+    fn markdown_uteml(&self, skill: Skill) -> &'static str {
+        match self.skills[skill] {
+            TrainingLevel::Untrained => "",
+            TrainingLevel::Trained   => " [T]",
+            TrainingLevel::Expert    => " [E]",
+            TrainingLevel::Master    => " [M]",
+            TrainingLevel::Legendary => " [L]",
+        }
+    }
+
+    pub fn to_markdown(&self) -> String {
+        // TODO: Name
+        format!(
+            "
+# Kingdom [NAME] (Level {})
+
+**Attributes:** Culture +{} / Economy +{} / Loyalty +{} / Stability +{}  \n\
+**Skills:**
+* Culture: Arts{} / Folklore{} / Magic{} / Scholarship{}
+* Economy: Boating{} / Exploration{} / Industry{} / Trade{}
+* Loyalty: Intrigue{} / Politics{} / Statecraft{} / Warfare{}
+* Stability: Agriculture{} / Defense{} / Engineering{} / Wilderness{}
+            ",
+            self.level,
+            self.attributes[Attribute::Culture],
+            self.attributes[Attribute::Economy],
+            self.attributes[Attribute::Loyalty],
+            self.attributes[Attribute::Stability],
+            self.markdown_uteml(Skill::Arts),
+            self.markdown_uteml(Skill::Folklore),
+            self.markdown_uteml(Skill::Magic),
+            self.markdown_uteml(Skill::Scholarship),
+            self.markdown_uteml(Skill::Boating),
+            self.markdown_uteml(Skill::Exploration),
+            self.markdown_uteml(Skill::Industry),
+            self.markdown_uteml(Skill::Trade),
+            self.markdown_uteml(Skill::Intrigue),
+            self.markdown_uteml(Skill::Politics),
+            self.markdown_uteml(Skill::Statecraft),
+            self.markdown_uteml(Skill::Warfare),
+            self.markdown_uteml(Skill::Agriculture),
+            self.markdown_uteml(Skill::Defense),
+            self.markdown_uteml(Skill::Engineering),
+            self.markdown_uteml(Skill::Wilderness),
+        )
+    }
+
     pub fn roll(&self, skill: Skill, context: &RollContext) -> RollResult {
         let attribute = skill.attribute();
         let attribute_mod = self.attributes[attribute];

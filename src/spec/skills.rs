@@ -1,5 +1,6 @@
 use enum_map::Enum;
-use strum_macros::EnumString;
+use strum::IntoEnumIterator;
+use strum_macros::{EnumString, IntoStaticStr, EnumIter};
 use super::attributes::Attribute;
 
 #[derive(Debug, Clone, Copy, EnumString)]
@@ -25,7 +26,7 @@ impl TrainingLevel {
     }
 }
 
-#[derive(Debug, Enum, Clone, Copy, PartialEq, Eq, EnumString)]
+#[derive(Debug, Enum, Clone, Copy, PartialEq, Eq, IntoStaticStr, EnumString, EnumIter)]
 #[strum(serialize_all = "kebab-case", ascii_case_insensitive)]
 pub enum Skill {
     // Culture
@@ -54,6 +55,21 @@ pub enum Skill {
 }
 
 impl Skill {
+    pub fn autocomplete_matches(self, prompt: &str) -> bool {
+        self.to_markdown().contains(prompt)
+    }
+
+    pub fn autocomplete_matching(prompt: &str) -> Vec<&'static str> {
+        Skill::iter()
+            .filter(|skill| skill.autocomplete_matches(prompt))
+            .map(|skill| skill.to_markdown())
+            .collect()
+    }
+
+    pub fn to_markdown(self) -> &'static str {
+        self.into()
+    }
+
     pub fn attribute(self) -> Attribute {
         use Attribute::*;
         use Skill::*;
@@ -78,5 +94,14 @@ impl Skill {
             Engineering => Stability,
             Wilderness  => Stability,      
         }
+    }
+}
+
+#[cfg(test)]
+pub mod tests {
+    use assert2::assert;
+    #[test]
+    fn foo() {
+        assert!(1 == 1);
     }
 }

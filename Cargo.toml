@@ -16,5 +16,9 @@ harness = false
 [dependencies]
 assert2 = "0.3.11"
 enum-map = "2.6.2"
+futures = "0.3"
+poise = "0.5.6"
 strum = "0.25.0"
 strum_macros = "0.25.2"
+tokio = { version = "1.32.0", features = ["full"] }
+

@@ -19,6 +19,30 @@ pub struct KingdomState {
     pub commodity_stores: EnumMap<Commodity, i8>,
 }
 
+impl KingdomState {
+    pub fn to_markdown(&self) -> String {
+        format!(
+            "
+## Current Kingdom State
+
+**Unrest:** {}  \n\
+**Resource Points:** {}  \n\
+**Fame Points:** {}
+
+**Commodities:** Food {}, Lumber {}, Luxuries {}, Ore {}, Stone {}
+            ",
+            self.unrest,
+            self.resource_points,
+            self.fame_points,
+            self.commodity_stores[Commodity::Food],
+            self.commodity_stores[Commodity::Lumber],
+            self.commodity_stores[Commodity::Luxuries],
+            self.commodity_stores[Commodity::Ore],
+            self.commodity_stores[Commodity::Stone],
+        )
+    }
+}
+
 #[cfg(test)]
 pub mod tests {
     use assert2::assert;
