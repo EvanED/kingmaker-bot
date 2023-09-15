@@ -1,4 +1,5 @@
-use crate::{discord::{Context, Error}, actions::b_commerce::collect_taxes, spec::Kingdom, turns::TurnState, state::KingdomState, rolls::roll_context::RollContext};
+use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::roll_context::RollContext, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}};
+use std::str::FromStr;
 
 #[poise::command(
     prefix_command,
@@ -58,7 +59,7 @@ pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
     slash_command,
 )]
 pub async fn improve_lifestyle(ctx: Context<'_>) -> Result<(), Error> {
-    make_move(ctx, "Improve Lifestyle", &collect_taxes::collect_taxes).await
+    make_move(ctx, "Improve Lifestyle", &improve_lifestyle::improve_lifestyle).await
 }
 
 /// A subcommand of `parent`
@@ -71,9 +72,12 @@ pub async fn trade_commodities(
     commodity: String,
     volume: i8,
 ) -> Result<(), Error> {
-    let s = format!("Trade Commodities: {volume} {commodity}");
-    ctx.say(s).await?;
-    Ok(())
+    let commodity = Commodity::from_str(&commodity)?;
+    let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
+        trade_commodities::trade_commodities(kingdom, turn, state, context, commodity, volume)
+    };
+
+    make_move(ctx, "Trade Commodities", closure).await
 }
 
 ///////////////////////////////////
@@ -85,8 +89,7 @@ pub async fn trade_commodities(
     slash_command,
 )]
 pub async fn celebrate_holiday(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Celebrate Holiday").await?;
-    Ok(())
+    make_move(ctx, "Celebrate Holiday", &celebrate_holiday::celebrate_holiday).await
 }
 
 
@@ -96,8 +99,7 @@ pub async fn celebrate_holiday(ctx: Context<'_>) -> Result<(), Error> {
     slash_command,
 )]
 pub async fn create_a_masterpiece(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Create a Masterpiece").await?;
-    Ok(())
+    make_move(ctx, "Create a Masterpiece", &create_a_masterpiece::create_a_masterpiece).await
 }
 
 
@@ -107,8 +109,7 @@ pub async fn create_a_masterpiece(ctx: Context<'_>) -> Result<(), Error> {
     slash_command,
 )]
 pub async fn prognostication(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Prognostication").await?;
-    Ok(())
+    make_move(ctx, "Prognostication", &prognostication::prognosticate).await
 }
 
 
@@ -122,9 +123,13 @@ pub async fn purchase_commodities(
     primary_want: String,
     secondary_want: String,
 ) -> Result<(), Error> {
-    let s = format!("Purchase Commodities: {primary_want} (secondary {secondary_want})");
-    ctx.say(s).await?;
-    Ok(())
+    let primary_want = Commodity::from_str(&primary_want)?;
+    let secondary_want = Commodity::from_str(&secondary_want)?;
+    let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
+        purchase_commodities::purchase_commodities(kingdom, turn, state, context, primary_want, secondary_want)
+    };
+
+    make_move(ctx, "Purchase Commodities", closure).await
 }
 
 
@@ -134,8 +139,7 @@ pub async fn purchase_commodities(
     slash_command,
 )]
 pub async fn supernatural_solution(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Supernatural Solution").await?;
-    Ok(())
+    make_move(ctx, "Supernatural Solution", &supernatural_solution::supernatural_solution).await
 }
 
 
@@ -148,9 +152,12 @@ pub async fn take_charge(
     ctx: Context<'_>,
     skill: String,
 ) -> Result<(), Error> {
-    let s = format!("Take Charge: {skill}");
-    ctx.say(s).await?;
-    Ok(())
+    let skill = Skill::from_str(&skill)?;
+    let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
+        take_charge::take_charge(kingdom, turn, state, context, skill)
+    };
+
+    make_move(ctx, "Take Charge", closure).await
 }
 
 /////////////////////////////////////////////////
@@ -161,9 +168,13 @@ pub async fn take_charge(
     prefix_command,
     slash_command,
 )]
-pub async fn claim_hex(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Claim Hex").await?;
-    Ok(())
+pub async fn claim_hex(ctx: Context<'_>, using_skill: String) -> Result<(), Error> {
+    let skill = Skill::from_str(&using_skill)?;
+    let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
+        claim_hex::claim_hex(kingdom, turn, state, context, skill)
+    };
+
+    make_move(ctx, "Claim Hex", closure).await
 }
 
 
@@ -176,9 +187,12 @@ pub async fn establish_farmland(
     ctx: Context<'_>,
     hex_type: String,
 ) -> Result<(), Error> {
-    let s = format!("Establish Farmland on {hex_type}");
-    ctx.say(s).await?;
-    Ok(())
+    let hex_type = HexType::from_str(&hex_type)?;
+    let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
+        establish_farmland::establish_farmland(kingdom, turn, state, context, hex_type)
+    };
+
+    make_move(ctx, "Claim Hex", closure).await
 }
 
 
@@ -188,8 +202,7 @@ pub async fn establish_farmland(
     slash_command,
 )]
 pub async fn go_fishing(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Go Fishing").await?;
-    Ok(())
+    make_move(ctx, "Go Fishing", &go_fishing::go_fishing).await
 }
 
 //////////////////////////////////////////////////
@@ -203,7 +216,10 @@ pub async fn build_structure(
     ctx: Context<'_>,
     structure: String,
 ) -> Result<(), Error> {
-    let s = format!("Build Structure: {structure}");
-    ctx.say(s).await?;
-    Ok(())
+    let structure = Structure::from_str(&structure)?;
+    let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
+        build_structure::build_structure(kingdom, turn, state, context, structure)
+    };
+
+    make_move(ctx, "Claim Hex", closure).await
 }

@@ -1,9 +1,9 @@
 use enum_map::Enum;
-use strum_macros::AsRefStr;
+use strum_macros::{AsRefStr, EnumString};
 
 use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Enum)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Enum, EnumString)]
 pub enum Structure {
     // CAUTION: This order MUST be kept in sync with STRUCTURE_STATS below
     
