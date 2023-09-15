@@ -1,7 +1,7 @@
 use enum_map::Enum;
 use strum_macros::{AsRefStr, EnumString};
 
-use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Enum, EnumString)]
 pub enum Structure {
@@ -114,7 +114,7 @@ const STRUCTURE_STATS: &'static [StructureStatsTableRow] = &[
 #[derive(Debug, Copy, Clone, PartialEq, Eq)] pub struct OtherCommodityCost(i8);
 
 
-pub fn build_structure(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, structure: Structure) -> (TurnState, KingdomState) {
+pub fn build_structure(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, structure: Structure) -> (RollResult, TurnState, KingdomState) {
     let stats = STRUCTURE_STATS[structure as usize];
     let (skill, dc, rp, food, lumber, luxury, ore, stone, others) = stats;
 
@@ -160,7 +160,7 @@ pub fn build_structure_from_stats(
     ore_cost: OreCost,
     stone_cost: StoneCost,
     other_commodity_cost: OtherCommodityCost,
-) -> (TurnState, KingdomState)
+) -> (RollResult, TurnState, KingdomState)
 {
     let the_roll = kingdom.roll(skill, context);
 
@@ -206,5 +206,11 @@ pub fn build_structure_from_stats(
     next_kingdom_state.commodity_stores[Commodity::Ore]      -= ore_cost;
     next_kingdom_state.commodity_stores[Commodity::Stone]    -= stone_cost;
 
-    (next_turn_state, next_kingdom_state)
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
+
+    (roll_result, next_turn_state, next_kingdom_state)
 }

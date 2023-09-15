@@ -1,6 +1,6 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}, bonus::{AppliesTo, AppliesUntil, BonusType, Bonus}}, spec::{Kingdom, skills::Skill}, turns::{TurnState, RandomEventSelectionMethod}};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}, bonus::{AppliesTo, AppliesUntil, BonusType, Bonus}}, spec::{Kingdom, skills::Skill}, turns::{TurnState, RandomEventSelectionMethod}};
 
-pub fn prognosticate(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
+pub fn prognosticate(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Industry, context);
     let dc = DC(14); // TODO
 
@@ -38,5 +38,11 @@ pub fn prognosticate(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, 
     assert!(next_turn_state.random_event_selection_method.is_none());
     next_turn_state.random_event_selection_method = event_selection;
 
-    (next_turn_state, next_kingdom_state)
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
+
+    (roll_result, next_turn_state, next_kingdom_state)
 }

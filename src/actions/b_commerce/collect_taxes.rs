@@ -1,12 +1,22 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}, roll_result::{DC, self, DegreeOfSuccess, RollResult, DieRoll, NaturalRoll, TotalRoll}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
 use std::cmp;
 
-pub fn decline_to_collect(_kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
+pub fn decline_to_collect(_kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let unrest_change = if context.d20 >= 11 {-1} else {0};
     let unrest = cmp::max(0, state.unrest + unrest_change);
     let new_kingdom_state = KingdomState { unrest, ..state.clone() }; // .clone() ??
 
-    (turn.clone(), new_kingdom_state)
+    let roll_result = RollResult {
+        die_roll: DieRoll {
+            natural: NaturalRoll(context.d20),
+            total:   TotalRoll(context.d20),
+            description: "Collect Taxes: flat check to reduce unrest".to_string(),
+        },
+        degree: if context.d20 >= 11 {DegreeOfSuccess::Success} else {DegreeOfSuccess::Failure},
+        dc: DC(11),
+    };
+
+    (roll_result, turn.clone(), new_kingdom_state)
 }
 
 pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {

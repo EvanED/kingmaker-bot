@@ -1,6 +1,6 @@
-use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
-pub fn go_fishing(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
+pub fn go_fishing(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Boating, context);
     let dc = DC(14); // TODO
 
@@ -27,5 +27,11 @@ pub fn go_fishing(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, con
     next_kingdom_state.commodity_stores[Commodity::Food] += food_increase;
     next_kingdom_state.unrest += unrest_increase;
 
-    (next_turn_state, next_kingdom_state)
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
+
+    (roll_result, next_turn_state, next_kingdom_state)
 }

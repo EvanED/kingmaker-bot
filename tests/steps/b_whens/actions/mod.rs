@@ -17,27 +17,31 @@ fn when_i_collect_taxes(world: &mut TestContext) {
 
 #[when("I do not collect taxes")]
 fn when_i_do_not_collect_taxes(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = collect_taxes::decline_to_collect(
-        &world.kingdom.as_ref().unwrap(),
-        &world.turn_state,
-        &world.kingdom_state,
-        &world.roll_context.as_ref().unwrap(),
-    )
-}
-
-#[when("I Improve Lifestyle")]
-fn when_i_improve_lifestyle(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = improve_lifestyle::improve_lifestyle(
+    let triple = collect_taxes::decline_to_collect(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
+}
+
+#[when("I Improve Lifestyle")]
+fn when_i_improve_lifestyle(world: &mut TestContext) {
+    let triple = improve_lifestyle::improve_lifestyle(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+    );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when(expr = "I Trade Commodities of {int} Lumber")]
 fn when_i_trade_commodities(world: &mut TestContext, volume: i32) {
-    (world.next_turn_state, world.kingdom_state) = trade_commodities::trade_commodities(
+    let triple = trade_commodities::trade_commodities(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
@@ -45,22 +49,26 @@ fn when_i_trade_commodities(world: &mut TestContext, volume: i32) {
         Commodity::Lumber,
         volume as i8,
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when(expr = "I Take Charge with Arts")]
 fn when_i_take_charge_arts(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = take_charge::take_charge(
+    let triple = take_charge::take_charge(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         Skill::Arts,
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Purchase Commodities of Food (secondary Lumber)")]
 fn when_i_purchase_commodities(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = purchase_commodities::purchase_commodities(
+    let triple = purchase_commodities::purchase_commodities(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
@@ -68,11 +76,13 @@ fn when_i_purchase_commodities(world: &mut TestContext) {
         Commodity::Food,
         Commodity::Lumber,
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Purchase Commodities of Luxuries (secondary Lumber)")]
 fn when_i_purchase_commodities2(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = purchase_commodities::purchase_commodities(
+    let triple = purchase_commodities::purchase_commodities(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
@@ -80,109 +90,131 @@ fn when_i_purchase_commodities2(world: &mut TestContext) {
         Commodity::Luxuries,
         Commodity::Lumber,
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Celebrate Holiday")]
 fn when_i_celebrate_holiday(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = celebrate_holiday::celebrate_holiday(
+    let triple = celebrate_holiday::celebrate_holiday(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I search for a Supernatural Solution")]
 fn when_i_search_for_a_supernatural_solution(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = supernatural_solution::supernatural_solution(
+    let triple = supernatural_solution::supernatural_solution(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Prognosticate")]
 fn when_i_prognosticate(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = prognostication::prognosticate(
+    let triple = prognostication::prognosticate(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Create a Masterpiece")]
 fn when_i_create_a_masterpiece(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = create_a_masterpiece::create_a_masterpiece(
+    let triple = create_a_masterpiece::create_a_masterpiece(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Go Fishing")]
 fn when_i_go_fishing(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = go_fishing::go_fishing(
+    let triple = go_fishing::go_fishing(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Establish Farmland on plains")]
 fn when_i_establish_farmland_on_plains(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = establish_farmland::establish_farmland(
+    let triple = establish_farmland::establish_farmland(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         establish_farmland::HexType::Plains,
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Establish Farmland on hills")]
 fn when_i_establish_farmland_on_hills(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = establish_farmland::establish_farmland(
+    let triple = establish_farmland::establish_farmland(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         establish_farmland::HexType::Hills,
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Claim Hex with Magic")]
 fn when_i_claim_hex_with_magic(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = claim_hex::claim_hex(
+    let triple = claim_hex::claim_hex(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         Skill::Magic,
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Build an Alchemy Lab Structure")]
 fn when_i_build_an_alchemy_lab(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = build_structure::build_structure(
+    let triple = build_structure::build_structure(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         build_structure::Structure::AlchemyLab,
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I Build a Bridge Structure")]
 fn when_i_build_a_bridge(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = build_structure::build_structure(
+    let triple = build_structure::build_structure(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         build_structure::Structure::Bridge,
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }

@@ -1,7 +1,7 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
 
 // TODO: Require Skill as one of prereqs
-pub fn claim_hex(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, skill: Skill) -> (TurnState, KingdomState) {
+pub fn claim_hex(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, skill: Skill) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(skill, context);
     let dc = DC(14); // TODO
 
@@ -38,7 +38,13 @@ pub fn claim_hex(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, cont
     let mut next_kingdom_state = state.clone();
     next_kingdom_state.resource_points -= 1;
 
-    (next_turn_state, next_kingdom_state)
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
+
+    (roll_result, next_turn_state, next_kingdom_state)
 }
 
 

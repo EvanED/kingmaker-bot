@@ -1,6 +1,6 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
-pub fn supernatural_solution(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
+pub fn supernatural_solution(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Industry, context);
     let dc = DC(14); // TODO
 
@@ -33,5 +33,11 @@ pub fn supernatural_solution(kingdom: &Kingdom, turn: &TurnState, state: &Kingdo
     let mut next_kingdom_state = state.clone();
     next_kingdom_state.resource_points -= research_cost;
 
-    (next_turn_state, next_kingdom_state)
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
+
+    (roll_result, next_turn_state, next_kingdom_state)
 }

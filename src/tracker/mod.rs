@@ -1,4 +1,4 @@
-use crate::{spec::Kingdom, state::KingdomState, turns::TurnState, rolls::roll_context::RollContext, discord::commands::kingdom::create_aryc};
+use crate::{spec::Kingdom, state::KingdomState, turns::TurnState, rolls::{roll_context::RollContext, roll_result::RollResult}, discord::commands::kingdom::create_aryc};
 
 #[derive(Debug)]
 pub struct TurnRecord {
@@ -27,6 +27,7 @@ pub struct OverallState {
 
 #[derive(Debug)]
 pub struct MoveResult {
+    pub roll_result: RollResult,
     pub state_changes: Vec<String>,
 }
 
@@ -51,12 +52,12 @@ impl OverallState {
     }
 
     pub fn make_move<F>(&mut self, description: String, turn_func: F) -> MoveResult
-        where F: FnOnce(&Kingdom, &TurnState, &KingdomState, &RollContext) -> (TurnState, KingdomState)
+        where F: FnOnce(&Kingdom, &TurnState, &KingdomState, &RollContext) -> (RollResult, TurnState, KingdomState)
     {
         println!("make_move({description}, ...)");
         let starting_state = self.turns.last().unwrap();
     
-        let (next_turn_state, next_kingdom_state) = turn_func(
+        let (roll_result, next_turn_state, next_kingdom_state) = turn_func(
             &self.kingdom,
             &starting_state.turn_state,
             &starting_state.kingdom_state,
@@ -71,6 +72,7 @@ impl OverallState {
         self.turns.push(next_turn);
 
         MoveResult {
+            roll_result,
             state_changes
         }
     }

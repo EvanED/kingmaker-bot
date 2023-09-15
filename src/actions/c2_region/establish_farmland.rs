@@ -1,6 +1,6 @@
 use strum_macros::EnumString;
 
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString)]
 pub enum HexType {
@@ -16,7 +16,7 @@ pub fn claim_second_hex_message(hex_type: HexType) -> String {
     }.to_string()
 }
 
-pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, hex_type: HexType) -> (TurnState, KingdomState) {
+pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, hex_type: HexType) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Agriculture, context);
     let dc = DC(14); // TODO
 
@@ -42,5 +42,11 @@ pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSt
 
     let next_kingdom_state = state.clone();
 
-    (next_turn_state, next_kingdom_state)
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
+
+    (roll_result, next_turn_state, next_kingdom_state)
 }

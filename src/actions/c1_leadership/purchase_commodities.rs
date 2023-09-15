@@ -1,6 +1,6 @@
-use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
-pub fn purchase_commodities(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, primary_want: Commodity, secondary_want: Commodity) -> (TurnState, KingdomState) {
+pub fn purchase_commodities(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, primary_want: Commodity, secondary_want: Commodity) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Industry, context);
     let dc = DC(14); // TODO
 
@@ -31,5 +31,11 @@ pub fn purchase_commodities(kingdom: &Kingdom, turn: &TurnState, state: &Kingdom
     next_kingdom_state.commodity_stores[primary_want] += primary_increase;
     next_kingdom_state.commodity_stores[secondary_want] += secondary_increase;
 
-    (next_turn_state, next_kingdom_state)
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
+
+    (roll_result, next_turn_state, next_kingdom_state)
 }

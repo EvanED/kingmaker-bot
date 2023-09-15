@@ -1,6 +1,6 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}, bonus::{AppliesUntil, Bonus, BonusType, AppliesTo}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}, bonus::{AppliesUntil, Bonus, BonusType, AppliesTo}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
-pub fn take_charge(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, skill: Skill) -> (TurnState, KingdomState) {
+pub fn take_charge(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, skill: Skill) -> (RollResult, TurnState, KingdomState) {
     let crit_success_bonus = Bonus {
         type_: BonusType::Circumstance,
         applies_to: AppliesTo::Skill(skill),
@@ -43,5 +43,11 @@ pub fn take_charge(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, co
         DegreeOfSuccess::CriticalFailure => next_turn_state.bonuses.push(crit_fail_penalty),
     }
 
-    (next_turn_state, next_state)
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
+
+    (roll_result, next_turn_state, next_state)
 }

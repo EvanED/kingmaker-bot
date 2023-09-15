@@ -1,4 +1,4 @@
-use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::roll_context::RollContext, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}};
+use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::RollResult}, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}};
 use std::str::FromStr;
 
 #[poise::command(
@@ -30,7 +30,7 @@ pub async fn act(_: Context<'_>) -> Result<(), Error> {
 }
 
 pub async fn make_move<F>(ctx: Context<'_>, desc: &str, turn_func: F) -> Result<(), Error>
-    where F: FnOnce(&Kingdom, &TurnState, &KingdomState, &RollContext) -> (TurnState, KingdomState)
+    where F: FnOnce(&Kingdom, &TurnState, &KingdomState, &RollContext) -> (RollResult, TurnState, KingdomState)
 {
     let move_result = {
         let mut state = ctx.data().tracker.lock().unwrap();
@@ -50,12 +50,7 @@ pub async fn make_move<F>(ctx: Context<'_>, desc: &str, turn_func: F) -> Result<
     slash_command,
 )]
 pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
-    let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
-        let triple = collect_taxes::collect_taxes(kingdom, turn, state, context);
-        let (_, turn_state, kingdom_state) = triple;
-        (turn_state, kingdom_state)
-    };
-    make_move(ctx, "Collect Taxes", closure).await
+    make_move(ctx, "Collect Taxes", &collect_taxes::collect_taxes).await
 }
 
 /// A subcommand of `parent`

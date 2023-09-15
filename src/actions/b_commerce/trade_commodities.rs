@@ -1,6 +1,6 @@
-use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
-pub fn trade_commodities(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, commodity: Commodity, volume: i8) -> (TurnState, KingdomState) {
+pub fn trade_commodities(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, commodity: Commodity, volume: i8) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Industry, context);
     let dc = DC(14); // TODO
 
@@ -29,5 +29,11 @@ pub fn trade_commodities(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSta
         next_kingdom_state.unrest += 1;
     }
 
-    (next_turn_state, next_kingdom_state)
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
+
+    (roll_result, next_turn_state, next_kingdom_state)
 }
