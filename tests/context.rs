@@ -1,7 +1,7 @@
 use kingdom::rolls::bonus::Bonus;
 use kingdom::rolls::roll_context::RollContext;
 use kingdom::spec::Kingdom;
-use kingdom::rolls::roll_result::RollResult;
+use kingdom::rolls::roll_result::{DieRoll, RollResult};
 use cucumber::World;
 use kingdom::state::KingdomState;
 use kingdom::turns::TurnState;
@@ -12,6 +12,7 @@ use kingdom::turns::TurnState;
 pub struct TestContext {
     pub kingdom:           Option<Kingdom>,
     pub roll_context:      Option<RollContext>,
+    pub die_roll:          Option<DieRoll>,
     pub roll_result:       Option<RollResult>,
     pub remaining_bonuses: Vec<Bonus>,
     pub turn_state:        TurnState,

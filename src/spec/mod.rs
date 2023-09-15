@@ -1,5 +1,5 @@
 use enum_map::EnumMap;
-use crate::rolls::roll_result::{RollResult, NaturalRoll, TotalRoll};
+use crate::rolls::roll_result::{DieRoll, NaturalRoll, TotalRoll};
 use crate::rolls::roll_context::RollContext;
 
 pub mod attributes;
@@ -68,7 +68,7 @@ impl Kingdom {
         )
     }
 
-    pub fn roll(&self, skill: Skill, context: &RollContext) -> RollResult {
+    pub fn roll(&self, skill: Skill, context: &RollContext) -> DieRoll {
         let attribute = skill.attribute();
         let attribute_mod = self.attributes[attribute];
 
@@ -94,6 +94,10 @@ impl Kingdom {
         // TODO: the "trained" should be replaced, maybe split up
         let description = format!("{natural} (nat) + {attribute_mod} (culture) + {invested_mod} (invested) + {proficiency} (training){bonuses_desc}");
 
-        RollResult { total, natural: NaturalRoll(natural), description }
+        DieRoll {
+            total,
+            natural: NaturalRoll(natural),
+            description,
+        }
     }
 }

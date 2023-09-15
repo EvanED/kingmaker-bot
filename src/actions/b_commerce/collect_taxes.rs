@@ -1,4 +1,4 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}, roll_result::{DC, self, DegreeOfSuccess}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
 use std::cmp;
 
 pub fn decline_to_collect(_kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
@@ -9,7 +9,7 @@ pub fn decline_to_collect(_kingdom: &Kingdom, turn: &TurnState, state: &KingdomS
     (turn.clone(), new_kingdom_state)
 }
 
-pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
+pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let crit_success_bonus: Bonus = Bonus {
         type_: BonusType::Circumstance,
         applies_to: AppliesTo::Attribute(Attribute::Economy),
@@ -70,8 +70,14 @@ pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, 
 
 
     let mut next_kingdom_state = state.clone();
-    next_kingdom_state.unrest += unrest_change;    
+    next_kingdom_state.unrest += unrest_change;
+
+    let roll_result = RollResult {
+        die_roll: the_roll,
+        degree,
+        dc,
+    };
     
-    (next_turn_state, next_kingdom_state)
+    (roll_result, next_turn_state, next_kingdom_state)
 }
 

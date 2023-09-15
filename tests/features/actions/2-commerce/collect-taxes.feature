@@ -9,6 +9,9 @@ Feature: Commerce Phase, Step 1 -- Collect Taxes
         Then there is a +2 circumstance bonus to Economy until the end of the turn, because "critical success collecting taxes"
         And Unrest is still 1
         And we collected taxes this turn
+        And the roll result was a critical success
+        And the roll result was a natural 20
+        And the roll result was a total 28
 
     Scenario: The collection of taxes doesn't increase unrest on a critical success, even if we collected last turn
         Given the kingdom Aryc at level 1
@@ -28,6 +31,9 @@ Feature: Commerce Phase, Step 1 -- Collect Taxes
         Then there is a +1 circumstance bonus to Economy until the end of the turn, because "success collecting taxes"
         And Unrest is still 1
         And we collected taxes this turn
+        And the roll result was a success
+        And the roll result was a natural 15
+        And the roll result was a total 23
 
     Scenario: The collection of taxes is successful, but we collected last turn too
         Given the kingdom Aryc at level 1

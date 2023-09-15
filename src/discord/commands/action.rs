@@ -50,7 +50,12 @@ pub async fn make_move<F>(ctx: Context<'_>, desc: &str, turn_func: F) -> Result<
     slash_command,
 )]
 pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
-    make_move(ctx, "Collect Taxes", &collect_taxes::collect_taxes).await
+    let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
+        let triple = collect_taxes::collect_taxes(kingdom, turn, state, context);
+        let (_, turn_state, kingdom_state) = triple;
+        (turn_state, kingdom_state)
+    };
+    make_move(ctx, "Collect Taxes", closure).await
 }
 
 /// A subcommand of `parent`

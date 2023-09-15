@@ -1,12 +1,12 @@
 use cucumber::then;
 use assert2::assert;
-use kingdom::{rolls::bonus::{BonusType, AppliesTo, AppliesUntil}, spec::{attributes::Attribute, skills::Skill}};
+use kingdom::{rolls::{bonus::{BonusType, AppliesTo, AppliesUntil}, roll_result::DegreeOfSuccess}, spec::{attributes::Attribute, skills::Skill}};
 use crate::context::TestContext;
 
 #[then(expr = "I get a result of {int} \\(natural {int}\\)")]
 fn check_roll_total(world: &mut TestContext, total_expected: i32, natural_expected: i32) {
-    let total_actual: i32   = world.roll_result.as_ref().unwrap().total.0.into();
-    let natural_actual: i32 = world.roll_result.as_ref().unwrap().natural.0.into();
+    let total_actual: i32   = world.die_roll.as_ref().unwrap().total.0.into();
+    let natural_actual: i32 = world.die_roll.as_ref().unwrap().natural.0.into();
 
     assert_eq!(total_expected, total_actual);
     assert_eq!(natural_expected, natural_actual);
@@ -14,7 +14,7 @@ fn check_roll_total(world: &mut TestContext, total_expected: i32, natural_expect
 
 #[then(expr = "the roll description is {string}")]
 fn check_roll_description(world: &mut TestContext, description_expected: String) {
-    assert!(description_expected == world.roll_result.as_ref().unwrap().description);
+    assert!(description_expected == world.die_roll.as_ref().unwrap().description);
 }
 
 #[then(expr = "there are no remaining bonuses")]
@@ -165,4 +165,26 @@ fn then_there_is_stability_penalty(world: &mut TestContext, reason: String) {
     assert!(bonus.applies_until == AppliesUntil::EndOfTheNextTurn);
     assert!(bonus.modifier == -1);
     assert!(bonus.reason == reason);
+}
+
+#[then("the roll result was a success")]
+fn then_the_die_roll_was_a_success(world: &mut TestContext) {
+    assert!(world.roll_result.is_some());
+    assert!(world.roll_result.as_ref().unwrap().degree == DegreeOfSuccess::Success);
+}
+
+#[then("the roll result was a critical success")]
+fn then_the_die_roll_was_a_critical_success(world: &mut TestContext) {
+    assert!(world.roll_result.is_some());
+    assert!(world.roll_result.as_ref().unwrap().degree == DegreeOfSuccess::CriticalSuccess);
+}
+
+#[then(expr = "the roll result was a natural {int}")]
+fn then_the_roll_result_was_a_natural(world: &mut TestContext, expected_result: i32) {
+    assert!(world.roll_result.as_ref().unwrap().die_roll.natural.0 as i32 == expected_result);
+}
+
+#[then(expr = "the roll result was a total {int}")]
+fn then_the_roll_result_was_a_total(world: &mut TestContext, expected_result: i32) {
+    assert!(world.roll_result.as_ref().unwrap().die_roll.total.0 as i32 == expected_result);
 }

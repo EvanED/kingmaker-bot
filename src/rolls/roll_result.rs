@@ -1,8 +1,15 @@
 #[derive(Debug)]
-pub struct RollResult {
+pub struct DieRoll {
     pub natural: NaturalRoll,
     pub total: TotalRoll,
     pub description: String,
+}
+
+#[derive(Debug)]
+pub struct RollResult {
+    pub die_roll: DieRoll,
+    pub degree: DegreeOfSuccess,
+    pub dc: DC,
 }
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]

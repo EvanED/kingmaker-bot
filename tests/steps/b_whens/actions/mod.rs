@@ -5,12 +5,14 @@ use crate::context::TestContext;
 
 #[when("I collect taxes")]
 fn when_i_collect_taxes(world: &mut TestContext) {
-    (world.next_turn_state, world.kingdom_state) = collect_taxes::collect_taxes(
+    let triple = collect_taxes::collect_taxes(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
     );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
 }
 
 #[when("I do not collect taxes")]
