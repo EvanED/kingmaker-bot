@@ -1,4 +1,4 @@
-use crate::{discord::{Context, Error}, actions::b_commerce::collect_taxes};
+use crate::{discord::{Context, Error}, actions::b_commerce::collect_taxes, spec::Kingdom, turns::TurnState, state::KingdomState, rolls::roll_context::RollContext};
 
 #[poise::command(
     prefix_command,
@@ -28,23 +28,18 @@ pub async fn act(_: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
-/// A subcommand of `parent`
-#[poise::command(
-    prefix_command,
-    slash_command,
-)]
-pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
+pub async fn make_move<F>(ctx: Context<'_>, desc: &str, turn_func: F) -> Result<(), Error>
+    where F: FnOnce(&Kingdom, &TurnState, &KingdomState, &RollContext) -> (TurnState, KingdomState)
+{
     let move_result = {
         let mut state = ctx.data().tracker.lock().unwrap();
         state.make_move(
-            "Collecting Taxes".to_string(),
-            &collect_taxes::collect_taxes,
+            desc.to_string(),
+            turn_func,
         )
     };
-
-    println!("..collect taxes: {:?}", move_result);
-
-    ctx.say(format!("Collect Taxes: {:?}", move_result)).await?;
+    println!("..{desc}: {:?}", move_result);
+    ctx.say(format!("{desc}: {:?}", move_result)).await?;
     Ok(())
 }
 
@@ -53,9 +48,17 @@ pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
     prefix_command,
     slash_command,
 )]
+pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
+    make_move(ctx, "Collect Taxes", &collect_taxes::collect_taxes).await
+}
+
+/// A subcommand of `parent`
+#[poise::command(
+    prefix_command,
+    slash_command,
+)]
 pub async fn improve_lifestyle(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Improve Lifestyle").await?;
-    Ok(())
+    make_move(ctx, "Improve Lifestyle", &collect_taxes::collect_taxes).await
 }
 
 /// A subcommand of `parent`
