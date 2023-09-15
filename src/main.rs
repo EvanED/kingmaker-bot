@@ -1,6 +1,9 @@
+use std::sync::Mutex;
+
 use kingdom::discord::commands::kingdom::kingdom;
 use kingdom::discord::commands::roll::roll;
 use kingdom::discord::commands::action::act;
+use kingdom::tracker::OverallState;
 use poise::serenity_prelude as serenity;
 
 use kingdom::discord::Data;
@@ -17,7 +20,9 @@ async fn main() {
         .setup(|ctx, _ready, framework| {
             Box::pin(async move {
                 poise::builtins::register_globally(ctx, &framework.options().commands).await?;
-                Ok(Data {})
+                Ok(Data {
+                    tracker: Mutex::new(OverallState::new())
+                })
             })
         });
 

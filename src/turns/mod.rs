@@ -1,4 +1,4 @@
-use crate::{rolls::bonus::Bonus, actions::c3_civic::build_structure::Structure};
+use crate::{rolls::bonus::Bonus, actions::c3_civic::build_structure::Structure, diff_utils::{append_number_change, append_bool_change}};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RandomEventSelectionMethod {
@@ -41,6 +41,27 @@ pub struct TurnState {
 }
 
 impl TurnState {
+    pub fn diff(&self, other: &TurnState) -> Vec<String> {
+        let mut diffs = Vec::new();
+
+        append_number_change(&mut diffs, "The number of bonuses", self.bonuses.len(), other.bonuses.len());
+        append_number_change(&mut diffs, "The number of requirements", self.requirements.len(), other.requirements.len());
+
+        append_bool_change(
+            &mut diffs,
+            self.collected_taxes, "'Collected Taxes' was reset",
+            other.collected_taxes, "The kingdom collected taxes this action",
+        );
+
+        append_bool_change(
+            &mut diffs,
+            self.supernatural_solution_available, "Supernatural Solution's substitution was used",
+            other.supernatural_solution_available, "Supernatural Solution's substitution became available",
+        );
+
+        diffs
+    }
+    
     fn next_turn_info(&self) -> String {
         let mut strings: Vec<String> = Vec::new();
 
@@ -174,5 +195,86 @@ impl TurnState {
 {next_turn_string}
             "
         )
+    }
+}
+
+#[cfg(test)]
+mod tests {
+    use crate::{rolls::bonus::{BonusType, AppliesTo, AppliesUntil}, spec::skills::Skill};
+
+    use super::*;
+    use assert2::assert;
+
+    #[test]
+    fn bonus_and_requirement_changes_reflected_in_number() {
+        let mut k1 = TurnState::default();
+        let mut k2 = TurnState ::default();
+
+        k1.bonuses.push(Bonus {
+            type_: BonusType::Circumstance,
+            applies_to: AppliesTo::RandomEventResolutions,
+            applies_until: AppliesUntil::NextApplicableRoll,
+            modifier: 1,
+            reason: "dummy".to_string(),
+        });
+
+        k2.requirements.push("abc".to_string());
+
+        let diff = k1.diff(&k2);
+        assert!(
+            diff == vec![
+                "The number of bonuses decreased from 1 to 0",
+                "The number of requirements increased from 0 to 1",
+            ]
+        );
+    }
+
+    #[test]
+    fn bonus_and_requirement_changes_reflected_in_number_only() {
+        let mut k1 = TurnState::default();
+        let mut k2 = TurnState ::default();
+
+        k1.bonuses.push(Bonus {
+            type_: BonusType::Circumstance,
+            applies_to: AppliesTo::RandomEventResolutions,
+            applies_until: AppliesUntil::NextApplicableRoll,
+            modifier: 1,
+            reason: "dummy".to_string(),
+        });
+        k2.bonuses.push(Bonus {
+            type_: BonusType::Status,
+            applies_to: AppliesTo::Skill(Skill::Agriculture),
+            applies_until: AppliesUntil::EndOfTheNextTurn,
+            modifier: 7,
+            reason: "different".to_string(),
+        });
+
+        k1.requirements.push("abc".to_string());
+        k2.requirements.push("def".to_string());
+
+        let diff = k1.diff(&k2);
+        assert!(
+            diff == Vec::<String>::new()
+        );
+    }
+
+    #[test]
+    fn current_turn_tracking() {
+        let mut k1 = TurnState::default();
+        let mut k2 = TurnState ::default();
+
+        k1.collected_taxes = false;
+        k2.collected_taxes = true;
+
+        k1.supernatural_solution_available = true;
+        k2.supernatural_solution_available = false;
+
+        let diff = k1.diff(&k2);
+        assert!(
+            diff == vec![
+                "The kingdom collected taxes this action",
+                "Supernatural Solution's substitution was used",
+            ]
+        );
     }
 }

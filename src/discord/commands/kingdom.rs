@@ -15,7 +15,7 @@ use crate::turns::RandomEventSelectionMethod;
 use crate::turns::TurnState;
 use enum_map::enum_map;
 
-fn create_aryc() -> Kingdom {
+pub fn create_aryc() -> Kingdom {
     use Attribute::*;
     use Skill::*;
     use TrainingLevel::*;
@@ -55,7 +55,7 @@ fn create_aryc() -> Kingdom {
     aryc
 }
 
-fn create_kingdom_state() -> KingdomState {
+fn _create_kingdom_state() -> KingdomState {
     KingdomState {
         unrest: 2,
         resource_points: 7,
@@ -70,7 +70,7 @@ fn create_kingdom_state() -> KingdomState {
     }
 }
 
-fn create_turn_state() -> TurnState {
+fn _create_turn_state() -> TurnState {
     TurnState {
         bonuses: vec![
             Bonus {
@@ -115,16 +115,21 @@ fn create_turn_state() -> TurnState {
 async fn show(
     ctx: Context<'_>,
 ) -> Result<(), Error> {
-    let aryc = create_aryc();
-    let kst = create_kingdom_state();
-    let tst = create_turn_state();
+    let markdown = {
+        let state = ctx.data().tracker.lock().unwrap();
 
-    let markdown = format!(
-        "{}{}{}",
-        aryc.to_markdown(),
-        kst.to_markdown(),
-        tst.to_markdown(),
-    );
+        let kingdom = &state.kingdom;
+        let kst = &state.turns.last().unwrap().kingdom_state;
+        let tst = &state.turns.last().unwrap().turn_state;
+
+        let markdown = format!(
+            "{}{}{}",
+            kingdom.to_markdown(),
+            kst.to_markdown(),
+            tst.to_markdown(),
+        );
+        markdown
+    };
 
     println!("{markdown}");
 
@@ -135,11 +140,27 @@ async fn show(
     Ok(())
 }
 
+#[poise::command(slash_command, prefix_command)]
+async fn history_dbg(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    let state_str = {
+        let state = ctx.data().tracker.lock().unwrap();
+        format!("{:?}", state)
+    };
+
+    println!("{}", state_str);
+    ctx.reply(state_str).await?;
+
+    Ok(())
+}
+
 #[poise::command(
     prefix_command,
     slash_command,
     subcommands(
         "show",
+        "history_dbg",
     ),
     subcommand_required
 )]

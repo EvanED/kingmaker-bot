@@ -1,4 +1,4 @@
-use crate::discord::{Context, Error};
+use crate::{discord::{Context, Error}, actions::b_commerce::collect_taxes};
 
 #[poise::command(
     prefix_command,
@@ -34,7 +34,17 @@ pub async fn act(_: Context<'_>) -> Result<(), Error> {
     slash_command,
 )]
 pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
-    ctx.say("Collect Taxes").await?;
+    let move_result = {
+        let mut state = ctx.data().tracker.lock().unwrap();
+        state.make_move(
+            "Collecting Taxes".to_string(),
+            &collect_taxes::collect_taxes,
+        )
+    };
+
+    println!("..collect taxes: {:?}", move_result);
+
+    ctx.say(format!("Collect Taxes: {:?}", move_result)).await?;
     Ok(())
 }
 
