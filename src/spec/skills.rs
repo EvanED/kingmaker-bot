@@ -1,7 +1,9 @@
 use enum_map::Enum;
+use strum_macros::EnumString;
 use super::attributes::Attribute;
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, EnumString)]
+#[strum(serialize_all = "kebab-case", ascii_case_insensitive)]
 pub enum TrainingLevel {
     Untrained,
     Trained,
@@ -23,7 +25,8 @@ impl TrainingLevel {
     }
 }
 
-#[derive(Debug, Enum, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Enum, Clone, Copy, PartialEq, Eq, EnumString)]
+#[strum(serialize_all = "kebab-case", ascii_case_insensitive)]
 pub enum Skill {
     // Culture
     Arts,

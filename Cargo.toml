@@ -16,3 +16,5 @@ harness = false
 [dependencies]
 assert2 = "0.3.11"
 enum-map = "2.6.2"
+strum = "0.25.0"
+strum_macros = "0.25.2"
