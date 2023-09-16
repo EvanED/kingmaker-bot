@@ -49,6 +49,7 @@ pub async fn make_move<F>(ctx: Context<'_>, desc: &str, turn_func: F) -> Result<
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="collect-taxes",
 )]
 pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
     make_move(ctx, "Collect Taxes", &collect_taxes::collect_taxes).await
@@ -58,6 +59,7 @@ pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="improve-lifestyle",
 )]
 pub async fn improve_lifestyle(ctx: Context<'_>) -> Result<(), Error> {
     make_move(ctx, "Improve Lifestyle", &improve_lifestyle::improve_lifestyle).await
@@ -67,6 +69,7 @@ pub async fn improve_lifestyle(ctx: Context<'_>) -> Result<(), Error> {
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="trade-commodities",
 )]
 pub async fn trade_commodities(
     ctx: Context<'_>,
@@ -88,6 +91,7 @@ pub async fn trade_commodities(
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="celebrate-holiday",
 )]
 pub async fn celebrate_holiday(ctx: Context<'_>) -> Result<(), Error> {
     make_move(ctx, "Celebrate Holiday", &celebrate_holiday::celebrate_holiday).await
@@ -98,6 +102,7 @@ pub async fn celebrate_holiday(ctx: Context<'_>) -> Result<(), Error> {
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="create-a-masterpiece",
 )]
 pub async fn create_a_masterpiece(ctx: Context<'_>) -> Result<(), Error> {
     make_move(ctx, "Create a Masterpiece", &create_a_masterpiece::create_a_masterpiece).await
@@ -108,6 +113,7 @@ pub async fn create_a_masterpiece(ctx: Context<'_>) -> Result<(), Error> {
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="prognostication",
 )]
 pub async fn prognostication(ctx: Context<'_>) -> Result<(), Error> {
     make_move(ctx, "Prognostication", &prognostication::prognosticate).await
@@ -118,6 +124,7 @@ pub async fn prognostication(ctx: Context<'_>) -> Result<(), Error> {
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="purchase-commodities",
 )]
 pub async fn purchase_commodities(
     ctx: Context<'_>,
@@ -138,6 +145,7 @@ pub async fn purchase_commodities(
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="supernatural-solution",
 )]
 pub async fn supernatural_solution(ctx: Context<'_>) -> Result<(), Error> {
     make_move(ctx, "Supernatural Solution", &supernatural_solution::supernatural_solution).await
@@ -148,6 +156,7 @@ pub async fn supernatural_solution(ctx: Context<'_>) -> Result<(), Error> {
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="take-charge",
 )]
 pub async fn take_charge(
     ctx: Context<'_>,
@@ -168,6 +177,7 @@ pub async fn take_charge(
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="claim-hex",
 )]
 pub async fn claim_hex(ctx: Context<'_>, using_skill: String) -> Result<(), Error> {
     let skill = Skill::from_str(&using_skill)?;
@@ -183,6 +193,7 @@ pub async fn claim_hex(ctx: Context<'_>, using_skill: String) -> Result<(), Erro
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="establish-farmland",
 )]
 pub async fn establish_farmland(
     ctx: Context<'_>,
@@ -201,6 +212,7 @@ pub async fn establish_farmland(
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="go-fishing",
 )]
 pub async fn go_fishing(ctx: Context<'_>) -> Result<(), Error> {
     make_move(ctx, "Go Fishing", &go_fishing::go_fishing).await
@@ -212,6 +224,7 @@ pub async fn go_fishing(ctx: Context<'_>) -> Result<(), Error> {
 #[poise::command(
     prefix_command,
     slash_command,
+    rename="build-structure",
 )]
 pub async fn build_structure(
     ctx: Context<'_>,
