@@ -1,7 +1,7 @@
 use strum_macros::AsRefStr;
 use std::fmt::Write;
 
-use crate::spec::{attributes, skills};
+use crate::{spec::{attributes, skills}, Markdownable};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr)]
 pub enum BonusType {
@@ -53,8 +53,16 @@ pub struct Bonus {
     pub reason: String,
 }
 
+impl Markdownable for Bonus {
+    fn to_markdown(&self) -> String {
+        let mut s = String::new();
+        self.append_markdown(&mut s);
+        s
+    }
+}
+
 impl Bonus {
-    pub fn to_markdown(&self, app_string: &mut String) {
+    pub fn append_markdown(&self, app_string: &mut String) {
         write!(
             app_string,
             //+1 circ bonus to arts rolls ...

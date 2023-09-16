@@ -1,4 +1,4 @@
-use crate::{rolls::bonus::Bonus, actions::c3_civic::build_structure::Structure, diff_utils::{append_number_change, append_bool_change}};
+use crate::{rolls::bonus::Bonus, actions::c3_civic::build_structure::Structure, diff_utils::{append_bool_change, append_set_change}};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub enum RandomEventSelectionMethod {
@@ -44,8 +44,8 @@ impl TurnState {
     pub fn diff(&self, other: &TurnState) -> Vec<String> {
         let mut diffs = Vec::new();
 
-        append_number_change(&mut diffs, "The number of bonuses", self.bonuses.len(), other.bonuses.len());
-        append_number_change(&mut diffs, "The number of requirements", self.requirements.len(), other.requirements.len());
+        append_set_change(&mut diffs, "bonus", &self.bonuses, &other.bonuses);
+        append_set_change(&mut diffs, "requirement", &self.requirements, &other.requirements);
 
         append_bool_change(
             &mut diffs,
@@ -145,7 +145,7 @@ impl TurnState {
         let mut s = "Bonuses:".to_string();
         for bonus in &self.bonuses {
             s.push_str("\n* ");
-            bonus.to_markdown(&mut s);
+            bonus.append_markdown(&mut s);
         };
         s
     }
@@ -206,31 +206,7 @@ mod tests {
     use assert2::assert;
 
     #[test]
-    fn bonus_and_requirement_changes_reflected_in_number() {
-        let mut k1 = TurnState::default();
-        let mut k2 = TurnState ::default();
-
-        k1.bonuses.push(Bonus {
-            type_: BonusType::Circumstance,
-            applies_to: AppliesTo::RandomEventResolutions,
-            applies_until: AppliesUntil::NextApplicableRoll,
-            modifier: 1,
-            reason: "dummy".to_string(),
-        });
-
-        k2.requirements.push("abc".to_string());
-
-        let diff = k1.diff(&k2);
-        assert!(
-            diff == vec![
-                "The number of bonuses decreased from 1 to 0",
-                "The number of requirements increased from 0 to 1",
-            ]
-        );
-    }
-
-    #[test]
-    fn bonus_and_requirement_changes_reflected_in_number_only() {
+    fn bonus_and_requirement_changes_reflected_in_text() {
         let mut k1 = TurnState::default();
         let mut k2 = TurnState ::default();
 
@@ -254,7 +230,12 @@ mod tests {
 
         let diff = k1.diff(&k2);
         assert!(
-            diff == Vec::<String>::new()
+            diff == vec![
+                "Lost bonus: +1 Circumstance bonus to random event rolls rolls until the next such roll, because dummy",
+                "Gained bonus: +7 Status bonus to agriculture rolls until the end of the next kingdom turn, because different",
+                "Lost requirement: abc",
+                "Gained requirement: def",
+            ]
         );
     }
 
