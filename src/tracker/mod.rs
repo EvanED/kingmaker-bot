@@ -31,6 +31,27 @@ pub struct MoveResult {
     pub state_changes: Vec<String>,
 }
 
+impl MoveResult {
+    pub fn to_markdown(&self, roll_description: &str) -> String {
+        let degree_str = self.roll_result.degree.to_markdown();
+        let total = self.roll_result.die_roll.total.0;
+        let working_out = &self.roll_result.die_roll.description;
+        let dc = self.roll_result.dc.0;
+
+        let mut text = format!("\
+## {roll_description}: {degree_str}
+
+**Total {total} (DC {dc}):** {working_out}");
+
+        for change in &self.state_changes {
+            text.push_str("\n* ");
+            text.push_str(change);
+        }
+
+        text
+    }
+}
+
 impl OverallState {
     pub fn new() -> OverallState {
         OverallState {

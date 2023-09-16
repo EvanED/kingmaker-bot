@@ -39,8 +39,9 @@ pub async fn make_move<F>(ctx: Context<'_>, desc: &str, turn_func: F) -> Result<
             turn_func,
         )
     };
-    println!("..{desc}: {:?}", move_result);
-    ctx.say(format!("{desc}: {:?}", move_result)).await?;
+    let text = move_result.to_markdown(desc);
+    println!("{text}");
+    ctx.say(text).await?;
     Ok(())
 }
 

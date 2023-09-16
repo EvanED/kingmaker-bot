@@ -21,6 +21,16 @@ pub enum DegreeOfSuccess {
 }
 
 impl DegreeOfSuccess {
+    pub fn to_markdown(self) -> &'static str {
+        use DegreeOfSuccess::*;
+        match self {
+            CriticalSuccess => "Critical Success",
+            Success         => "Success",
+            Failure         => "Failure",
+            CriticalFailure => "Critical Failure",
+        }
+    }
+
     pub fn improve(&self) -> DegreeOfSuccess {
         use DegreeOfSuccess::*;
         match self {
