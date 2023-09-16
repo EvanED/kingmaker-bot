@@ -14,6 +14,7 @@ use crate::state::KingdomState;
 use crate::turns::RandomEventSelectionMethod;
 use crate::turns::TurnState;
 use enum_map::enum_map;
+use std::convert::TryFrom;
 
 pub fn create_aryc() -> Kingdom {
     use Attribute::*;
@@ -162,6 +163,7 @@ async fn history_dbg(
         "show",
         "history_dbg",
         "set",
+        "discharge",
     ),
     subcommand_required
 )]
@@ -174,13 +176,13 @@ pub async fn kingdom(_: Context<'_>) -> Result<(), Error> {
     slash_command,
     subcommands(
         "unrest",
-        // "rp",
-        // "fame",
-        // "food",
-        // "lumber",
-        // "luxuries",
-        // "ore",
-        // "stone",
+        "rp",
+        "fame",
+        "food",
+        "lumber",
+        "luxuries",
+        "ore",
+        "stone",
     ),
     subcommand_required
 )]
@@ -196,6 +198,76 @@ fn set_unrest(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box
 
     (next_turn_state, next_kingdom_state)
 }
+
+fn set_rp(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let next_turn_state = turn_state.clone();
+    let mut next_kingdom_state = kingdom_state.clone();
+
+    next_kingdom_state.resource_points = changer(next_kingdom_state.resource_points);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_fame(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let next_turn_state = turn_state.clone();
+    let mut next_kingdom_state = kingdom_state.clone();
+
+    next_kingdom_state.fame_points = changer(next_kingdom_state.fame_points);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_food(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let next_turn_state = turn_state.clone();
+    let mut next_kingdom_state = kingdom_state.clone();
+
+    const COMMODITY: Commodity = Commodity::Food;
+    next_kingdom_state.commodity_stores[COMMODITY] = changer(next_kingdom_state.commodity_stores[COMMODITY]);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_lumber(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let next_turn_state = turn_state.clone();
+    let mut next_kingdom_state = kingdom_state.clone();
+
+    const COMMODITY: Commodity = Commodity::Lumber;
+    next_kingdom_state.commodity_stores[COMMODITY] = changer(next_kingdom_state.commodity_stores[COMMODITY]);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_luxuries(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let next_turn_state = turn_state.clone();
+    let mut next_kingdom_state = kingdom_state.clone();
+
+    const COMMODITY: Commodity = Commodity::Luxuries;
+    next_kingdom_state.commodity_stores[COMMODITY] = changer(next_kingdom_state.commodity_stores[COMMODITY]);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_ore(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let next_turn_state = turn_state.clone();
+    let mut next_kingdom_state = kingdom_state.clone();
+
+    const COMMODITY: Commodity = Commodity::Ore;
+    next_kingdom_state.commodity_stores[COMMODITY] = changer(next_kingdom_state.commodity_stores[COMMODITY]);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_stone(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let next_turn_state = turn_state.clone();
+    let mut next_kingdom_state = kingdom_state.clone();
+
+    const COMMODITY: Commodity = Commodity::Stone;
+    next_kingdom_state.commodity_stores[COMMODITY] = changer(next_kingdom_state.commodity_stores[COMMODITY]);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+
 
 fn changer_set(_start: i8, set_to: i8) -> i8 {
     set_to
@@ -216,19 +288,20 @@ fn make_changer(spec: String) -> Result<Box<dyn FnOnce(i8) -> i8>, Error> {
     Ok(Box::new(closure))
 }
 
-#[poise::command(slash_command, prefix_command)]
-async fn unrest(
+async fn do_set<F>(
     ctx: Context<'_>,
     change: String,
-) -> Result<(), Error> {
-    let roll_description = "GM set Unrest";
-
+    update_func: F,
+    roll_description: &str,
+) -> Result<(), Error>
+    where F: FnOnce(&TurnState, &KingdomState, Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState)
+{
     let state_changes = {
         let mut state = ctx.data().tracker.lock().unwrap();
         let changer = make_changer(change)?;
         state.make_update(
             roll_description.to_string(),
-            &set_unrest,
+            update_func,
             changer,
         )
     };
@@ -244,4 +317,135 @@ async fn unrest(
     ctx.reply(text).await?;
 
     Ok(())
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn rp(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_rp, "GM set RP").await
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn unrest(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_unrest, "GM set Unrest").await
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn fame(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_fame, "GM set Fame").await
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn food(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_food, "GM set Food").await
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn lumber(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_lumber, "GM set Lumber").await
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn luxuries(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_luxuries, "GM set Luxuries").await
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn ore(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_ore, "GM set Ore").await
+}
+
+
+#[poise::command(slash_command, prefix_command)]
+async fn stone(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_stone, "GM set Stone").await
+}
+
+fn discharge_requirement(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let mut next_turn_state = turn_state.clone();
+    let next_kingdom_state = kingdom_state.clone();
+
+    let index = changer(0);
+    let index = usize::try_from(index);
+
+    if index.is_err() || index.unwrap() >= next_turn_state.requirements.len() {
+        println!("!!! OUCH !!!");
+        next_turn_state.requirements.push("That was a bad discharge command".to_string());
+        return (next_turn_state, next_kingdom_state);
+    }
+
+    next_turn_state.requirements.remove(index.unwrap());
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn discharge_bonus(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let mut next_turn_state = turn_state.clone();
+    let next_kingdom_state = kingdom_state.clone();
+
+    let index = changer(0);
+    let index = usize::try_from(index);
+
+    if index.is_err() || index.unwrap() >= next_turn_state.bonuses.len() {
+        println!("!!! OUCH !!!");
+        next_turn_state.requirements.push("That was a bad discharge command".to_string());
+        return (next_turn_state, next_kingdom_state);
+    }
+
+    next_turn_state.bonuses.remove(index.unwrap());
+
+    (next_turn_state, next_kingdom_state)
+}
+
+#[poise::command(
+    prefix_command,
+    slash_command,
+    subcommands(
+        "requirement",
+        "bonus",
+    ),
+    subcommand_required
+)]
+pub async fn discharge(_: Context<'_>) -> Result<(), Error> {
+    Ok(())
+}
+
+
+#[poise::command(slash_command, prefix_command)]
+async fn requirement(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, discharge_requirement, "GM discharged Requirement").await
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn bonus(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, discharge_bonus, "GM discharged Bonus").await
 }

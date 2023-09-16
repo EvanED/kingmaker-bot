@@ -144,7 +144,7 @@ impl TurnState {
     fn bonuses_markdown_yes(&self) -> String {
         let mut s = "Bonuses:".to_string();
         for bonus in &self.bonuses {
-            s.push_str("\n* ");
+            s.push_str("\n1. ");
             bonus.append_markdown(&mut s);
         };
         s
@@ -163,7 +163,7 @@ impl TurnState {
     fn requirements_markdown_yes(&self) -> String {
         let mut s = "Requirements:".to_string();
         for request in &self.requirements {
-            s.push_str("\n* ");
+            s.push_str("\n1. ");
             s.push_str(request);
         };
         s
