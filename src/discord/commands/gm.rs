@@ -9,6 +9,7 @@ use crate::{discord::{Context, Error}, rolls::roll_context::RollType, tracker::O
         "fudge",
         "save",
         "load",
+        "rollback",
     ),
     subcommand_required
 )]
@@ -111,5 +112,34 @@ async fn load(ctx: Context<'_>, filename: String) -> Result<(), Error> {
     }
     println!("Loaded");
     ctx.say("👍").await?;
+    Ok(())
+}
+
+#[poise::command(
+    prefix_command,
+    slash_command,
+)]
+async fn rollback(ctx: Context<'_>) -> Result<(), Error> {
+    let changes = {
+        let mut state = ctx.data().tracker.lock().unwrap();
+        let (prev, current) = match &state.turns[..] {
+            [.., prev, current] => (prev, current),
+            _                    => panic!("Huh?"),
+        };
+        let changes = current.diff(prev);
+        state.turns.pop();
+        changes
+    };
+    
+    let mut text = "## Rolling back the most recent turn\nThe undo has the effect of appling these changes:".to_string();
+
+    for change in &changes {
+        text.push_str("\n* ");
+        text.push_str(change);
+    }
+
+    println!("{}", text);
+    ctx.reply(text).await?;
+    
     Ok(())
 }
