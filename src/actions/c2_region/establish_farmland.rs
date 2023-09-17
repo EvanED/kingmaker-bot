@@ -18,7 +18,16 @@ pub fn claim_second_hex_message(hex_type: HexType) -> String {
 
 pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, hex_type: HexType) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Agriculture, context);
-    let dc = DC(14); // TODO
+
+    // TODO: Cucumber tests need enhanced for DC change and RP cost (previously it was zero cost)
+    let dc = match hex_type {
+        HexType::Plains => DC(14),
+        HexType::Hills  => DC(14 + 5),
+    };
+    let rp_cost = match hex_type {
+        HexType::Plains => 1,
+        HexType::Hills  => 2,
+    };
 
     let degree = roll_result::rate_success(
         the_roll.natural,
@@ -40,7 +49,8 @@ pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSt
         next_turn_state.dc6_crop_failure_potential_for_x_turns = 2;
     }
 
-    let next_kingdom_state = state.clone();
+    let mut next_kingdom_state = state.clone();
+    next_kingdom_state.resource_points -= rp_cost;
 
     let roll_result = RollResult {
         die_roll: the_roll,
