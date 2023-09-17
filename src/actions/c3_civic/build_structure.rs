@@ -171,12 +171,20 @@ pub fn build_structure_from_stats(
         dc,
     );
 
+    let this_attempt_is_free = match turn.can_build_this_structure_for_no_resource_cost {
+        Some(prev) if prev == structure => true,
+        Some(_)                                    => false,
+        None                                       => false,
+    };        
+
     let grid_msg = "mark the urban grid with the new stucture".to_string();
     let bonuses_msg = "adjust kingdom item bonuses accordingly".to_string();
+    let crit_fail_msg = "fill the lot(s) in the Urban Grid with rubble".to_string();
     let new_requirements = match degree {
         DegreeOfSuccess::CriticalSuccess => vec![grid_msg, bonuses_msg],
         DegreeOfSuccess::Success         => vec![grid_msg, bonuses_msg],
-        _                                => vec![],
+        DegreeOfSuccess::Failure         => vec![],
+        DegreeOfSuccess::CriticalFailure => vec![crit_fail_msg],
     };
 
     let food_cost  = commodity_cost(degree, food_cost.0);
@@ -188,24 +196,24 @@ pub fn build_structure_from_stats(
     let mut next_turn_state = turn.clone();
     next_turn_state.requirements.extend(new_requirements);
     if degree == DegreeOfSuccess::Failure {
-        assert_eq!(None, next_turn_state.can_build_this_structure_for_no_resource_cost);
         next_turn_state.can_build_this_structure_for_no_resource_cost = Some(structure);
     }
-    if degree == DegreeOfSuccess::CriticalFailure {
-        next_turn_state.requirements.push("fill the lot(s) in the Urban Grid with rubble".to_string());
-    }
-    if other_commodity_cost.0 >= 1 {
-        next_turn_state.requirements.push("the structure has commodity costs that have not been deducted".to_string());
+    else {
+        next_turn_state.can_build_this_structure_for_no_resource_cost = None;
     }
 
     let mut next_kingdom_state = state.clone();
-    next_kingdom_state.resource_points -= rp_cost.0;
-
-    next_kingdom_state.commodity_stores[Commodity::Food]     -= food_cost;
-    next_kingdom_state.commodity_stores[Commodity::Lumber]   -= lumber_cost;
-    next_kingdom_state.commodity_stores[Commodity::Luxuries] -= luxury_cost;
-    next_kingdom_state.commodity_stores[Commodity::Ore]      -= ore_cost;
-    next_kingdom_state.commodity_stores[Commodity::Stone]    -= stone_cost;
+    if !this_attempt_is_free {
+        next_kingdom_state.resource_points -= rp_cost.0;
+        next_kingdom_state.commodity_stores[Commodity::Food]     -= food_cost;
+        next_kingdom_state.commodity_stores[Commodity::Lumber]   -= lumber_cost;
+        next_kingdom_state.commodity_stores[Commodity::Luxuries] -= luxury_cost;
+        next_kingdom_state.commodity_stores[Commodity::Ore]      -= ore_cost;
+        next_kingdom_state.commodity_stores[Commodity::Stone]    -= stone_cost;
+        if other_commodity_cost.0 >= 1 {
+            next_turn_state.requirements.push("the structure has commodity costs that have not been deducted".to_string());
+        }
+    }
 
     let roll_result = RollResult {
         die_roll: the_roll,
