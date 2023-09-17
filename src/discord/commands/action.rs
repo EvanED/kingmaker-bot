@@ -1,6 +1,7 @@
 use futures::Stream;
 use futures::StreamExt;
 
+use crate::actions::c2_region::claim_hex::ClaimHexSkill;
 use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::{roll_context::{RollContext, RollType}, roll_result::{RollResult, DC, DieRoll, NaturalRoll, TotalRoll, DegreeOfSuccess}}, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}, tracker::OverallState};
 use std::str::FromStr;
 
@@ -182,6 +183,7 @@ pub async fn take_charge(
 /////////////////////////////////////////////////
 
 
+
 /// A subcommand of `parent`
 #[poise::command(
     prefix_command,
@@ -190,7 +192,7 @@ pub async fn take_charge(
 )]
 pub async fn claim_hex(
     ctx: Context<'_>,
-    using_skill: Skill,
+    using_skill: ClaimHexSkill,
 ) -> Result<(), Error> {
     let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
         claim_hex::claim_hex(kingdom, turn, state, context, using_skill)

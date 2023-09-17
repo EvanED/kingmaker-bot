@@ -1,7 +1,25 @@
+use poise::ChoiceParameter;
+
 use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
 
+#[derive(Debug, Clone, Copy, ChoiceParameter)]
+pub enum ClaimHexSkill {
+    Exploration,
+    Intrigue,
+    Wilderness,
+    Magic,
+}
+
 // TODO: Require Skill as one of prereqs
-pub fn claim_hex(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, skill: Skill) -> (RollResult, TurnState, KingdomState) {
+pub fn claim_hex(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, skill: ClaimHexSkill) -> (RollResult, TurnState, KingdomState) {
+
+    let skill = match skill {
+        ClaimHexSkill::Exploration => Skill::Exploration,
+        ClaimHexSkill::Intrigue    => Skill::Intrigue,
+        ClaimHexSkill::Magic       => Skill::Magic,
+        ClaimHexSkill::Wilderness  => Skill::Wilderness,
+    };
+
     let the_roll = kingdom.roll(skill, context);
     let dc = DC(14); // TODO
 
