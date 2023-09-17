@@ -1,4 +1,4 @@
-use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::RollResult}, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}};
+use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::{roll_context::{RollContext, RollType}, roll_result::RollResult}, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}, tracker::OverallState};
 use std::str::FromStr;
 
 #[poise::command(
@@ -29,15 +29,23 @@ pub async fn act(_: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
 
+fn post_action_updates(state: &mut OverallState) -> () {
+    state.context.d4 = RollType::FairRoll;
+    state.context.d6 = RollType::FairRoll;
+    state.context.d20 = RollType::FairRoll;
+}
+
 pub async fn make_move<F>(ctx: Context<'_>, desc: &str, turn_func: F) -> Result<(), Error>
     where F: FnOnce(&Kingdom, &TurnState, &KingdomState, &RollContext) -> (RollResult, TurnState, KingdomState)
 {
     let move_result = {
         let mut state = ctx.data().tracker.lock().unwrap();
-        state.make_move(
+        let move_result = state.make_move(
             desc.to_string(),
             turn_func,
-        )
+        );
+        post_action_updates(&mut state);
+        move_result
     };
     let text = move_result.to_markdown(desc);
     println!("{text}");
