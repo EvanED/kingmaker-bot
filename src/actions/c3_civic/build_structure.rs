@@ -1,10 +1,11 @@
 use enum_map::Enum;
 use serde::{Serialize, Deserialize};
-use strum_macros::{AsRefStr, EnumString};
+use strum::IntoEnumIterator;
+use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
 use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Enum, EnumString, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, IntoStaticStr, EnumString, EnumIter, Enum, Serialize, Deserialize)]
 pub enum Structure {
     // CAUTION: This order MUST be kept in sync with STRUCTURE_STATS below
     
@@ -49,6 +50,23 @@ pub enum Structure {
     TavernPopular,
     TradeShop,
     Watchtower,
+}
+
+impl Structure {
+    pub fn autocomplete_matches(self, prompt: &str) -> bool {
+        self.as_static_str().contains(prompt)
+    }
+
+    pub fn autocomplete_matching(prompt: &str) -> Vec<&'static str> {
+        Structure::iter()
+            .filter(|skill| skill.autocomplete_matches(prompt))
+            .map(|skill| skill.as_static_str())
+            .collect()
+    }
+
+    pub fn as_static_str(self) -> &'static str {
+        self.into()
+    }
 }
 
 type StructureStatsTableRow = (Skill, i8, i8, i8, i8, i8, i8, i8, i8);

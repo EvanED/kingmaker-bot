@@ -1,11 +1,12 @@
 use enum_map::Enum;
+use poise::ChoiceParameter;
 use serde::{Serialize, Deserialize};
 use strum::IntoEnumIterator;
 use strum_macros::{EnumString, IntoStaticStr, EnumIter, EnumCount};
 use super::attributes::Attribute;
 
 // TODO: Can we remove Default?
-#[derive(Debug, Clone, Copy, EnumString, EnumIter, EnumCount, Serialize, Deserialize, Default)]
+#[derive(Debug, Clone, Copy, EnumIter, EnumCount, Serialize, Deserialize, Default, ChoiceParameter)]
 #[strum(serialize_all = "kebab-case", ascii_case_insensitive)]
 pub enum TrainingLevel {
     #[default] Untrained,

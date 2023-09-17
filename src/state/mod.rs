@@ -1,10 +1,11 @@
 use enum_map::{EnumMap, Enum};
+use poise::ChoiceParameter;
 use serde::{Serialize, Deserialize};
-use strum_macros::{EnumString, EnumIter, AsRefStr};
+use strum_macros::{EnumIter, AsRefStr};
 use strum::IntoEnumIterator;
 use crate::{diff_utils::append_number_change, spec::enum_map_serde};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Enum, AsRefStr, EnumString, EnumIter, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Enum, AsRefStr, /*EnumString,*/ EnumIter, Serialize, Deserialize, ChoiceParameter)]
 #[strum(ascii_case_insensitive)]
 pub enum Commodity {
     Food,

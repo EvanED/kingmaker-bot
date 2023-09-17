@@ -98,7 +98,7 @@ impl TurnState {
             strings.push(
                 format!(
                     "* The structure {} is in progress and building does not require sepending resources again",
-                    self.can_build_this_structure_for_no_resource_cost.unwrap().as_ref(),
+                    self.can_build_this_structure_for_no_resource_cost.unwrap().as_static_str(),
                 )
             );
         }

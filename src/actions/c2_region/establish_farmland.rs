@@ -1,8 +1,8 @@
-use strum_macros::EnumString;
+use poise::ChoiceParameter;
 
 use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, EnumString)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, ChoiceParameter)]
 pub enum HexType {
     Plains,
     Hills,

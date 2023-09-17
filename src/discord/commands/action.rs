@@ -1,3 +1,6 @@
+use futures::Stream;
+use futures::StreamExt;
+
 use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::{roll_context::{RollContext, RollType}, roll_result::{RollResult, DC, DieRoll, NaturalRoll, TotalRoll, DegreeOfSuccess}}, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}, tracker::OverallState};
 use std::str::FromStr;
 
@@ -83,10 +86,9 @@ pub async fn improve_lifestyle(ctx: Context<'_>) -> Result<(), Error> {
 )]
 pub async fn trade_commodities(
     ctx: Context<'_>,
-    commodity: String,
+    commodity: Commodity,
     volume: i8,
 ) -> Result<(), Error> {
-    let commodity = Commodity::from_str(&commodity)?;
     let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
         trade_commodities::trade_commodities(kingdom, turn, state, context, commodity, volume)
     };
@@ -138,11 +140,9 @@ pub async fn prognostication(ctx: Context<'_>) -> Result<(), Error> {
 )]
 pub async fn purchase_commodities(
     ctx: Context<'_>,
-    primary_want: String,
-    secondary_want: String,
+    primary_want: Commodity,
+    secondary_want: Commodity,
 ) -> Result<(), Error> {
-    let primary_want = Commodity::from_str(&primary_want)?;
-    let secondary_want = Commodity::from_str(&secondary_want)?;
     let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
         purchase_commodities::purchase_commodities(kingdom, turn, state, context, primary_want, secondary_want)
     };
@@ -170,9 +170,8 @@ pub async fn supernatural_solution(ctx: Context<'_>) -> Result<(), Error> {
 )]
 pub async fn take_charge(
     ctx: Context<'_>,
-    skill: String,
+    skill: Skill,
 ) -> Result<(), Error> {
-    let skill = Skill::from_str(&skill)?;
     let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
         take_charge::take_charge(kingdom, turn, state, context, skill)
     };
@@ -189,10 +188,12 @@ pub async fn take_charge(
     slash_command,
     rename="claim-hex",
 )]
-pub async fn claim_hex(ctx: Context<'_>, using_skill: String) -> Result<(), Error> {
-    let skill = Skill::from_str(&using_skill)?;
+pub async fn claim_hex(
+    ctx: Context<'_>,
+    using_skill: Skill,
+) -> Result<(), Error> {
     let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
-        claim_hex::claim_hex(kingdom, turn, state, context, skill)
+        claim_hex::claim_hex(kingdom, turn, state, context, using_skill)
     };
 
     make_move(ctx, "Claim Hex", closure).await
@@ -207,9 +208,8 @@ pub async fn claim_hex(ctx: Context<'_>, using_skill: String) -> Result<(), Erro
 )]
 pub async fn establish_farmland(
     ctx: Context<'_>,
-    hex_type: String,
+    hex_type: HexType,
 ) -> Result<(), Error> {
-    let hex_type = HexType::from_str(&hex_type)?;
     let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
         establish_farmland::establish_farmland(kingdom, turn, state, context, hex_type)
     };
@@ -230,6 +230,16 @@ pub async fn go_fishing(ctx: Context<'_>) -> Result<(), Error> {
 
 //////////////////////////////////////////////////
 
+async fn autocomplete_structure<'a>(
+    _ctx: Context<'_>,
+    partial: &'a str,
+) -> impl Stream<Item = String> + 'a {
+    let matching = Structure::autocomplete_matching(partial);
+    futures::stream::iter(matching)
+        .filter(move |name| futures::future::ready(name.starts_with(partial)))
+        .map(|name| name.to_string())
+}
+
 /// A subcommand of `parent`
 #[poise::command(
     prefix_command,
@@ -238,6 +248,7 @@ pub async fn go_fishing(ctx: Context<'_>) -> Result<(), Error> {
 )]
 pub async fn build_structure(
     ctx: Context<'_>,
+    #[autocomplete = "autocomplete_structure"]
     structure: String,
 ) -> Result<(), Error> {
     let structure = Structure::from_str(&structure)?;
