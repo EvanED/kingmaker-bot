@@ -212,7 +212,7 @@ pub async fn establish_farmland(
         establish_farmland::establish_farmland(kingdom, turn, state, context, hex_type)
     };
 
-    make_move(ctx, "Claim Hex", closure).await
+    make_move(ctx, "Establish Farmland", closure).await
 }
 
 
@@ -243,5 +243,5 @@ pub async fn build_structure(
         build_structure::build_structure(kingdom, turn, state, context, structure)
     };
 
-    make_move(ctx, "Claim Hex", closure).await
+    make_move(ctx, "Build Structure", closure).await
 }

@@ -2,9 +2,9 @@ use enum_map::{EnumMap, Enum};
 use serde::{Serialize, Deserialize};
 use strum_macros::{EnumString, EnumIter, AsRefStr};
 use strum::IntoEnumIterator;
-use crate::diff_utils::append_number_change;
+use crate::{diff_utils::append_number_change, spec::enum_map_serde};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Enum, AsRefStr, EnumString, EnumIter)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Enum, AsRefStr, EnumString, EnumIter, Serialize, Deserialize)]
 #[strum(ascii_case_insensitive)]
 pub enum Commodity {
     Food,
@@ -19,7 +19,7 @@ pub struct KingdomState {
     pub unrest: i8,
     pub resource_points: i8,  // More?
     pub fame_points: i8,
-    #[serde(skip)] // FIXME
+    #[serde(with="enum_map_serde")]
     pub commodity_stores: EnumMap<Commodity, i8>,
 }
 

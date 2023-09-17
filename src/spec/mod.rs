@@ -58,31 +58,31 @@ where
     }
 }
 
-mod skills_serde {
-    use enum_map::EnumMap;
-    use serde::Serializer;
+pub mod enum_map_serde {
+    use enum_map::{EnumMap, EnumArray};
+    use serde::{Serializer, Serialize, Deserialize};
     use serde::ser::SerializeMap;
     use strum::IntoEnumIterator;
     use serde::de::Deserializer;
     use super::MyMapVisitor;
 
-    use super::skills::{TrainingLevel, Skill};
-
-    pub fn serialize<S>(map: &EnumMap<Skill, TrainingLevel>, serializer: S) -> Result<S::Ok, S::Error>
+    pub fn serialize<K: Copy + Serialize + IntoEnumIterator + EnumArray<V>, V: Copy + Serialize, S>(map: &EnumMap<K, V>, serializer: S) -> Result<S::Ok, S::Error>
     where
         S: Serializer,
     {
-        let count = Skill::iter().count();
+        let count = K::iter().count();
         let mut smap = serializer.serialize_map(Some(count))?;
-        for skill in Skill::iter() {
+        for skill in K::iter() {
             let value = map[skill];
             smap.serialize_entry(&skill, &value)?;
         }
         smap.end()
     }
 
-    pub fn deserialize<'de, D>(deserializer: D) -> Result<EnumMap<Skill, TrainingLevel>, D::Error>
+    pub fn deserialize<'de, K, V, D>(deserializer: D) -> Result<EnumMap<K, V>, D::Error>
     where
+        K: Copy + EnumArray<V> + IntoEnumIterator + Deserialize<'de>,
+        V: Default + Deserialize<'de>,
         D: Deserializer<'de>,
     {
         // Instantiate our Visitor and ask the Deserializer to drive
@@ -94,11 +94,11 @@ mod skills_serde {
 #[derive(Debug, Serialize, Deserialize)]
 pub struct Kingdom {
     pub name: String,
-    #[serde(skip)] // FIXME
+    #[serde(with="enum_map_serde")]
     pub attributes: AttributeMap,
-    #[serde(skip)]
+    #[serde(with="enum_map_serde")]
     pub invested: EnumMap<Attribute, bool>,
-    #[serde(with="skills_serde")]
+    #[serde(with="enum_map_serde")]
     pub skills: EnumMap<Skill, TrainingLevel>,
     pub level: i8,
 }
