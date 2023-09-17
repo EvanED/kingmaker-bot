@@ -122,24 +122,36 @@ async fn load(ctx: Context<'_>, filename: String) -> Result<(), Error> {
 async fn rollback(ctx: Context<'_>) -> Result<(), Error> {
     let changes = {
         let mut state = ctx.data().tracker.lock().unwrap();
-        let (prev, current) = match &state.turns[..] {
-            [.., prev, current] => (prev, current),
-            _                    => panic!("Huh?"),
-        };
-        let changes = current.diff(prev);
-        state.turns.pop();
-        changes
+
+        if state.turns.len() < 2 {
+            None
+        }
+        else {
+            let (prev, current) = match &state.turns[..] {
+                [.., prev, current] => (prev, current),
+                _ => panic!("Huh?"),
+            };
+            let changes = current.diff(prev);
+            state.turns.pop();
+            Some(changes)
+        }
     };
-    
-    let mut text = "## Rolling back the most recent turn\nThe undo has the effect of appling these changes:".to_string();
 
-    for change in &changes {
-        text.push_str("\n* ");
-        text.push_str(change);
-    }
+    match changes {
+        Some(changes) => {
+            let mut text = "## Rolling back the most recent turn\nThe undo has the effect of appling these changes:".to_string();
 
-    println!("{}", text);
-    ctx.reply(text).await?;
-    
+            for change in &changes {
+                text.push_str("\n* ");
+                text.push_str(change);
+            }
+
+            println!("{}", text);
+            ctx.reply(text).await?;
+        },
+        None => {
+            ctx.reply("Cannot pop the only 'turn'").await?;
+        }
+    }    
     Ok(())
 }
