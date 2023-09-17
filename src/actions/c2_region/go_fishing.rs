@@ -2,6 +2,7 @@ use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext,
 
 pub fn go_fishing(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Boating, context);
+    let d4 = context.d4.roll();
     let dc = DC(14); // TODO
 
     let degree = roll_result::rate_success(
@@ -11,13 +12,13 @@ pub fn go_fishing(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, con
     );
 
     let food_increase = match degree {
-        DegreeOfSuccess::CriticalSuccess => context.d4,
+        DegreeOfSuccess::CriticalSuccess => d4,
         DegreeOfSuccess::Success         => 1,
         _                                => 0,
     };
 
     let unrest_increase = match degree {
-        DegreeOfSuccess::CriticalFailure => context.d4,
+        DegreeOfSuccess::CriticalFailure => d4,
         _                                => 0,
     };
 

@@ -2,6 +2,8 @@ use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result:
 
 pub fn celebrate_holiday(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Industry, context);
+    let d4_1 = context.d4.roll();
+    let d4_2 = context.d4.roll();
     let dc = DC(14); // TODO
 
     let degree = roll_result::rate_success(
@@ -23,7 +25,7 @@ pub fn celebrate_holiday(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSta
     };
 
     let roll_2_recource_dice_gain_rp_equal_to_the_result = match degree {
-        DegreeOfSuccess::CriticalSuccess => context.d4 + context.d4,
+        DegreeOfSuccess::CriticalSuccess => d4_1 + d4_2,
         _                                => 0,
     };
 
@@ -37,7 +39,7 @@ pub fn celebrate_holiday(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSta
     if next_kingdom_state.fame_points < 0 {
         assert_eq!(degree, DegreeOfSuccess::CriticalFailure);
         next_kingdom_state.fame_points = 0;
-        next_kingdom_state.unrest += context.d4;
+        next_kingdom_state.unrest += d4_1;
     }
 
     let roll_result = RollResult {

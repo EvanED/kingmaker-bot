@@ -1,14 +1,14 @@
 use cucumber::given;
 use kingdom::rolls::bonus::{Bonus, BonusType, AppliesTo, AppliesUntil};
-use kingdom::rolls::roll_context::RollContext;
+use kingdom::rolls::roll_context::{RollContext, RollType};
 use crate::context::TestContext;
 use kingdom::spec::attributes::Attribute;
 
 fn set_roll_context(world: &mut TestContext) {
     let ctx = RollContext {
-        d4: -10,
-        d6: -10,
-        d20: -10,
+        d4: RollType::FixedResult(-10),
+        d6: RollType::FixedResult(-10),
+        d20: RollType::FixedResult(-10),
         bonuses: Vec::new(),
     };
     world.roll_context = Some(ctx);
@@ -20,7 +20,7 @@ fn set_roll(world: &mut TestContext, d20: i32) {
         set_roll_context(world);
     }
 
-    world.roll_context.as_mut().unwrap().d20 = d20 as i8;
+    world.roll_context.as_mut().unwrap().d20 = RollType::FixedResult(d20 as i8);
 }
 
 #[given(expr="a circumstance bonus of +{int} to Culture, because {string}")]
@@ -52,7 +52,7 @@ fn given_next_d4s(world: &mut TestContext, d4: i32) {
     if world.roll_context.is_none() {
         set_roll_context(world);
     }
-    world.roll_context.as_mut().unwrap().d4 = d4 as i8;
+    world.roll_context.as_mut().unwrap().d4 = RollType::FixedResult(d4 as i8);
 }
 
 #[given(expr="the next d6 rolls are {int}")]
@@ -60,5 +60,5 @@ fn given_next_d6s(world: &mut TestContext, d6: i32) {
     if world.roll_context.is_none() {
         set_roll_context(world);
     }
-    world.roll_context.as_mut().unwrap().d6 = d6 as i8;
+    world.roll_context.as_mut().unwrap().d6 = RollType::FixedResult(d6 as i8);
 }

@@ -1,4 +1,4 @@
-use crate::{spec::Kingdom, state::KingdomState, turns::TurnState, rolls::{roll_context::RollContext, roll_result::RollResult}, discord::commands::kingdom::create_aryc};
+use crate::{spec::Kingdom, state::KingdomState, turns::TurnState, rolls::{roll_context::{RollContext, RollType}, roll_result::RollResult}, discord::commands::kingdom::create_aryc};
 
 #[derive(Debug)]
 pub struct TurnRecord {
@@ -56,9 +56,10 @@ impl OverallState {
     pub fn new() -> OverallState {
         OverallState {
             context: RollContext {
-                d4: 2,
-                d6: 6,
-                d20: 20,
+                // FIXME:
+                d4: RollType::FixedResult(2),
+                d6: RollType::FixedResult(6),
+                d20: RollType::FixedResult(20),
                 bonuses: Vec::new(),
             },
             kingdom: create_aryc(),

@@ -88,7 +88,7 @@ impl Kingdom {
             }
         }
 
-        let natural = context.d20;
+        let natural = context.d20.roll();
         let total = TotalRoll(natural + attribute_mod + invested_mod + proficiency + bonuses_mod);
 
         // TODO: the "trained" should be replaced, maybe split up

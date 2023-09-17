@@ -2,6 +2,9 @@ use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result:
 
 pub fn supernatural_solution(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Industry, context);
+    let d4 = context.d4.roll();
+    let d6_1 = context.d6.roll();
+    let d6_2 = context.d6.roll();
     let dc = DC(14); // TODO
 
     let degree = roll_result::rate_success(
@@ -18,9 +21,9 @@ pub fn supernatural_solution(kingdom: &Kingdom, turn: &TurnState, state: &Kingdo
 
     let research_cost = match degree {
         DegreeOfSuccess::CriticalSuccess => 0,
-        DegreeOfSuccess::Success         => context.d4,
-        DegreeOfSuccess::Failure         => context.d6 + context.d6,
-        DegreeOfSuccess::CriticalFailure => context.d6 + context.d6,
+        DegreeOfSuccess::Success         => d4,
+        DegreeOfSuccess::Failure         => d6_1 + d6_2,
+        DegreeOfSuccess::CriticalFailure => d6_1 + d6_2,
     };
 
     let mut next_turn_state = turn.clone();
