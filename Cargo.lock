@@ -1015,6 +1015,7 @@ dependencies = [
  "enum-map",
  "futures",
  "poise",
+ "rand",
  "strum",
  "strum_macros",
  "tokio",

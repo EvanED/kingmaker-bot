@@ -56,10 +56,9 @@ impl OverallState {
     pub fn new() -> OverallState {
         OverallState {
             context: RollContext {
-                // FIXME:
-                d4: RollType::FixedResult(2),
-                d6: RollType::FixedResult(6),
-                d20: RollType::FixedResult(20),
+                d4: RollType::FairRoll,
+                d6: RollType::FairRoll,
+                d20: RollType::FairRoll,
                 bonuses: Vec::new(),
             },
             kingdom: create_aryc(),
