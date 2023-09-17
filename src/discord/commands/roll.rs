@@ -14,7 +14,16 @@ pub async fn roll(
     ctx: Context<'_>,
     skill: Skill,
 ) -> Result<(), Error> {
-    let response = format!("rolling **{:?}** again!", skill);
-    ctx.say(response).await?;
+    let roll = {
+        let state = ctx.data().tracker.lock().unwrap();
+        state.kingdom.roll(skill, &state.context)
+    };
+
+    let skill_str: &'static str = skill.into();
+    let msg = format!("{skill_str}: {}", roll.to_markdown());
+
+    println!("{}", msg);
+    ctx.reply(msg).await?;
+
     Ok(())
 }

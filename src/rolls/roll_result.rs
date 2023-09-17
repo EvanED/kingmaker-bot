@@ -5,6 +5,16 @@ pub struct DieRoll {
     pub description: String,
 }
 
+impl DieRoll {
+    pub fn to_markdown(&self) -> String {
+        format!(
+            "**{}** total = {}",
+            self.total.0,
+            self.description,
+        )
+    }
+}
+
 #[derive(Debug)]
 pub struct RollResult {
     pub die_roll: DieRoll,
