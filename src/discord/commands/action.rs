@@ -1,4 +1,4 @@
-use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::{roll_context::{RollContext, RollType}, roll_result::RollResult}, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}, tracker::OverallState};
+use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::{roll_context::{RollContext, RollType}, roll_result::{RollResult, DC, DieRoll, NaturalRoll, TotalRoll, DegreeOfSuccess}}, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}, tracker::OverallState};
 use std::str::FromStr;
 
 #[poise::command(
@@ -22,6 +22,8 @@ use std::str::FromStr;
         "go_fishing",
         // Action phase, civic actions
         "build_structure",
+        // Generic
+        "comment",
     ),
     subcommand_required
 )]
@@ -244,4 +246,31 @@ pub async fn build_structure(
     };
 
     make_move(ctx, "Build Structure", closure).await
+}
+
+/// A subcommand of `parent`
+#[poise::command(
+    prefix_command,
+    slash_command,
+)]
+pub async fn comment(
+    ctx: Context<'_>,
+    comment: String,
+) -> Result<(), Error> {
+    let closure = |_kingdom: &_, turn: &TurnState, state: &KingdomState, _context: &_| {
+        let phony_rr = RollResult {
+            dc: DC(0),
+            die_roll: DieRoll {
+                natural: NaturalRoll(0),
+                total:   TotalRoll(0),
+                description: "dummy".to_string(),
+            },
+            degree: DegreeOfSuccess::Success,
+        };
+        (
+            phony_rr, turn.clone(), state.clone(),
+        )
+    };
+
+    make_move(ctx, &comment, closure).await
 }
