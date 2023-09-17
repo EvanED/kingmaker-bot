@@ -1,6 +1,8 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{rolls::bonus::Bonus, actions::c3_civic::build_structure::Structure, diff_utils::{append_bool_change, append_set_change}};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RandomEventSelectionMethod {
     AdvantageGM,
     AdvantagePlayers,
@@ -15,7 +17,7 @@ impl RandomEventSelectionMethod {
     }
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct TurnState {
     // Tracks for now
     pub bonuses: Vec<Bonus>,

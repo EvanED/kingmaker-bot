@@ -1,7 +1,8 @@
 use super::bonus::Bonus;
 use rand::Rng;
+use serde::{Serialize, Deserialize};
 
-#[derive(Debug, Clone, Copy)]
+#[derive(Debug, Clone, Copy, Serialize, Deserialize)]
 pub enum RollType<const FACES: i8> {
     FairRoll,
     FixedResult(i8),
@@ -21,7 +22,7 @@ impl<const FACES: i8> RollType<FACES> {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct RollContext {
     pub d4: RollType<4>,
     pub d6: RollType<6>,

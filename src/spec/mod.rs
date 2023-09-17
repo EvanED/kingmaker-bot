@@ -1,4 +1,10 @@
-use enum_map::EnumMap;
+use std::fmt;
+use std::marker::PhantomData;
+
+use enum_map::{EnumMap, EnumArray};
+use serde::de::{Visitor, MapAccess};
+use serde::{Serialize, Deserialize};
+use strum::IntoEnumIterator;
 use crate::rolls::roll_result::{DieRoll, NaturalRoll, TotalRoll};
 use crate::rolls::roll_context::RollContext;
 
@@ -12,11 +18,87 @@ pub type AttributeMap = EnumMap<Attribute, i8>;
 pub type SkillMap = EnumMap<Skill, TrainingLevel>;
 pub use enum_map::enum_map;
 
-#[derive(Debug)]
+struct MyMapVisitor<K: IntoEnumIterator + EnumArray<V>, V: Default> {
+    marker: PhantomData<fn() -> EnumMap<K, V>>
+}
+
+impl<K: IntoEnumIterator + EnumArray<V>, V: Default> MyMapVisitor<K, V> {
+    fn new() -> Self {
+        MyMapVisitor {
+            marker: PhantomData
+        }
+    }
+}
+
+impl<'de, K: IntoEnumIterator + EnumArray<V>, V: Default> Visitor<'de> for MyMapVisitor<K, V>
+where
+    K: Deserialize<'de>,
+    V: Deserialize<'de>,
+{
+    // The type that our Visitor is going to produce.
+    type Value = EnumMap<K, V>;
+
+    // Format a message stating what data this Visitor expects to receive.
+    fn expecting(&self, formatter: &mut fmt::Formatter) -> fmt::Result {
+        formatter.write_str("an EnumMap<K, V>")
+    }
+
+    // Deserialize MyMap from an abstract "map" provided by the
+    // Deserializer. The MapAccess input is a callback provided by
+    // the Deserializer to let us see each entry in the map.
+    fn visit_map<M>(self, mut access: M) -> Result<Self::Value, M::Error>
+    where
+        M: MapAccess<'de>,
+    {
+        let mut map = EnumMap::<K, V>::default();
+        while let Some((key, value)) = access.next_entry()? {
+            map[key] = value;
+        }
+        Ok(map)
+    }
+}
+
+mod skills_serde {
+    use enum_map::EnumMap;
+    use serde::Serializer;
+    use serde::ser::SerializeMap;
+    use strum::IntoEnumIterator;
+    use serde::de::Deserializer;
+    use super::MyMapVisitor;
+
+    use super::skills::{TrainingLevel, Skill};
+
+    pub fn serialize<S>(map: &EnumMap<Skill, TrainingLevel>, serializer: S) -> Result<S::Ok, S::Error>
+    where
+        S: Serializer,
+    {
+        let count = Skill::iter().count();
+        let mut smap = serializer.serialize_map(Some(count))?;
+        for skill in Skill::iter() {
+            let value = map[skill];
+            smap.serialize_entry(&skill, &value)?;
+        }
+        smap.end()
+    }
+
+    pub fn deserialize<'de, D>(deserializer: D) -> Result<EnumMap<Skill, TrainingLevel>, D::Error>
+    where
+        D: Deserializer<'de>,
+    {
+        // Instantiate our Visitor and ask the Deserializer to drive
+        // it over the input data, resulting in an instance of MyMap.
+        deserializer.deserialize_map(MyMapVisitor::new())
+    }
+}
+
+#[derive(Debug, Serialize, Deserialize)]
 pub struct Kingdom {
     pub name: String,
+    #[serde(skip)] // FIXME
     pub attributes: AttributeMap,
+    #[serde(skip)]
     pub invested: EnumMap<Attribute, bool>,
+    #[serde(with="skills_serde")]
     pub skills: EnumMap<Skill, TrainingLevel>,
     pub level: i8,
 }

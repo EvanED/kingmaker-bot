@@ -1,12 +1,14 @@
 use enum_map::Enum;
+use serde::{Serialize, Deserialize};
 use strum::IntoEnumIterator;
-use strum_macros::{EnumString, IntoStaticStr, EnumIter};
+use strum_macros::{EnumString, IntoStaticStr, EnumIter, EnumCount};
 use super::attributes::Attribute;
 
-#[derive(Debug, Clone, Copy, EnumString)]
+// TODO: Can we remove Default?
+#[derive(Debug, Clone, Copy, EnumString, EnumIter, EnumCount, Serialize, Deserialize, Default)]
 #[strum(serialize_all = "kebab-case", ascii_case_insensitive)]
 pub enum TrainingLevel {
-    Untrained,
+    #[default] Untrained,
     Trained,
     Expert,
     Master,
@@ -26,7 +28,7 @@ impl TrainingLevel {
     }
 }
 
-#[derive(Debug, Enum, Clone, Copy, PartialEq, Eq, IntoStaticStr, EnumString, EnumIter)]
+#[derive(Debug, Enum, Clone, Copy, PartialEq, Eq, IntoStaticStr, EnumString, EnumIter, Serialize, Deserialize)]
 #[strum(serialize_all = "kebab-case", ascii_case_insensitive)]
 pub enum Skill {
     // Culture

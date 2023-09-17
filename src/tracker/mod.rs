@@ -1,6 +1,8 @@
+use serde::{Serialize, Deserialize};
+
 use crate::{spec::Kingdom, state::KingdomState, turns::TurnState, rolls::{roll_context::{RollContext, RollType}, roll_result::RollResult}, discord::commands::kingdom::create_aryc};
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct TurnRecord {
     pub description:   String,
     pub kingdom_state: KingdomState,
@@ -18,7 +20,7 @@ impl TurnRecord {
     }
 }
 
-#[derive(Debug)]
+#[derive(Debug, Serialize, Deserialize)]
 pub struct OverallState {
     pub context: RollContext,
     pub kingdom: Kingdom,

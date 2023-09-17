@@ -1,7 +1,8 @@
 use enum_map::Enum;
+use serde::{Serialize, Deserialize};
 use strum_macros::{EnumString, IntoStaticStr};
 
-#[derive(Debug, Enum, Clone, Copy, PartialEq, Eq, IntoStaticStr, EnumString)]
+#[derive(Debug, Enum, Clone, Copy, PartialEq, Eq, IntoStaticStr, EnumString, Serialize, Deserialize)]
 #[strum(serialize_all = "kebab-case", ascii_case_insensitive)]
 pub enum Attribute {
     Culture,

@@ -1,4 +1,5 @@
 use enum_map::{EnumMap, Enum};
+use serde::{Serialize, Deserialize};
 use strum_macros::{EnumString, EnumIter, AsRefStr};
 use strum::IntoEnumIterator;
 use crate::diff_utils::append_number_change;
@@ -13,11 +14,12 @@ pub enum Commodity {
     Stone,
 }
 
-#[derive(Debug, Default, Clone)]
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct KingdomState {
     pub unrest: i8,
     pub resource_points: i8,  // More?
     pub fame_points: i8,
+    #[serde(skip)] // FIXME
     pub commodity_stores: EnumMap<Commodity, i8>,
 }
 

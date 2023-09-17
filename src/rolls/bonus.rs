@@ -1,16 +1,17 @@
+use serde::{Serialize, Deserialize};
 use strum_macros::AsRefStr;
 use std::fmt::Write;
 
 use crate::{spec::{attributes, skills}, Markdownable};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Serialize, Deserialize)]
 pub enum BonusType {
     Circumstance,
     Item,
     Status,
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AppliesTo {
     Attribute(attributes::Attribute),
     Skill(skills::Skill),
@@ -27,7 +28,7 @@ impl AppliesTo {
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AppliesUntil {
     NextApplicableRoll,
     StartOfTheNextTurn,
@@ -44,7 +45,7 @@ impl AppliesUntil {
     }
 }
 
-#[derive(Debug, Clone, PartialEq, Eq)]
+#[derive(Debug, Clone, PartialEq, Eq, Serialize, Deserialize)]
 pub struct Bonus {
     pub type_: BonusType,
     pub applies_to: AppliesTo,
