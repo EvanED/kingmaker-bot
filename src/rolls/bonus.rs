@@ -69,7 +69,7 @@ impl Bonus {
             //+1 circ bonus to arts rolls ...
             //1 2  3  4     5              6           7
             "{}{} {} {} to {} rolls until {}, because {}",
-            /*1*/ if self.modifier >= 0 {'+'} else {'-'},
+            /*1*/ if self.modifier >= 0 {"+"} else {""},
             /*2*/ self.modifier,
             /*3*/ self.type_.as_ref(),
             /*4*/ if self.modifier >= 0 {"bonus"} else {"penalty"},
