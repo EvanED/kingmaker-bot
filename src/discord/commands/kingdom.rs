@@ -21,6 +21,7 @@ pub fn create_aryc() -> Kingdom {
     use Skill::*;
     use TrainingLevel::*;
     let aryc = Kingdom {
+        name: "Aryc".to_string(),
         level: 1,
         attributes: enum_map! {
             Culture   => 0,

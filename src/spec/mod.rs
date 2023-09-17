@@ -14,6 +14,7 @@ pub use enum_map::enum_map;
 
 #[derive(Debug)]
 pub struct Kingdom {
+    pub name: String,
     pub attributes: AttributeMap,
     pub invested: EnumMap<Attribute, bool>,
     pub skills: EnumMap<Skill, TrainingLevel>,
@@ -32,10 +33,9 @@ impl Kingdom {
     }
 
     pub fn to_markdown(&self) -> String {
-        // TODO: Name
         format!(
             "
-# Kingdom [NAME] (Level {})
+# {} (Level {})
 
 **Attributes:** Culture +{} / Economy +{} / Loyalty +{} / Stability +{}  \n\
 **Skills:**
@@ -44,6 +44,7 @@ impl Kingdom {
 * Loyalty: Intrigue{} / Politics{} / Statecraft{} / Warfare{}
 * Stability: Agriculture{} / Defense{} / Engineering{} / Wilderness{}
             ",
+            self.name,
             self.level,
             self.attributes[Attribute::Culture],
             self.attributes[Attribute::Economy],

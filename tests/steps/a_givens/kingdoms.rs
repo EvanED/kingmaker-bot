@@ -10,6 +10,7 @@ fn create_aryc(world: &mut TestContext) {
     use Skill::*;
     use TrainingLevel::*;
     let aryc = spec::Kingdom {
+        name: "Aryc".to_string(),
         level: 1,
         attributes: enum_map! {
             Culture   => 0,
