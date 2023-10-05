@@ -103,6 +103,13 @@ impl OverallState {
             &starting_state.kingdom_state,
             &self.context,
         );
+
+        let description = format!(
+            "{} ({})",
+            description,
+            roll_result.degree.to_markdown(),
+        );
+
         let next_turn = TurnRecord {
             description,
             kingdom_state: next_kingdom_state,
