@@ -87,7 +87,7 @@ impl Bonus {
         }
     }
 
-    pub fn expiring(&self, attribute: attributes::Attribute, skill: skills::Skill) -> bool {
+    pub fn expires_from_roll(&self, attribute: attributes::Attribute, skill: skills::Skill) -> bool {
         match self.applies_until {
             AppliesUntil::NextApplicableRoll => self.applies(attribute, skill),
             AppliesUntil::StartOfTheNextTurn => false,
@@ -99,7 +99,7 @@ impl Bonus {
 pub fn filter_from_roll(bonuses: &Vec<Bonus>, attribute: attributes::Attribute, skill: skills::Skill) -> Vec<Bonus> {
     bonuses.iter()
         .filter(
-            |bonus| !bonus.expiring(attribute, skill)
+            |bonus| !bonus.expires_from_roll(attribute, skill)
         )
         .map(|bonus| bonus.clone())
         .collect()
