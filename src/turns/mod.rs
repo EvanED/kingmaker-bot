@@ -1,3 +1,5 @@
+use std::cmp;
+
 use serde::{Serialize, Deserialize};
 
 use crate::{rolls::bonus::Bonus, actions::c3_civic::build_structure::Structure, diff_utils::{append_bool_change, append_set_change}};
@@ -42,7 +44,47 @@ pub struct TurnState {
     pub can_build_this_structure_for_no_resource_cost: Option<Structure>,
 }
 
+fn sub_min_0(x: i8) -> i8 {
+    cmp::max(x - 1, 0)
+}
+
+fn sub_option(x: Option<i8>) -> Option<i8> {
+    match x {
+        None        => None,
+        Some(1)     => None,
+        Some(x) => Some(x-1),
+    }
+}
+
 impl TurnState {
+
+    pub fn next_turn(&self) -> TurnState {
+        TurnState {
+            bonuses: self.bonuses.clone(),
+            requirements: self.requirements.clone(),
+
+            // Information tracked for this turn is (mostly) reset
+            create_a_masterpiece_attempted: false,
+            supernatural_solution_available: false,
+            random_event_selection_method: None,
+
+            // Counters get decremented
+            dc6_crop_failure_potential_for_x_turns: sub_min_0(self.dc6_crop_failure_potential_for_x_turns),
+            supernatural_solution_blocked_for_x_turns: sub_option(self.supernatural_solution_blocked_for_x_turns),
+
+            // Gets reset right away, but contributes (TODO) to the KingdomState
+            additional_fame_points_scheduled: 0,
+
+            // These will be reset very early in the turn, but not yet:
+            collected_taxes: self.collected_taxes,
+            traded_commodities: self.traded_commodities,
+            bonus_rp: self.bonus_rp,
+
+            // These could in theory carry forward indefinitely
+            can_build_this_structure_for_no_resource_cost: self.can_build_this_structure_for_no_resource_cost,
+        }
+    }
+
     pub fn diff(&self, other: &TurnState) -> Vec<String> {
         let mut diffs = Vec::new();
 
@@ -259,5 +301,81 @@ mod tests {
                 "Supernatural Solution's substitution was used",
             ]
         );
+    }
+
+    fn create_test_turn_state() -> TurnState {
+        TurnState {
+            bonuses: vec![], // TODO need tests and implementation
+            requirements: vec![],
+            create_a_masterpiece_attempted: true,
+            supernatural_solution_available: true,
+            dc6_crop_failure_potential_for_x_turns: 0,
+            random_event_selection_method: Some(RandomEventSelectionMethod::AdvantageGM),
+            collected_taxes: true,
+            traded_commodities: true,
+            bonus_rp: 5,
+            additional_fame_points_scheduled: 2,
+            supernatural_solution_blocked_for_x_turns: None,
+            can_build_this_structure_for_no_resource_cost: None,    
+        }
+    }
+
+    #[test]
+    fn check_new_turn_gets_basic_stuff_right() {
+        let start_state = create_test_turn_state();
+        let next_turn = start_state.next_turn();
+        
+        // Stuff about upcoming turn is reset
+        assert!(next_turn.create_a_masterpiece_attempted == false);
+        assert!(next_turn.supernatural_solution_available == false);
+        assert!(next_turn.random_event_selection_method == None);
+
+        // This should be decremented -- more tests below
+        assert!(next_turn.dc6_crop_failure_potential_for_x_turns == 0); // -1
+
+        // Stuff from the previous turn that affects this turn still needs to be tracked
+        assert!(next_turn.collected_taxes == true); // same
+        assert!(next_turn.traded_commodities == true); // same
+        assert!(next_turn.bonus_rp == 5);
+
+        // This is applied immediately
+        assert!(next_turn.additional_fame_points_scheduled == 0); // CHECK THAT fame == 1 + this
+
+        // These just carry forward
+        assert!(next_turn.supernatural_solution_blocked_for_x_turns == None); // -1
+        assert!(next_turn.can_build_this_structure_for_no_resource_cost == None);
+    }
+
+    #[test]
+    fn check_d6_crop_failure_potential_gets_decremented() {
+        let start_state = TurnState {
+            dc6_crop_failure_potential_for_x_turns: 5,
+            ..create_test_turn_state()
+        };
+        let next_turn = start_state.next_turn();
+
+        assert!(next_turn.dc6_crop_failure_potential_for_x_turns == 4);
+    }
+
+    #[test]
+    fn check_supernatural_solution_blocked_gets_decremented() {
+        let start_state = TurnState {
+            supernatural_solution_blocked_for_x_turns: Some(5),
+            ..create_test_turn_state()
+        };
+        let next_turn = start_state.next_turn();
+
+        assert!(next_turn.supernatural_solution_blocked_for_x_turns == Some(4));
+    }
+
+    #[test]
+    fn check_supernatural_solution_blocked_gets_decremented_to_none_instead_of_zero() {
+        let start_state = TurnState {
+            supernatural_solution_blocked_for_x_turns: Some(1),
+            ..create_test_turn_state()
+        };
+        let next_turn = start_state.next_turn();
+
+        assert!(next_turn.supernatural_solution_blocked_for_x_turns == None);
     }
 }

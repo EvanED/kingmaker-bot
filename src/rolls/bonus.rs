@@ -94,6 +94,18 @@ impl Bonus {
             AppliesUntil::EndOfTheNextTurn   => false,
         }
     }
+
+    pub fn transform_at_turn_start(&self) -> Option<Bonus> {
+        match self.applies_until {
+            AppliesUntil::NextApplicableRoll => None,
+            AppliesUntil::StartOfTheNextTurn => None,
+            AppliesUntil::EndOfTheNextTurn   => Some(Bonus{
+                applies_until: AppliesUntil::StartOfTheNextTurn,
+                reason: self.reason.clone(),
+                ..*self
+            }),
+        }
+    }
 }
 
 pub fn filter_from_roll(bonuses: &Vec<Bonus>, attribute: attributes::Attribute, skill: skills::Skill) -> Vec<Bonus> {
