@@ -42,7 +42,6 @@ pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSt
         _                                => vec![],
     };
 
-
     let mut next_turn_state = turn.clone();
     next_turn_state.requirements.extend(new_requirements);
     if degree == DegreeOfSuccess::CriticalFailure {

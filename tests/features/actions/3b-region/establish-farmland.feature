@@ -48,7 +48,7 @@ Feature: Activity Phase, Step 2 (Region) -- Establish Farmland
 
     Scenario: Establish Farmland succeeds
         Given the kingdom Aryc at level 1
-        And a die roll of 15
+        And a die roll of 19
         When I Establish Farmland on hills
         Then there is 1 requirement
         And "mark the map with the new farmland" is a requirement
