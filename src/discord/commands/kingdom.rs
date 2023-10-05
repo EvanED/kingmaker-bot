@@ -58,6 +58,7 @@ pub fn create_aryc() -> Kingdom {
 
 fn _create_kingdom_state() -> KingdomState {
     KingdomState {
+        xp: 0,
         unrest: 2,
         resource_points: 7,
         fame_points: 1,

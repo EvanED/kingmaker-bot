@@ -175,6 +175,7 @@ async fn rollback(ctx: Context<'_>) -> Result<(), Error> {
     prefix_command,
     slash_command,
     subcommands(
+        "xp",
         "unrest",
         "rp",
         "fame",
@@ -204,6 +205,15 @@ fn set_rp(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn
     let mut next_kingdom_state = kingdom_state.clone();
 
     next_kingdom_state.resource_points = changer(next_kingdom_state.resource_points);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_xp(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i16) -> i16>) -> (TurnState, KingdomState) {
+    let next_turn_state = turn_state.clone();
+    let mut next_kingdom_state = kingdom_state.clone();
+
+    next_kingdom_state.xp = changer(next_kingdom_state.xp);
 
     (next_turn_state, next_kingdom_state)
 }
@@ -288,6 +298,25 @@ fn make_changer(spec: String) -> Result<Box<dyn FnOnce(i8) -> i8>, Error> {
     Ok(Box::new(closure))
 }
 
+fn changer_set_i16(_start: i16, set_to: i16) -> i16 {
+    set_to
+}
+
+fn changer_change_i16(start: i16, change_by: i16) -> i16 {
+    start + change_by
+}
+
+fn make_changer_i16(spec: String) -> Result<Box<dyn FnOnce(i16) -> i16>, Error> {
+    let num = spec.parse::<i16>()?;
+    let changer = match spec.chars().nth(0) {
+        Some('-') | Some('+') => changer_change_i16,
+        _                     => changer_set_i16,
+    };
+
+    let closure = move |start| changer(start, num);
+    Ok(Box::new(closure))
+}
+
 pub async fn do_set<F>(
     ctx: Context<'_>,
     change: String,
@@ -318,6 +347,46 @@ pub async fn do_set<F>(
 
     Ok(())
 }
+
+pub async fn do_set_i16<F>(
+    ctx: Context<'_>,
+    change: String,
+    update_func: F,
+    roll_description: &str,
+) -> Result<(), Error>
+    where F: FnOnce(&TurnState, &KingdomState, Box<dyn FnOnce(i16) -> i16>) -> (TurnState, KingdomState)
+{
+    let state_changes = {
+        let mut state = ctx.data().tracker.lock().unwrap();
+        let changer = make_changer_i16(change)?;
+        state.make_update_i16(
+            roll_description.to_string(),
+            update_func,
+            changer,
+        )
+    };
+
+    let mut text = format!("## {roll_description}");
+
+    for change in &state_changes {
+        text.push_str("\n* ");
+        text.push_str(change);
+    }
+
+    println!("{}", text);
+    ctx.reply(text).await?;
+
+    Ok(())
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn xp(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set_i16(ctx, change, set_xp, "GM set XP").await
+}
+
 
 #[poise::command(slash_command, prefix_command)]
 async fn rp(

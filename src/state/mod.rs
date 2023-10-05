@@ -17,6 +17,7 @@ pub enum Commodity {
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct KingdomState {
+    pub xp: i16,
     pub unrest: i8,
     pub resource_points: i8,  // More?
     pub fame_points: i8,
@@ -28,6 +29,7 @@ impl KingdomState {
     pub fn diff(&self, other: &KingdomState) -> Vec<String> {
         let mut diffs = Vec::new();
 
+        append_number_change(&mut diffs, "XP", self.xp, other.xp);
         append_number_change(&mut diffs, "Unrest", self.unrest, other.unrest);
         append_number_change(&mut diffs, "RP", self.resource_points, other.resource_points);
         append_number_change(&mut diffs, "Fame", self.fame_points, other.fame_points);
@@ -49,11 +51,13 @@ impl KingdomState {
             "
 ## Current Kingdom State
 
+**XP:** {}  \n\
 **Unrest:** {}  \n\
 **Resource Points:** {}  \n\
 **Fame Points:** {}
 **Commodities:** Food {}, Lumber {}, Luxuries {}, Ore {}, Stone {}
             ",
+            self.xp,
             self.unrest,
             self.resource_points,
             self.fame_points,
@@ -70,6 +74,24 @@ impl KingdomState {
 mod tests {
     use super::*;
     use assert2::assert;
+
+    #[test]
+    fn xp_increase_reflected_in_diff() {
+        let k1 = KingdomState {
+            xp: 100,
+            ..KingdomState::default()
+        };
+        let k2 = KingdomState {
+            xp: 200,
+            ..KingdomState::default()
+        };
+        let diff = k1.diff(&k2);
+        assert!(
+            diff == vec![
+                "XP increased from 100 to 200",
+            ]
+        );
+    }
 
     #[test]
     fn unrest_decrease_reflected_in_diff() {

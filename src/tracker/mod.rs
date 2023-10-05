@@ -121,6 +121,28 @@ impl OverallState {
 
         state_changes
     }
+
+    pub fn make_update_i16<F>(&mut self, description: String, update_func: F, changer: Box<dyn FnOnce(i16) -> i16>) -> Vec<String>
+        where F: FnOnce(&TurnState, &KingdomState, Box<dyn FnOnce(i16) -> i16>) -> (TurnState, KingdomState)
+    {
+        println!("make_update({description}, ...)");
+        let starting_state = self.turns.last().unwrap();
+
+        let (next_turn_state, next_kingdom_state) = update_func(
+            &starting_state.turn_state,
+            &starting_state.kingdom_state,
+            changer,
+        );
+        let next_turn = TurnRecord {
+            description,
+            kingdom_state: next_kingdom_state,
+            turn_state: next_turn_state,
+        };
+        let state_changes = starting_state.diff(&next_turn);
+        self.turns.push(next_turn);
+
+        state_changes
+    }
 }
 
 
