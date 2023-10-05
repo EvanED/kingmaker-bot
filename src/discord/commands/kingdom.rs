@@ -143,6 +143,24 @@ async fn show(
 }
 
 #[poise::command(slash_command, prefix_command)]
+async fn history(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    let markdown = {
+        let state = ctx.data().tracker.lock().unwrap();
+        state.history_to_markdown()
+    };
+
+    println!("{markdown}");
+
+    ctx.say(
+        markdown
+    ).await?;
+
+    Ok(())
+}
+
+#[poise::command(slash_command, prefix_command)]
 async fn history_dbg(
     ctx: Context<'_>,
 ) -> Result<(), Error> {
@@ -162,6 +180,7 @@ async fn history_dbg(
     slash_command,
     subcommands(
         "show",
+        "history",
         "history_dbg",
     ),
     subcommand_required

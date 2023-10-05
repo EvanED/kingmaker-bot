@@ -17,6 +17,7 @@ pub enum Commodity {
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct KingdomState {
+    #[serde(default)]
     pub xp: i16,
     pub unrest: i8,
     pub resource_points: i8,  // More?

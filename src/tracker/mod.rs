@@ -1,6 +1,6 @@
 use serde::{Serialize, Deserialize};
 
-use crate::{spec::Kingdom, state::KingdomState, turns::TurnState, rolls::{roll_context::{RollContext, RollType}, roll_result::RollResult}, discord::commands::kingdom::create_aryc};
+use crate::{spec::Kingdom, state::KingdomState, turns::TurnState, rolls::{roll_context::{RollContext, RollType}, roll_result::RollResult}, discord::commands::kingdom::create_aryc, Markdownable};
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TurnRecord {
@@ -17,6 +17,12 @@ impl TurnRecord {
 
         kingdom_changes.extend(turn_changes.into_iter());
         kingdom_changes
+    }
+}
+
+impl Markdownable for TurnRecord {
+    fn to_markdown(&self) -> String {
+        format!("1. {}", self.description)
     }
 }
 
@@ -55,6 +61,17 @@ impl MoveResult {
 }
 
 impl OverallState {
+    pub fn history_to_markdown(&self) -> String {
+        self.turns.iter()
+            .map(|turn| turn.to_markdown())
+            .filter(
+                |desc|
+                !desc.contains("GM discharged") && !desc.contains("GM set")
+            )
+            .collect::<Vec<String>>()
+            .join("\n")
+    }
+    
     pub fn new() -> OverallState {
         OverallState {
             context: RollContext {
