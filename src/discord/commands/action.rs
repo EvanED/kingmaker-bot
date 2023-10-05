@@ -44,9 +44,11 @@ fn post_action_updates(state: &mut OverallState) -> () {
 pub async fn make_move<F>(ctx: Context<'_>, desc: &str, turn_func: F) -> Result<(), Error>
     where F: FnOnce(&Kingdom, &TurnState, &KingdomState, &RollContext) -> (RollResult, TurnState, KingdomState)
 {
+    let player = &ctx.author().name;
     let move_result = {
         let mut state = ctx.data().tracker.lock().unwrap();
         let move_result = state.make_move(
+            player,
             desc.to_string(),
             turn_func,
         );

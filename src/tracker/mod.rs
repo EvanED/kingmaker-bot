@@ -4,6 +4,8 @@ use crate::{spec::Kingdom, state::KingdomState, turns::TurnState, rolls::{roll_c
 
 #[derive(Debug, Serialize, Deserialize)]
 pub struct TurnRecord {
+    #[serde(default)]
+    pub player:        Option<String>,  // TODO: remove Option
     pub description:   String,
     pub kingdom_state: KingdomState,
     pub turn_state:    TurnState,
@@ -22,7 +24,11 @@ impl TurnRecord {
 
 impl Markdownable for TurnRecord {
     fn to_markdown(&self) -> String {
-        format!("1. {}", self.description)
+        let player = match self.player.as_ref() {
+            Some(s) => &s,
+            None            => "(unknown)",
+        };
+        format!("1. *{}:* {}", player, self.description)
     }
 }
 
@@ -83,6 +89,7 @@ impl OverallState {
             kingdom: create_aryc(),
             turns: vec![
                 TurnRecord {
+                    player: None,
                     description: "Initial state".to_string(),
                     kingdom_state: KingdomState::default(),
                     turn_state: TurnState::default(),
@@ -91,7 +98,7 @@ impl OverallState {
         }
     }
 
-    pub fn make_move<F>(&mut self, description: String, turn_func: F) -> MoveResult
+    pub fn make_move<F>(&mut self, player: &str, description: String, turn_func: F) -> MoveResult
         where F: FnOnce(&Kingdom, &TurnState, &KingdomState, &RollContext) -> (RollResult, TurnState, KingdomState)
     {
         println!("make_move({description}, ...)");
@@ -111,6 +118,7 @@ impl OverallState {
         );
 
         let next_turn = TurnRecord {
+            player: Some(player.to_string()),
             description,
             kingdom_state: next_kingdom_state,
             turn_state: next_turn_state,
@@ -124,7 +132,7 @@ impl OverallState {
         }
     }
 
-    pub fn make_update<F>(&mut self, description: String, update_func: F, changer: Box<dyn FnOnce(i8) -> i8>) -> Vec<String>
+    pub fn make_update<F>(&mut self, player: &str, description: String, update_func: F, changer: Box<dyn FnOnce(i8) -> i8>) -> Vec<String>
         where F: FnOnce(&TurnState, &KingdomState, Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState)
     {
         println!("make_update({description}, ...)");
@@ -136,6 +144,7 @@ impl OverallState {
             changer,
         );
         let next_turn = TurnRecord {
+            player: Some(player.to_string()),
             description,
             kingdom_state: next_kingdom_state,
             turn_state: next_turn_state,
@@ -146,7 +155,7 @@ impl OverallState {
         state_changes
     }
 
-    pub fn make_update_i16<F>(&mut self, description: String, update_func: F, changer: Box<dyn FnOnce(i16) -> i16>) -> Vec<String>
+    pub fn make_update_i16<F>(&mut self, player: &str, description: String, update_func: F, changer: Box<dyn FnOnce(i16) -> i16>) -> Vec<String>
         where F: FnOnce(&TurnState, &KingdomState, Box<dyn FnOnce(i16) -> i16>) -> (TurnState, KingdomState)
     {
         println!("make_update({description}, ...)");
@@ -158,6 +167,7 @@ impl OverallState {
             changer,
         );
         let next_turn = TurnRecord {
+            player: Some(player.to_string()),
             description,
             kingdom_state: next_kingdom_state,
             turn_state: next_turn_state,

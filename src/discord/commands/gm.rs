@@ -325,10 +325,12 @@ pub async fn do_set<F>(
 ) -> Result<(), Error>
     where F: FnOnce(&TurnState, &KingdomState, Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState)
 {
+    let player = &ctx.author().name;
     let state_changes = {
         let mut state = ctx.data().tracker.lock().unwrap();
         let changer = make_changer(change)?;
         state.make_update(
+            player,
             roll_description.to_string(),
             update_func,
             changer,
@@ -356,10 +358,12 @@ pub async fn do_set_i16<F>(
 ) -> Result<(), Error>
     where F: FnOnce(&TurnState, &KingdomState, Box<dyn FnOnce(i16) -> i16>) -> (TurnState, KingdomState)
 {
+    let player = &ctx.author().name;
     let state_changes = {
         let mut state = ctx.data().tracker.lock().unwrap();
         let changer = make_changer_i16(change)?;
         state.make_update_i16(
+            player,
             roll_description.to_string(),
             update_func,
             changer,
