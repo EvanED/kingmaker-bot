@@ -60,7 +60,11 @@ impl TurnState {
 
     pub fn next_turn(&self) -> TurnState {
         TurnState {
-            bonuses: self.bonuses.clone(),
+            bonuses: (
+                self.bonuses.iter()
+                .filter_map(|bonus| bonus.transform_at_turn_start())
+                .collect()
+            ),
             requirements: self.requirements.clone(),
 
             // Information tracked for this turn is (mostly) reset
@@ -305,8 +309,11 @@ mod tests {
 
     fn create_test_turn_state() -> TurnState {
         TurnState {
-            bonuses: vec![], // TODO need tests and implementation
-            requirements: vec![],
+            bonuses: vec![],
+            requirements: vec![
+                "requirement #1".to_string(),
+                "requirement #2".to_string(),
+            ],
             create_a_masterpiece_attempted: true,
             supernatural_solution_available: true,
             dc6_crop_failure_potential_for_x_turns: 0,
@@ -344,6 +351,10 @@ mod tests {
         // These just carry forward
         assert!(next_turn.supernatural_solution_blocked_for_x_turns == None); // -1
         assert!(next_turn.can_build_this_structure_for_no_resource_cost == None);
+        assert!(next_turn.requirements == vec![
+            "requirement #1",
+            "requirement #2",
+        ]);
     }
 
     #[test]
@@ -377,5 +388,66 @@ mod tests {
         let next_turn = start_state.next_turn();
 
         assert!(next_turn.supernatural_solution_blocked_for_x_turns == None);
+    }
+
+    #[test]
+    fn check_bonuses_continue_as_appropriate() {
+        let bonuses = vec![
+            Bonus {
+                type_: BonusType::Circumstance,
+                applies_to: AppliesTo::Skill(Skill::Arts),
+                applies_until: AppliesUntil::EndOfTheNextTurn,
+                modifier: 1,
+                reason: "Should Remain Until End of *This* Turn #1".to_string(),
+            },
+            Bonus {
+                type_: BonusType::Circumstance,
+                applies_to: AppliesTo::Skill(Skill::Arts),
+                applies_until: AppliesUntil::NextApplicableRoll,
+                modifier: 1,
+                reason: "Should Expire #1".to_string(),
+            },
+            Bonus {
+                type_: BonusType::Circumstance,
+                applies_to: AppliesTo::Skill(Skill::Arts),
+                applies_until: AppliesUntil::StartOfTheNextTurn,
+                modifier: 1,
+                reason: "Should Expire #2".to_string(),
+            },
+            Bonus {
+                type_: BonusType::Circumstance,
+                applies_to: AppliesTo::Skill(Skill::Arts),
+                applies_until: AppliesUntil::EndOfTheNextTurn,
+                modifier: 1,
+                reason: "Should Remain Until End of *This* Turn #2".to_string(),
+            },
+        ];
+
+        let start_state = TurnState {
+            bonuses,
+            ..create_test_turn_state()
+        };
+        let next_turn = start_state.next_turn();
+
+        let expected_bonuses = vec![
+            Bonus {
+                type_: BonusType::Circumstance,
+                applies_to: AppliesTo::Skill(Skill::Arts),
+                // was EndOfTheNextTurn
+                applies_until: AppliesUntil::StartOfTheNextTurn,
+                modifier: 1,
+                reason: "Should Remain Until End of *This* Turn #1".to_string(),
+            },
+            Bonus {
+                type_: BonusType::Circumstance,
+                applies_to: AppliesTo::Skill(Skill::Arts),
+                // was EndOfTheNextTurn
+                applies_until: AppliesUntil::StartOfTheNextTurn,
+                modifier: 1,
+                reason: "Should Remain Until End of *This* Turn #2".to_string(),
+            },
+        ];
+
+        assert!(next_turn.bonuses == expected_bonuses);
     }
 }
