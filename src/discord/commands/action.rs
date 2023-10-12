@@ -28,6 +28,7 @@ use std::str::FromStr;
         "build_structure",
         // Generic
         "comment",
+        "next_turn",
     ),
     subcommand_required
 )]
@@ -261,6 +262,33 @@ pub async fn build_structure(
     };
 
     make_move(ctx, "Build Structure", closure).await
+}
+
+#[poise::command(
+    prefix_command,
+    slash_command,
+    rename="next-turn",
+)]
+pub async fn next_turn(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    let closure = |_kingdom: &_, turn: &TurnState, state: &KingdomState, _context: &_| {
+        let phony_rr = RollResult {
+            dc: DC(0),
+            die_roll: DieRoll {
+                natural: NaturalRoll(0),
+                total:   TotalRoll(0),
+                description: "next turn".to_string(),
+            },
+            degree: DegreeOfSuccess::Success,
+        };
+        let nt = turn.next_turn();
+        (
+            phony_rr, nt, state.clone(),
+        )
+    };
+
+    make_move(ctx, "Next Turn", closure).await
 }
 
 /// A subcommand of `parent`
