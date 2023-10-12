@@ -77,25 +77,31 @@ Feature: Commerce Phase, Step 1 -- Collect Taxes
     Scenario: We do not collect taxes, and get to decrease Unrest
         Given the kingdom Aryc at level 1
         And we have 2 Unrest
+        And the kingdom did collect taxes the previous turn
         And a die roll of 11
         When I do not collect taxes
         Then there is no bonus
         And Unrest went down to 1
+        And we did not collect taxes this turn
     
     Scenario: We do not collect taxes, but do not get to decrease Unrest
         Given the kingdom Aryc at level 1
         And we have 2 Unrest
+        And the kingdom did collect taxes the previous turn
         And a die roll of 10
         When I do not collect taxes
         Then there is no bonus
         And Unrest is still 2
+        And we did not collect taxes this turn
     
      Scenario: We do not collect taxes, would roll high, but there is no Unrest to decrease
         Given the kingdom Aryc at level 1
         And we have 0 Unrest
+        And the kingdom did collect taxes the previous turn
         And a die roll of 20
         When I do not collect taxes
         Then there is no bonus
         And Unrest is still 0
+        And we did not collect taxes this turn
     
     

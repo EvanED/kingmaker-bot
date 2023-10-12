@@ -17,7 +17,14 @@ pub fn decline_to_collect(_kingdom: &Kingdom, turn: &TurnState, state: &KingdomS
         dc: DC(11),
     };
 
-    (roll_result, turn.clone(), new_kingdom_state)
+    let new_turn_state = TurnState {
+        collected_taxes: false,
+        bonuses: turn.bonuses.clone(),
+        requirements: turn.requirements.clone(),
+        ..*turn
+    };
+
+    (roll_result, new_turn_state, new_kingdom_state)
 }
 
 pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
