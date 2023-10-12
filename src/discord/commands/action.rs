@@ -294,8 +294,9 @@ pub async fn next_turn(
             degree: DegreeOfSuccess::Success,
         };
         let nt = turn.next_turn();
+        let nk = state.next_turn(&nt);
         (
-            phony_rr, nt, state.clone(),
+            phony_rr, nt, nk,
         )
     };
 

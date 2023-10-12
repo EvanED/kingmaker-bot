@@ -184,6 +184,12 @@ async fn rollback(ctx: Context<'_>) -> Result<(), Error> {
         "luxuries",
         "ore",
         "stone",
+
+        "food_income",
+        "lumber_income",
+        // TODO: luxury
+        "ore_income",
+        "stone_income",
     ),
     subcommand_required
 )]
@@ -277,6 +283,47 @@ fn set_stone(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<
     (next_turn_state, next_kingdom_state)
 }
 
+
+
+fn set_food_income(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let mut next_turn_state = turn_state.clone();
+    let next_kingdom_state = kingdom_state.clone();
+
+    const COMMODITY: Commodity = Commodity::Food;
+    next_turn_state.commodity_income[COMMODITY] = changer(next_turn_state.commodity_income[COMMODITY]);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_lumber_income(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let mut next_turn_state = turn_state.clone();
+    let next_kingdom_state = kingdom_state.clone();
+
+    const COMMODITY: Commodity = Commodity::Lumber;
+    next_turn_state.commodity_income[COMMODITY] = changer(next_turn_state.commodity_income[COMMODITY]);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_ore_income(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let mut next_turn_state = turn_state.clone();
+    let next_kingdom_state = kingdom_state.clone();
+
+    const COMMODITY: Commodity = Commodity::Ore;
+    next_turn_state.commodity_income[COMMODITY] = changer(next_turn_state.commodity_income[COMMODITY]);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_stone_income(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let mut next_turn_state = turn_state.clone();
+    let next_kingdom_state = kingdom_state.clone();
+
+    const COMMODITY: Commodity = Commodity::Stone;
+    next_turn_state.commodity_income[COMMODITY] = changer(next_turn_state.commodity_income[COMMODITY]);
+
+    (next_turn_state, next_kingdom_state)
+}
 
 
 fn changer_set(_start: i8, set_to: i8) -> i8 {
@@ -456,6 +503,56 @@ async fn stone(
 ) -> Result<(), Error> {
     do_set(ctx, change, set_stone, "GM set Stone").await
 }
+
+
+#[poise::command(
+    slash_command,
+    prefix_command,
+    rename="food-income",
+)]
+async fn food_income(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_stone_income, "GM set Food income").await
+}
+
+#[poise::command(
+    slash_command,
+    prefix_command,
+    rename="lumber-income",
+)]
+async fn lumber_income(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_stone_income, "GM set Lumber income").await
+}
+
+#[poise::command(
+    slash_command,
+    prefix_command,
+    rename="ore-income",
+)]
+async fn ore_income(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_stone_income, "GM set Ore income").await
+}
+
+#[poise::command(
+    slash_command,
+    prefix_command,
+    rename="stone-income",
+)]
+async fn stone_income(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_stone_income, "GM set Stone income").await
+}
+
 
 
 fn discharge_requirement(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {

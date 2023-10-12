@@ -93,6 +93,13 @@ fn _create_turn_state() -> TurnState {
         requirements: vec![
             "do something".to_string(),
         ],
+        commodity_income: enum_map! {
+            Commodity::Food     => 1,
+            Commodity::Lumber   => 2,
+            Commodity::Luxuries => 0,
+            Commodity::Ore      => 0,
+            Commodity::Stone    => 0,
+        },
 
         create_a_masterpiece_attempted: false,
         supernatural_solution_available: true,

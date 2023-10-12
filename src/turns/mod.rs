@@ -1,8 +1,10 @@
 use std::cmp;
 
+use enum_map::{EnumMap,enum_map};
 use serde::{Serialize, Deserialize};
+use strum::IntoEnumIterator;
 
-use crate::{rolls::bonus::Bonus, actions::c3_civic::build_structure::Structure, diff_utils::{append_bool_change, append_set_change}};
+use crate::{rolls::bonus::Bonus, actions::c3_civic::build_structure::Structure, diff_utils::{append_bool_change, append_set_change, append_number_change}, state::Commodity, spec::enum_map_serde};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RandomEventSelectionMethod {
@@ -42,6 +44,9 @@ pub struct TurnState {
     pub supernatural_solution_blocked_for_x_turns: Option<i8>,
     // FIXME: this should be per-settlement:
     pub can_build_this_structure_for_no_resource_cost: Option<Structure>,
+
+    #[serde(with="enum_map_serde", default)]
+    pub commodity_income: EnumMap<Commodity, i8>,
 }
 
 fn sub_min_0(x: i8) -> i8 {
@@ -86,6 +91,7 @@ impl TurnState {
 
             // These could in theory carry forward indefinitely
             can_build_this_structure_for_no_resource_cost: self.can_build_this_structure_for_no_resource_cost,
+            commodity_income: self.commodity_income.clone(),
         }
     }
 
@@ -106,6 +112,15 @@ impl TurnState {
             self.supernatural_solution_available, "Supernatural Solution's substitution was used",
             other.supernatural_solution_available, "Supernatural Solution's substitution became available",
         );
+
+        for commodity in Commodity::iter() {
+            append_number_change(
+                &mut diffs,
+                &format!("{} income", commodity),
+                self.commodity_income[commodity],
+                other.commodity_income[commodity],
+            );
+        }
 
         diffs
     }
@@ -226,8 +241,19 @@ impl TurnState {
         }
     }
 
+    fn commodity_income_string(&self) -> String {
+        format!(
+            "**Commodity Income:** Food {}, Lumber {}, Luxuries {}, Ore {}, Stone {}",
+            self.commodity_income[Commodity::Food],
+            self.commodity_income[Commodity::Lumber],
+            self.commodity_income[Commodity::Luxuries],
+            self.commodity_income[Commodity::Ore],
+            self.commodity_income[Commodity::Stone],
+        )
+    }
 
     pub fn to_markdown(&self) -> String {
+        let commodity_income_string = self.commodity_income_string();
         let bonuses_string = self.bonuses_markdown();
         let requirements_string = self.requirements_markdown();
         let this_turn_string = self.this_turn_info();
@@ -237,6 +263,7 @@ impl TurnState {
             "
 ## Current Turn State
 
+{commodity_income_string}
 {bonuses_string}
 {requirements_string}
 {this_turn_string}
@@ -252,6 +279,22 @@ mod tests {
 
     use super::*;
     use assert2::assert;
+
+    #[test]
+    fn commodity_income_changes_reflected_in_text() {
+        let mut k1 = TurnState::default();
+        let mut k2 = TurnState ::default();
+
+        k1.commodity_income[Commodity::Ore] = 4;
+        k2.commodity_income[Commodity::Ore] = 2;
+
+        let diff = k1.diff(&k2);
+        assert!(
+            diff == vec![
+                "Ore income decreased from 4 to 2",
+            ]
+        );
+    }
 
     #[test]
     fn bonus_and_requirement_changes_reflected_in_text() {
@@ -323,7 +366,14 @@ mod tests {
             bonus_rp: 5,
             additional_fame_points_scheduled: 2,
             supernatural_solution_blocked_for_x_turns: None,
-            can_build_this_structure_for_no_resource_cost: None,    
+            can_build_this_structure_for_no_resource_cost: None,
+            commodity_income: enum_map! {
+                Commodity::Food     => 1,
+                Commodity::Lumber   => 2,
+                Commodity::Luxuries => 0,
+                Commodity::Ore      => 0,
+                Commodity::Stone    => 0,
+            },
         }
     }
 

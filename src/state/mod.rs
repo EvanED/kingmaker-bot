@@ -3,7 +3,8 @@ use poise::ChoiceParameter;
 use serde::{Serialize, Deserialize};
 use strum_macros::{EnumIter, AsRefStr};
 use strum::IntoEnumIterator;
-use crate::{diff_utils::append_number_change, spec::enum_map_serde};
+use crate::{diff_utils::append_number_change, spec::enum_map_serde, turns::TurnState};
+use assert2::assert;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Enum, AsRefStr, /*EnumString,*/ EnumIter, Serialize, Deserialize, ChoiceParameter)]
 #[strum(ascii_case_insensitive)]
@@ -27,6 +28,20 @@ pub struct KingdomState {
 }
 
 impl KingdomState {
+    pub fn max_commodity_store(_c: Commodity) -> i8 {
+        4
+    }
+
+    pub fn next_turn(&self, turn_state: &TurnState) -> KingdomState {
+        let mut next_kstate = self.clone();
+
+        for commodity in Commodity::iter() {
+            next_kstate.commodity_stores[commodity] += turn_state.commodity_income[commodity];
+        }
+
+        next_kstate
+    }
+
     pub fn diff(&self, other: &KingdomState) -> Vec<String> {
         let mut diffs = Vec::new();
 
@@ -75,6 +90,23 @@ impl KingdomState {
 mod tests {
     use super::*;
     use assert2::assert;
+
+    #[test]
+    fn commodity_stores_increase_at_start_of_turn() {
+        let mut k1 = KingdomState::default();
+        k1.commodity_stores[Commodity::Food] = 1;
+
+        let mut turn_state = TurnState::default();
+        turn_state.commodity_income[Commodity::Food] = 1;
+        turn_state.commodity_income[Commodity::Ore] = 3;
+
+        //
+        let k2 = k1.next_turn(&turn_state);
+
+        //
+        assert!(k2.commodity_stores[Commodity::Food] == 1 + 1);
+        assert!(k2.commodity_stores[Commodity::Ore]  == 0 + 3);
+    }
 
     #[test]
     fn xp_increase_reflected_in_diff() {
