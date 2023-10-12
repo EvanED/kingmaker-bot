@@ -1,3 +1,18 @@
 Generate RP
 Apply Fame at start of Turn
 Roll Random Event
+
+
+Next Turn does not clear RP
+Maybe success on Prog. says critical success in die roll
+
+Take charge -- record skill in description
+Take charge -- offer best choice
+
+Record commodity increase at start of turn (# mines, etc.)
+Track whether traded commodities (for crit fail)
+Failure on Trade Commodities adds a bonus RP die
+Track Celebrate Holiday for DC
+Celebrate Holiday crit success is... not right
+
+Move `/act next-turn` to a GM command
