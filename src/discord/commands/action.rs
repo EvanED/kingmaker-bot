@@ -11,6 +11,7 @@ use std::str::FromStr;
     subcommands(
         // Commerce phase
         "collect_taxes",
+        "decline_to_collect_taxes",
         "improve_lifestyle",
         "trade_commodities",
         // Action phase, leadership actions
@@ -70,6 +71,16 @@ pub async fn make_move<F>(ctx: Context<'_>, desc: &str, turn_func: F) -> Result<
 )]
 pub async fn collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
     make_move(ctx, "Collect Taxes", &collect_taxes::collect_taxes).await
+}
+
+/// A subcommand of `parent`
+#[poise::command(
+    prefix_command,
+    slash_command,
+    rename="decline-to-collect-taxes",
+)]
+pub async fn decline_to_collect_taxes(ctx: Context<'_>) -> Result<(), Error> {
+    make_move(ctx, "Decline To Collect Taxes", &collect_taxes::decline_to_collect).await
 }
 
 /// A subcommand of `parent`
