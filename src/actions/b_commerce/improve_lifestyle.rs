@@ -1,4 +1,7 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
+use crate::state::KingdomState;
+use crate::rolls::{roll_context::RollContext, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}, roll_result::{self, DegreeOfSuccess, RollResult}};
+use crate::spec::{Kingdom, skills::Skill, attributes::Attribute};
+use crate::turns::TurnState;
 
 pub fn improve_lifestyle(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let crit_success_bonus: Bonus = Bonus {
@@ -39,7 +42,7 @@ pub fn improve_lifestyle(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSta
     
 
     let the_roll = kingdom.roll(Skill::Politics, context);
-    let dc = DC(14); // TODO
+    let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(
         the_roll.natural,

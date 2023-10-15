@@ -3,7 +3,7 @@ use poise::ChoiceParameter;
 use serde::{Serialize, Deserialize};
 use strum_macros::{EnumIter, AsRefStr};
 use strum::IntoEnumIterator;
-use crate::{diff_utils::append_number_change, spec::enum_map_serde, turns::TurnState};
+use crate::{diff_utils::append_number_change, spec::{enum_map_serde, Kingdom}, turns::TurnState, rolls::roll_result::DC};
 use assert2::assert;
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Enum, AsRefStr, /*EnumString,*/ EnumIter, Serialize, Deserialize, ChoiceParameter)]
@@ -29,7 +29,74 @@ pub struct KingdomState {
     pub commodity_stores: EnumMap<Commodity, i8>,
 }
 
+fn level_to_raw_control_dc(level: i8) -> i8 {
+    match level {
+        1  => 14,
+        2  => 15,
+        3  => 16,
+        4  => 18,
+        5  => 20,
+        6  => 22,
+        7  => 23,
+        8  => 24,
+        9  => 26,
+        10 => 27,
+        11 => 28,
+        12 => 30,
+        13 => 31,
+        14 => 32,
+        15 => 34,
+        16 => 35,
+        17 => 36,
+        18 => 38,
+        19 => 39,
+        20 => 40,
+        _  => panic!("Bad level"),
+    }
+}
+
+#[derive(Debug, Clone)]
+enum KingdomSizeCategory {
+    Territory,
+    Province,
+    State,
+    Country,
+    Dominion,
+}
+
+fn size_to_category(size: i8) -> KingdomSizeCategory {
+    use KingdomSizeCategory::*;
+    match size {
+        0..=9         => Territory,
+        10..=24       => Province,
+        25..=49       => State,
+        50..=99       => Country,
+        100..=i8::MAX => Dominion,
+        i8::MIN..=-1  => panic!("You're gonna need a bigger kingdom"),
+    }
+}
+
+fn size_to_control_dc_modifier(size: KingdomSizeCategory) -> i8 {
+    use KingdomSizeCategory::*;
+    match size {
+        Territory  => 0,
+        Province   => 1,
+        State      => 2,
+        Country    => 3,
+        Dominion   => 4,
+    }
+}
+
 impl KingdomState {
+    pub fn control_dc(&self, kingdom: &Kingdom) -> DC {
+        let pre_dc = level_to_raw_control_dc(kingdom.level);
+
+        let size = size_to_category(self.size);
+        let dc_mod = size_to_control_dc_modifier(size);
+
+        DC(pre_dc + dc_mod)
+    }
+
     pub fn max_commodity_store(_c: Commodity) -> i8 {
         4
     }

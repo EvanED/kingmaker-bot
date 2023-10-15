@@ -2,7 +2,7 @@ use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result:
 
 pub fn go_fishing(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Industry, context);
-    let dc = DC(14); // TODO
+    let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(
         the_roll.natural,

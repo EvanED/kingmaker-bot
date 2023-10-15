@@ -1,6 +1,6 @@
 use poise::ChoiceParameter;
 
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
 
 #[derive(Debug, Clone, Copy, ChoiceParameter)]
 pub enum ClaimHexSkill {
@@ -21,7 +21,7 @@ pub fn claim_hex(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, cont
     };
 
     let the_roll = kingdom.roll(skill, context);
-    let dc = DC(14); // TODO
+    let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(
         the_roll.natural,

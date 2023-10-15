@@ -1,10 +1,10 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
 
 pub fn create_a_masterpiece(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Arts, context);
     let d4_1 = context.d4.roll();
     let d4_2 = context.d4.roll();
-        let dc = DC(14); // TODO
+    let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(
         the_roll.natural,

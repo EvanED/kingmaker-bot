@@ -20,9 +20,10 @@ pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSt
     let the_roll = kingdom.roll(Skill::Agriculture, context);
 
     // TODO: Cucumber tests need enhanced for DC change and RP cost (previously it was zero cost)
+    let control_dc = state.control_dc(kingdom);
     let dc = match hex_type {
-        HexType::Plains => DC(14),
-        HexType::Hills  => DC(14 + 5),
+        HexType::Plains => control_dc,
+        HexType::Hills  => DC(control_dc.0 + 5),
     };
     let rp_cost = match hex_type {
         HexType::Plains => 1,
