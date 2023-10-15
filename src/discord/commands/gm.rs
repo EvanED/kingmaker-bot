@@ -175,6 +175,7 @@ async fn rollback(ctx: Context<'_>) -> Result<(), Error> {
     prefix_command,
     slash_command,
     subcommands(
+        "size",
         "xp",
         "unrest",
         "rp",
@@ -211,6 +212,15 @@ fn set_rp(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn
     let mut next_kingdom_state = kingdom_state.clone();
 
     next_kingdom_state.resource_points = changer(next_kingdom_state.resource_points);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_size(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let next_turn_state = turn_state.clone();
+    let mut next_kingdom_state = kingdom_state.clone();
+
+    next_kingdom_state.size = changer(next_kingdom_state.size);
 
     (next_turn_state, next_kingdom_state)
 }
@@ -428,6 +438,14 @@ pub async fn do_set_i16<F>(
     ctx.reply(text).await?;
 
     Ok(())
+}
+
+#[poise::command(slash_command, prefix_command)]
+async fn size(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_size, "GM set Size").await
 }
 
 #[poise::command(slash_command, prefix_command)]

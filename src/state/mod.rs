@@ -19,6 +19,8 @@ pub enum Commodity {
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct KingdomState {
     #[serde(default)]
+    pub size: i8,
+    #[serde(default)]
     pub xp: i16,
     pub unrest: i8,
     pub resource_points: i8,  // More?
@@ -45,6 +47,7 @@ impl KingdomState {
     pub fn diff(&self, other: &KingdomState) -> Vec<String> {
         let mut diffs = Vec::new();
 
+        append_number_change(&mut diffs, "Size", self.size, other.size);
         append_number_change(&mut diffs, "XP", self.xp, other.xp);
         append_number_change(&mut diffs, "Unrest", self.unrest, other.unrest);
         append_number_change(&mut diffs, "RP", self.resource_points, other.resource_points);
@@ -67,12 +70,14 @@ impl KingdomState {
             "
 ## Current Kingdom State
 
+**Size:** {}  \n\
 **XP:** {}  \n\
 **Unrest:** {}  \n\
 **Resource Points:** {}  \n\
 **Fame Points:** {}
 **Commodities:** Food {}, Lumber {}, Luxuries {}, Ore {}, Stone {}
             ",
+            self.size,
             self.xp,
             self.unrest,
             self.resource_points,
@@ -219,6 +224,9 @@ mod tests {
         let mut k1 = KingdomState::default();
         let mut k2 = KingdomState::default();
 
+        k1.size = 5;
+        k2.size = 6;
+
         k1.unrest = 3;
         k2.unrest = 4;
 
@@ -232,6 +240,7 @@ mod tests {
         let diff = k1.diff(&k2);
         assert!(
             diff == vec![
+                "Size increased from 5 to 6",
                 "Unrest increased from 3 to 4",
                 "Food decreased from 2 to 1",
                 "Ore decreased from 5 to 0",
