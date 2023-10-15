@@ -532,7 +532,7 @@ async fn food_income(
     ctx: Context<'_>,
     change: String,
 ) -> Result<(), Error> {
-    do_set(ctx, change, set_stone_income, "GM set Food income").await
+    do_set(ctx, change, set_food_income, "GM set Food income").await
 }
 
 #[poise::command(
@@ -544,7 +544,7 @@ async fn lumber_income(
     ctx: Context<'_>,
     change: String,
 ) -> Result<(), Error> {
-    do_set(ctx, change, set_stone_income, "GM set Lumber income").await
+    do_set(ctx, change, set_lumber_income, "GM set Lumber income").await
 }
 
 #[poise::command(
@@ -556,7 +556,7 @@ async fn ore_income(
     ctx: Context<'_>,
     change: String,
 ) -> Result<(), Error> {
-    do_set(ctx, change, set_stone_income, "GM set Ore income").await
+    do_set(ctx, change, set_ore_income, "GM set Ore income").await
 }
 
 #[poise::command(
