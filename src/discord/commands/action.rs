@@ -191,7 +191,8 @@ pub async fn take_charge(
         take_charge::take_charge(kingdom, turn, state, context, skill)
     };
 
-    make_move(ctx, "Take Charge", closure).await
+    let desc = format!("Take Charge ({skill:?})");
+    make_move(ctx, &desc, closure).await
 }
 
 /////////////////////////////////////////////////

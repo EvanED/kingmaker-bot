@@ -6,7 +6,6 @@ Roll Random Event
 Next Turn does not clear RP
 Maybe success on Prog. says critical success in die roll
 
-Take charge -- record skill in description
 Take charge -- offer best choice
 
 Record commodity increase at start of turn (# mines, etc.)
