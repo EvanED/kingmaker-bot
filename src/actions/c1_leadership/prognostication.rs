@@ -15,12 +15,17 @@ pub fn prognosticate(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, 
         DegreeOfSuccess::Success         => 1,
         _                                => 0,
     };
-    let crit_success_bonus = Bonus {
+    let reason = match degree {
+        DegreeOfSuccess::CriticalSuccess => "critical success on Prognostication",
+        DegreeOfSuccess::Success         => "success on Prognostication",
+        _                                => "YOU SHOULD NOT SEE THIS (Prognostication)",
+    };
+    let success_bonus = Bonus {
         type_: BonusType::Circumstance,
         applies_to: AppliesTo::RandomEventResolutions,
         applies_until: AppliesUntil::StartOfTheNextTurn,  // FIXME: End of this turn vs start of next?
         modifier,
-        reason: "critical success on Prognostication".to_string(),
+        reason: reason.to_string(),
     };
 
     let event_selection = match degree {
@@ -32,8 +37,8 @@ pub fn prognosticate(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, 
     let next_kingdom_state = state.clone();
     
     let mut next_turn_state = turn.clone();
-    if crit_success_bonus.modifier >= 1 {
-        next_turn_state.bonuses.push(crit_success_bonus);
+    if success_bonus.modifier >= 1 {
+        next_turn_state.bonuses.push(success_bonus);
     }
     assert!(next_turn_state.random_event_selection_method.is_none());
     next_turn_state.random_event_selection_method = event_selection;

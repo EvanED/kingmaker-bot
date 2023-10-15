@@ -15,7 +15,7 @@ Feature: Activity Phase, Step 1 (Leadership) -- Prognostication
         And random kingdom event selection will be normal
         And a die roll of 15
         When I Prognosticate
-        Then there is a +1 circumstance bonus to The Event until the end of the turn, because "critical success on Prognostication"
+        Then there is a +1 circumstance bonus to The Event until the end of the turn, because "success on Prognostication"
         And random kingdom event selection is normal
 
     Scenario: Prognostication fails
