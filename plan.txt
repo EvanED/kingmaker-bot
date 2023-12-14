@@ -1,3 +1,13 @@
+Clear Hex action
+Build Roads action
+Establish Work Site action
+Celebrate Holiday effects wrong
+Size penalty to DC (?)
+
+All critical successes should give +1 fame
+
+Track random event DC turn to turn
+
 Generate RP
 Apply Fame at start of Turn
 Roll Random Event
