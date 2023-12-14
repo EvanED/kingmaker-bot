@@ -2,67 +2,37 @@ Feature: Activity Phase, Step 1 (Leadership) -- Celebrate Holiday
 
     Scenario: Celebrate Holiday critically succeeds
         Given the kingdom Aryc at level 1
-        And the kingdom has 1 Fame point
-        And the kingdom is not scheduled to gain a Fame point at the start of next turn
-        And the kingdom has 1 RP
-        And we have 1 Unrest
+        And the kingdom has 10 RP
         And a die roll of 20
-        And the next d4 rolls are 3
         When I Celebrate Holiday
-        Then Fame points went up to 2
-        And the kingdom will gain one additional Fame point next turn
-        And RP went up to 7
-        And Unrest is still 1
+        Then there is a +2 circumstance bonus to Loyalty until the end of the next turn, because "critical success celebrating holiday"
+        And RP is still 10
 
     Scenario: Celebrate Holiday succeeds
         Given the kingdom Aryc at level 1
-        And the kingdom has 1 Fame point
-        And the kingdom is not scheduled to gain a Fame point at the start of next turn
-        And the kingdom has 1 RP
-        And we have 1 Unrest
+        And the kingdom has 10 RP
         And a die roll of 15
+        And the next d4 rolls are 3
         When I Celebrate Holiday
-        Then Fame points went up to 2
-        And the kingdom will not gain one additional Fame point next turn
-        And RP is still 1
-        And Unrest is still 1
+        Then there is a +1 circumstance bonus to Loyalty until the end of the next turn, because "success celebrating holiday"
+        And RP went down to 7
 
     Scenario: Celebrate Holiday fails
         Given the kingdom Aryc at level 1
-        And the kingdom has 1 Fame point
-        And the kingdom is not scheduled to gain a Fame point at the start of next turn
-        And the kingdom has 1 RP
-        And we have 1 Unrest
+        And the kingdom has 10 RP
         And a die roll of 5
+        And the next d4 rolls are 3
         When I Celebrate Holiday
-        Then Fame points is still 1
-        And the kingdom will not gain one additional Fame point next turn
-        And RP is still 1
-        And Unrest is still 1
+        Then RP went down to 7
+        And there are no remaining bonuses
 
     Scenario: Celebrate Holiday critically fails
         Given the kingdom Aryc at level 1
-        And the kingdom has 2 Fame points
-        And the kingdom is not scheduled to gain a Fame point at the start of next turn
-        And the kingdom has 1 RP
-        And we have 1 Unrest
+        And the kingdom has 10 RP
         And a die roll of 1
         When I Celebrate Holiday
-        Then Fame points went down to 1
-        And the kingdom will not gain one additional Fame point next turn
-        And RP is still 1
-        And Unrest is still 1
+        Then there is a -1 circumstance penalty to Loyalty until the end of the next turn, because "critical failure celebrating holiday"
+        And there is 1 requirement
+        And "there is a penalty of 4 resource dice next turn" is a requirement
 
-    Scenario: Celebrate Holiday critically fails, and the RP cost is unaffordable
-        Given the kingdom Aryc at level 1
-        And the kingdom has 0 Fame points
-        And the kingdom is not scheduled to gain a Fame point at the start of next turn
-        And the kingdom has 1 RP
-        And we have 1 Unrest
-        And a die roll of 1
-        And the next d4 rolls are 3
-        When I Celebrate Holiday
-        Then Fame points is still 0
-        And the kingdom will not gain one additional Fame point next turn
-        And RP is still 1
-        And Unrest went up to 4
+# TODO: Test cases for when the RP cost on success/failure is unaffordable

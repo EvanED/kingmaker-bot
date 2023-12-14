@@ -41,6 +41,16 @@ impl DegreeOfSuccess {
         }
     }
 
+    pub fn lowercase_description(self) -> &'static str {
+        use DegreeOfSuccess::*;
+        match self {
+            CriticalSuccess => "critical success",
+            Success         => "success",
+            Failure         => "failure",
+            CriticalFailure => "critical failure",
+        }
+    }
+
     pub fn improve(&self) -> DegreeOfSuccess {
         use DegreeOfSuccess::*;
         match self {

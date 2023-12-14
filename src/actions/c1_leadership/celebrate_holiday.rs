@@ -1,9 +1,8 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}, bonus::Bonus}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
 
 pub fn celebrate_holiday(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(Skill::Industry, context);
-    let d4_1 = context.d4.roll();
-    let d4_2 = context.d4.roll();
+    let d4 = context.d4.roll();
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(
@@ -11,36 +10,38 @@ pub fn celebrate_holiday(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSta
         the_roll.total,
         dc,
     );
-    
-    let gain_1_fame_or_infamy_point_immediately = match degree {
-        DegreeOfSuccess::CriticalSuccess => 1,
-        DegreeOfSuccess::Success         => 1,
-        DegreeOfSuccess::Failure         => 0,
+
+    let loyalty_bonus = match degree {
+        DegreeOfSuccess::CriticalSuccess =>  2,
+        DegreeOfSuccess::Success         =>  1,
+        DegreeOfSuccess::Failure         =>  0,
         DegreeOfSuccess::CriticalFailure => -1,
     };
 
-    let at_the_start_of_your_next_kingdom_turn_gain_1_additional_fame_or_infamy_point = match degree {
-        DegreeOfSuccess::CriticalSuccess => 1,
-        _                                => 0,
-    };
-
-    let roll_2_recource_dice_gain_rp_equal_to_the_result = match degree {
-        DegreeOfSuccess::CriticalSuccess => d4_1 + d4_2,
-        _                                => 0,
+    let roll_a_recource_dice_spend_rp_equal_to_the_result = match degree {
+        DegreeOfSuccess::CriticalSuccess => 0,
+        _                                => d4,
     };
 
     let mut next_turn_state = turn.clone();
-    next_turn_state.additional_fame_points_scheduled += at_the_start_of_your_next_kingdom_turn_gain_1_additional_fame_or_infamy_point;
+    if loyalty_bonus != 0 {
+        let bonus = Bonus {
+            type_: crate::rolls::bonus::BonusType::Circumstance,
+            applies_to: crate::rolls::bonus::AppliesTo::Attribute(Attribute::Loyalty),
+            applies_until: crate::rolls::bonus::AppliesUntil::EndOfTheNextTurn,
+            modifier: loyalty_bonus,
+            reason: format!("{} celebrating holiday", degree.lowercase_description()),
+        };
+        next_turn_state.bonuses.push(bonus);
+    }
+    if degree == DegreeOfSuccess::CriticalFailure {
+        next_turn_state.requirements.push(
+            "there is a penalty of 4 resource dice next turn".to_string()
+        );
+    }
 
     let mut next_kingdom_state = state.clone();
-    next_kingdom_state.fame_points += gain_1_fame_or_infamy_point_immediately;
-    next_kingdom_state.resource_points += roll_2_recource_dice_gain_rp_equal_to_the_result;
-
-    if next_kingdom_state.fame_points < 0 {
-        assert_eq!(degree, DegreeOfSuccess::CriticalFailure);
-        next_kingdom_state.fame_points = 0;
-        next_kingdom_state.unrest += d4_1;
-    }
+    next_kingdom_state.resource_points -= roll_a_recource_dice_spend_rp_equal_to_the_result;
 
     let roll_result = RollResult {
         die_roll: the_roll,

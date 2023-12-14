@@ -52,6 +52,32 @@ fn check_there_are_two_bonuses(world: &mut TestContext) {
     assert!(1 == world.next_turn_state.bonuses.len());
 }
 
+#[then(expr = "there is a +{int} circumstance bonus to Loyalty until the end of the next turn, because {string}")]
+fn check_there_is_circumstance_bonus_to_loyalty_until_end_of_the_next_turn(world: &mut TestContext, modifier: i32, reason: String) {
+    assert!(1 == world.next_turn_state.bonuses.len());
+
+    let bonus = &world.next_turn_state.bonuses[0];
+    assert!(bonus.type_ == BonusType::Circumstance);
+    assert!(bonus.applies_to == AppliesTo::Attribute(Attribute::Loyalty));
+    assert!(bonus.applies_until == AppliesUntil::EndOfTheNextTurn);
+    assert!(bonus.modifier as i32 == modifier);
+    assert!(bonus.reason == reason);
+}
+
+#[then(expr = "there is a -{int} circumstance penalty to Loyalty until the end of the next turn, because {string}")]
+fn check_there_is_circumstance_penalty_to_loyalty_until_end_of_the_next_turn(world: &mut TestContext, modifier: i32, reason: String) {
+    assert!(1 == world.next_turn_state.bonuses.len());
+
+    let bonus = &world.next_turn_state.bonuses[0];
+    assert!(bonus.type_ == BonusType::Circumstance);
+    assert!(bonus.applies_to == AppliesTo::Attribute(Attribute::Loyalty));
+    assert!(bonus.applies_until == AppliesUntil::EndOfTheNextTurn);
+    assert!(bonus.modifier as i32 == -modifier);
+    assert!(bonus.reason == reason);
+}
+
+
+
 #[then(expr = "there is a +{int} circumstance bonus to Economy until the end of the turn, because {string}")]
 fn check_there_is_plus2_circumstance_bonus_to_economy_until_end_of_the_turn(world: &mut TestContext, modifier: i32, reason: String) {
     assert!(1 == world.next_turn_state.bonuses.len());
