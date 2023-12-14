@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday, supernatural_solution, prognostication, create_a_masterpiece}, c2_region::{go_fishing, establish_farmland, claim_hex::{self, ClaimHexSkill}}, c3_civic::build_structure}, state::Commodity, spec::skills::Skill};
+use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday, supernatural_solution, prognostication, create_a_masterpiece}, c2_region::{go_fishing, establish_farmland, claim_hex::{self, ClaimHexSkill}, build_roads}, c3_civic::build_structure}, state::Commodity, spec::skills::Skill};
 
 use crate::context::TestContext;
 
@@ -214,6 +214,19 @@ fn when_i_build_a_bridge(world: &mut TestContext) {
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         build_structure::Structure::Bridge,
+    );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
+}
+
+#[when("I Build Roads on plains")]
+fn when_i_build_roads(world: &mut TestContext) {
+    let triple = build_roads::build_roads(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        build_roads::TerrainType::Plains,
     );
     (_, world.next_turn_state, world.kingdom_state) = triple;
     world.roll_result = Some(triple.0);
