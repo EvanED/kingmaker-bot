@@ -470,7 +470,9 @@ async fn unrest(
     ctx: Context<'_>,
     change: String,
 ) -> Result<(), Error> {
-    do_set(ctx, change, set_unrest, "GM set Unrest").await
+    let ans = do_set(ctx, change, set_unrest, "GM set Unrest").await;
+    let _ = ctx.reply("If you have increased unrest because of an event in Safe Harbor, remember to reduce the decrease by 1 because of the Cemetery there!").await;
+    ans
 }
 
 #[poise::command(slash_command, prefix_command)]
