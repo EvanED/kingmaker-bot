@@ -219,14 +219,33 @@ fn when_i_build_a_bridge(world: &mut TestContext) {
     world.roll_result = Some(triple.0);
 }
 
-#[when("I Build Roads on plains")]
-fn when_i_build_roads(world: &mut TestContext) {
+#[when(expr = "I Build Roads on {string}")]
+fn when_i_build_roads(world: &mut TestContext, terrain: String) {
+
+    let terrain = build_roads::TerrainType::from_string(&terrain).unwrap();
+
     let triple = build_roads::build_roads(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
-        build_roads::TerrainType::Plains,
+        terrain,
+    );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
+}
+
+#[when(expr = "I Build Roads on plains")]
+fn when_i_build_roads2(world: &mut TestContext) {
+
+    let terrain = build_roads::TerrainType::Plains;
+
+    let triple = build_roads::build_roads(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        terrain,
     );
     (_, world.next_turn_state, world.kingdom_state) = triple;
     world.roll_result = Some(triple.0);

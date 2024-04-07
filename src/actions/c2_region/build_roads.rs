@@ -10,6 +10,18 @@ pub enum TerrainType {
 }
 
 impl TerrainType {
+    pub fn from_string(s: &str) -> Option<TerrainType> {
+        use TerrainType::*;
+        return match s {
+            "plains"    => Some(Plains),
+            "hills"     => Some(Hills),
+            "forest"    => Some(Forest),
+            "swamp"     => Some(Swamp),
+            "mountains" => Some(Mountains),
+            _           => None,
+        }
+    }
+
     pub fn rp_cost(self) -> i8 {
         use TerrainType::*;
         match self {
