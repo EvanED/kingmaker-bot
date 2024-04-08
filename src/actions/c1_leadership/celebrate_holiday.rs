@@ -1,7 +1,7 @@
 use crate::{rolls::{bonus::{self, Bonus}, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{attributes::Attribute, skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
 
 pub fn celebrate_holiday(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
-    let the_roll = kingdom.roll(bonus::KingdomAction::CelebrateHoliday, Skill::Industry, context);
+    let the_roll = kingdom.roll(state, bonus::KingdomAction::CelebrateHoliday, Skill::Industry, context);
     let d4 = context.d4.roll();
     let dc = state.control_dc(kingdom);
 

@@ -51,7 +51,7 @@ pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, 
     };
     
 
-    let the_roll = kingdom.roll(bonus::KingdomAction::CollectTaxes, Skill::Trade, context);
+    let the_roll = kingdom.roll(state, bonus::KingdomAction::CollectTaxes, Skill::Trade, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

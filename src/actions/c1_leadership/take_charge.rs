@@ -16,7 +16,7 @@ pub fn take_charge(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, co
         reason: "critical failure on Take Charge".to_string(),
     };
 
-    let the_roll = kingdom.roll(bonus::KingdomAction::TakeCharge, Skill::Industry, context);
+    let the_roll = kingdom.roll(state, bonus::KingdomAction::TakeCharge, Skill::Industry, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

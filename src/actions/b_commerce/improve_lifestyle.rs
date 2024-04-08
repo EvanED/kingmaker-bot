@@ -42,7 +42,7 @@ pub fn improve_lifestyle(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSta
     };
     
 
-    let the_roll = kingdom.roll(KingdomAction::ImproveLifestyle, Skill::Politics, context);
+    let the_roll = kingdom.roll(state, KingdomAction::ImproveLifestyle, Skill::Politics, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

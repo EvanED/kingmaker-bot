@@ -1,7 +1,6 @@
 Clear Hex action
 Build Roads action
 Establish Work Site action
-Size penalty to DC -- YES, needs done
 Unrest penalty to DC -- YES, needs done
 
 All critical successes should give +1 fame
@@ -34,3 +33,10 @@ Track Celebrate Holiday for DC
 Celebrate Holiday crit success is... not right
 
 Move `/act next-turn` to a GM command
+
+
+
+NOT TESTED
+==========
+Tracking of claimed hexes
+Unrest status penalty

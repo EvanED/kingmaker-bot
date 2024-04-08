@@ -17,7 +17,7 @@ pub async fn roll(
 ) -> Result<(), Error> {
     let roll = {
         let state = ctx.data().tracker.lock().unwrap();
-        state.kingdom.roll(bonus::KingdomAction::UNSPECIFIED, skill, &state.context)
+        state.kingdom.roll(&state.turns.last().unwrap().kingdom_state, bonus::KingdomAction::UNSPECIFIED, skill, &state.context)
     };
 
     let skill_str: &'static str = skill.into();

@@ -28,7 +28,7 @@ pub fn claim_hex(
         ClaimHexSkill::Wilderness  => Skill::Wilderness,
     };
 
-    let the_roll = kingdom.roll(bonus::KingdomAction::ClaimHex, skill, context);
+    let the_roll = kingdom.roll(state, bonus::KingdomAction::ClaimHex, skill, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

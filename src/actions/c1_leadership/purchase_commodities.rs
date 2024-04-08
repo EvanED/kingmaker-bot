@@ -1,7 +1,7 @@
 use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{skills::Skill, Kingdom}, state::{Commodity, KingdomState}, turns::TurnState};
 
 pub fn purchase_commodities(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, primary_want: Commodity, secondary_want: Commodity) -> (RollResult, TurnState, KingdomState) {
-    let the_roll = kingdom.roll(bonus::KingdomAction::PurchaseCommodities, Skill::Industry, context);
+    let the_roll = kingdom.roll(state, bonus::KingdomAction::PurchaseCommodities, Skill::Industry, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

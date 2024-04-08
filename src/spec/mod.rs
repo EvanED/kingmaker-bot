@@ -8,6 +8,7 @@ use strum::IntoEnumIterator;
 use crate::rolls::bonus::KingdomAction;
 use crate::rolls::roll_result::{DieRoll, NaturalRoll, TotalRoll};
 use crate::rolls::roll_context::RollContext;
+use crate::state::KingdomState;
 use crate::Markdownable;
 
 pub mod attributes;
@@ -153,7 +154,7 @@ impl Kingdom {
         )
     }
 
-    pub fn roll(&self, action: KingdomAction, skill: Skill, context: &RollContext) -> DieRoll {
+    pub fn roll(&self, state: &KingdomState, action: KingdomAction, skill: Skill, context: &RollContext) -> DieRoll {
         println!("roll({action:?}, ...)");
         for b in &context.bonuses {
             println!("  {}", b.to_markdown());

@@ -1,7 +1,7 @@
 use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{skills::Skill, Kingdom}, state::{Commodity, KingdomState}, turns::TurnState};
 
 pub fn go_fishing(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
-    let the_roll = kingdom.roll(bonus::KingdomAction::GoFishing, Skill::Boating, context);
+    let the_roll = kingdom.roll(state, bonus::KingdomAction::GoFishing, Skill::Boating, context);
     let d4 = context.d4.roll();
     let dc = state.control_dc(kingdom);
 

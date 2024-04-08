@@ -46,7 +46,7 @@ impl TerrainType {
 }
 
 pub fn build_roads(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, terrain: TerrainType) -> (RollResult, TurnState, KingdomState) {
-    let the_roll = kingdom.roll(bonus::KingdomAction::BuildRoads, Skill::Engineering, context);
+    let the_roll = kingdom.roll(state, bonus::KingdomAction::BuildRoads, Skill::Engineering, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

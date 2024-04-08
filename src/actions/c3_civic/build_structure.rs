@@ -181,7 +181,7 @@ pub fn build_structure_from_stats(
     other_commodity_cost: OtherCommodityCost,
 ) -> (RollResult, TurnState, KingdomState)
 {
-    let the_roll = kingdom.roll(bonus::KingdomAction::BuildStructure, skill, context);
+    let the_roll = kingdom.roll(state, bonus::KingdomAction::BuildStructure, skill, context);
 
     let degree = roll_result::rate_success(
         the_roll.natural,
