@@ -5,8 +5,10 @@ use enum_map::{EnumMap, EnumArray};
 use serde::de::{Visitor, MapAccess};
 use serde::{Serialize, Deserialize};
 use strum::IntoEnumIterator;
+use crate::rolls::bonus::KingdomAction;
 use crate::rolls::roll_result::{DieRoll, NaturalRoll, TotalRoll};
 use crate::rolls::roll_context::RollContext;
+use crate::Markdownable;
 
 pub mod attributes;
 use self::attributes::Attribute;
@@ -151,7 +153,11 @@ impl Kingdom {
         )
     }
 
-    pub fn roll(&self, skill: Skill, context: &RollContext) -> DieRoll {
+    pub fn roll(&self, action: KingdomAction, skill: Skill, context: &RollContext) -> DieRoll {
+        println!("roll({action:?}, ...)");
+        for b in &context.bonuses {
+            println!("  {}", b.to_markdown());
+        }
         let attribute = skill.attribute();
         let attribute_mod = self.attributes[attribute];
 
@@ -163,7 +169,7 @@ impl Kingdom {
         let mut bonuses_mod: i8 = 0;
         let mut bonuses_desc = String::new();
         for bonus in applicable_bonuses.iter() {
-            if bonus.applies(attribute, skill) {
+            if bonus.applies(attribute, skill, action) {
                 bonuses_mod += bonus.modifier;
                 bonuses_desc.push_str(
                     format!(" + {} ({})", bonus.modifier, bonus.reason).as_str()

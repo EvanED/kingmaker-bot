@@ -2,6 +2,7 @@
 
 use crate::discord::Context;
 use crate::discord::Error;
+use crate::rolls::bonus;
 use crate::spec::skills::Skill;
 
 /// Roll a skill*
@@ -16,7 +17,7 @@ pub async fn roll(
 ) -> Result<(), Error> {
     let roll = {
         let state = ctx.data().tracker.lock().unwrap();
-        state.kingdom.roll(skill, &state.context)
+        state.kingdom.roll(bonus::KingdomAction::UNSPECIFIED, skill, &state.context)
     };
 
     let skill_str: &'static str = skill.into();

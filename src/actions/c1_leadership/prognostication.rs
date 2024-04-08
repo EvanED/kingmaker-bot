@@ -1,7 +1,7 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}, bonus::{AppliesTo, AppliesUntil, BonusType, Bonus}}, spec::{Kingdom, skills::Skill}, turns::{TurnState, RandomEventSelectionMethod}};
+use crate::{rolls::{bonus::{self, AppliesTo, AppliesUntil, Bonus, BonusType}, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{skills::Skill, Kingdom}, state::KingdomState, turns::{RandomEventSelectionMethod, TurnState}};
 
 pub fn prognosticate(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
-    let the_roll = kingdom.roll(Skill::Industry, context);
+    let the_roll = kingdom.roll(bonus::KingdomAction::Prognostication, Skill::Industry, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

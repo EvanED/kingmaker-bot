@@ -1,7 +1,7 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
 
 pub fn supernatural_solution(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
-    let the_roll = kingdom.roll(Skill::Industry, context);
+    let the_roll = kingdom.roll(bonus::KingdomAction::SupernaturalSolution, Skill::Industry, context);
     let d4 = context.d4.roll();
     let d6_1 = context.d6.roll();
     let d6_2 = context.d6.roll();

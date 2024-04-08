@@ -1,4 +1,4 @@
-use crate::{spec::{Kingdom, skills::Skill}, turns::TurnState, state::KingdomState, rolls::{roll_context::RollContext, roll_result::{self, RollResult}}, discord::commands::action::next_turn};
+use crate::{discord::commands::action::next_turn, rolls::{bonus, roll_context::RollContext, roll_result::{self, RollResult}}, spec::{skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
 
 #[derive(Clone,Copy,Debug)]
 pub enum TerrainType {
@@ -46,7 +46,7 @@ impl TerrainType {
 }
 
 pub fn build_roads(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, terrain: TerrainType) -> (RollResult, TurnState, KingdomState) {
-    let the_roll = kingdom.roll(Skill::Engineering, context);
+    let the_roll = kingdom.roll(bonus::KingdomAction::BuildRoads, Skill::Engineering, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

@@ -1,6 +1,6 @@
 use poise::ChoiceParameter;
 
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult, DC}}, spec::{skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ChoiceParameter)]
 pub enum HexType {
@@ -17,7 +17,7 @@ pub fn claim_second_hex_message(hex_type: HexType) -> String {
 }
 
 pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, hex_type: HexType) -> (RollResult, TurnState, KingdomState) {
-    let the_roll = kingdom.roll(Skill::Agriculture, context);
+    let the_roll = kingdom.roll(bonus::KingdomAction::EstablishFarmland, Skill::Agriculture, context);
 
     // TODO: Cucumber tests need enhanced for DC change and RP cost (previously it was zero cost)
     let control_dc = state.control_dc(kingdom);

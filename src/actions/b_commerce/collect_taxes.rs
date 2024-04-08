@@ -1,4 +1,4 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, bonus::{Bonus, BonusType, AppliesTo, AppliesUntil}, roll_result::{DC, self, DegreeOfSuccess, RollResult, DieRoll, NaturalRoll, TotalRoll}}, spec::{Kingdom, skills::Skill, attributes::Attribute}, turns::TurnState};
+use crate::{rolls::{bonus::{self, AppliesTo, AppliesUntil, Bonus, BonusType}, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, DieRoll, NaturalRoll, RollResult, TotalRoll, DC}}, spec::{attributes::Attribute, skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
 use std::cmp;
 
 pub fn decline_to_collect(_kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext) -> (RollResult, TurnState, KingdomState) {
@@ -51,7 +51,7 @@ pub fn collect_taxes(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, 
     };
     
 
-    let the_roll = kingdom.roll(Skill::Trade, context);
+    let the_roll = kingdom.roll(bonus::KingdomAction::CollectTaxes, Skill::Trade, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

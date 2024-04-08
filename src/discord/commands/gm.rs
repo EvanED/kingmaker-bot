@@ -51,7 +51,7 @@ async fn add_bonus(
 
     ////////////////////////////////////////
 
-    action::make_move(
+    let _ = action::make_move(
         ctx,
         "GM manually added bonus",
         |_, turn, kingdom_state, _| {

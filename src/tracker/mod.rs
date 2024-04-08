@@ -103,6 +103,8 @@ impl OverallState {
     {
         println!("make_move({description}, ...)");
         let starting_state = self.turns.last().unwrap();
+
+        self.context.bonuses = starting_state.turn_state.bonuses.clone();
     
         let (roll_result, next_turn_state, next_kingdom_state) = turn_func(
             &self.kingdom,

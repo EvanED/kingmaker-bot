@@ -1,4 +1,4 @@
-use crate::{state::KingdomState, rolls::{roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}, bonus::{AppliesUntil, Bonus, BonusType, AppliesTo}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{rolls::{bonus::{self, AppliesTo, AppliesUntil, Bonus, BonusType}, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
 
 pub fn take_charge(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, skill: Skill) -> (RollResult, TurnState, KingdomState) {
     let crit_success_bonus = Bonus {
@@ -16,7 +16,7 @@ pub fn take_charge(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, co
         reason: "critical failure on Take Charge".to_string(),
     };
 
-    let the_roll = kingdom.roll(Skill::Industry, context);
+    let the_roll = kingdom.roll(bonus::KingdomAction::TakeCharge, Skill::Industry, context);
     let dc = state.control_dc(kingdom);
 
     let degree = roll_result::rate_success(

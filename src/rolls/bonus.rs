@@ -4,7 +4,7 @@ use strum_macros::AsRefStr;
 use std::{fmt::Write, str::FromStr};
 use strum_macros::EnumString;
 
-use crate::{spec::{attributes, skills}, Markdownable};
+use crate::{spec::{attributes, skills, Kingdom}, Markdownable};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Serialize, Deserialize, ChoiceParameter)]
 pub enum BonusType {
@@ -16,13 +16,42 @@ pub enum BonusType {
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, EnumString)]
 #[strum(serialize_all = "kebab-case", ascii_case_insensitive)]
 pub enum KingdomAction {
+    BuildRoads,
+    BuildStructure,
+    CelebrateHoliday,
     ClaimHex,
+    CollectTaxes,
+    CreateAMasterpiece,
+    EstablishFarmland,
+    GoFishing,
+    ImproveLifestyle,
+    Prognostication,
+    PurchaseCommodities,
+    SupernaturalSolution,
+    TakeCharge,
+    TradeCommodities,
+    UNSPECIFIED,
 }
 
 impl KingdomAction {
     fn to_markdown(self) -> &'static str {
+        use KingdomAction::*;
         match self {
-            KingdomAction::ClaimHex => "Claim Hex actions",
+            BuildRoads           => "Build Roads action",
+            BuildStructure       => "Build Structure action",
+            CelebrateHoliday     => "celebrate Holiday action",
+            ClaimHex             => "Claim Hex action",
+            CollectTaxes         => "Collect Taxes action",
+            CreateAMasterpiece   => "Create A Masterpiece action",
+            EstablishFarmland    => "Establish Farmland action",
+            GoFishing            => "Go Fishing action",
+            ImproveLifestyle     => "Improve Lifestyle action",
+            Prognostication      => "Prognostication action",
+            PurchaseCommodities  => "Purchase Commodities action",
+            SupernaturalSolution => "Supernatural Solution action",
+            TakeCharge           => "Take Charge action",
+            TradeCommodities     => "Trade Commodities action",
+            UNSPECIFIED          => "<Unspecified kingdom action",
         }
     }
 }
@@ -122,18 +151,18 @@ impl Bonus {
         ).unwrap();
     }
 
-    pub fn applies(&self, attribute: attributes::Attribute, skill: skills::Skill) -> bool {
+    pub fn applies(&self, attribute: attributes::Attribute, skill: skills::Skill, action: KingdomAction) -> bool {
         match self.applies_to {
             AppliesTo::Attribute(a) => a == attribute,
             AppliesTo::Skill(s)         => s == skill,
-            AppliesTo::KingdomAction(a) => false, // FIXME... what?
+            AppliesTo::KingdomAction(a) => a == action, // FIXME... what?
             AppliesTo::RandomEventResolutions  => false,            // TODO... what?
         }
     }
 
-    pub fn expires_from_roll(&self, attribute: attributes::Attribute, skill: skills::Skill) -> bool {
+    pub fn expires_from_roll(&self, attribute: attributes::Attribute, skill: skills::Skill, action: KingdomAction) -> bool {
         match self.applies_until {
-            AppliesUntil::NextApplicableRoll => self.applies(attribute, skill),
+            AppliesUntil::NextApplicableRoll => self.applies(attribute, skill, action),
             AppliesUntil::StartOfTheNextTurn => false,
             AppliesUntil::EndOfTheNextTurn   => false,
             AppliesUntil::Forever            => false,
@@ -154,10 +183,10 @@ impl Bonus {
     }
 }
 
-pub fn filter_from_roll(bonuses: &Vec<Bonus>, attribute: attributes::Attribute, skill: skills::Skill) -> Vec<Bonus> {
+pub fn filter_from_roll(action: KingdomAction, bonuses: &Vec<Bonus>, attribute: attributes::Attribute, skill: skills::Skill) -> Vec<Bonus> {
     bonuses.iter()
         .filter(
-            |bonus| !bonus.expires_from_roll(attribute, skill)
+            |bonus| !bonus.expires_from_roll(attribute, skill, action)
         )
         .map(|bonus| bonus.clone())
         .collect()

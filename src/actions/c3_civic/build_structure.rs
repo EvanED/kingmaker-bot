@@ -3,7 +3,7 @@ use serde::{Serialize, Deserialize};
 use strum::IntoEnumIterator;
 use strum_macros::{EnumIter, EnumString, IntoStaticStr};
 
-use crate::{state::{KingdomState, Commodity}, rolls::{roll_context::RollContext, roll_result::{DC, self, DegreeOfSuccess, RollResult}}, spec::{Kingdom, skills::Skill}, turns::TurnState};
+use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult, DC}}, spec::{skills::Skill, Kingdom}, state::{Commodity, KingdomState}, turns::TurnState};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, IntoStaticStr, EnumString, EnumIter, Enum, Serialize, Deserialize)]
 pub enum Structure {
@@ -181,7 +181,7 @@ pub fn build_structure_from_stats(
     other_commodity_cost: OtherCommodityCost,
 ) -> (RollResult, TurnState, KingdomState)
 {
-    let the_roll = kingdom.roll(skill, context);
+    let the_roll = kingdom.roll(bonus::KingdomAction::BuildStructure, skill, context);
 
     let degree = roll_result::rate_success(
         the_roll.natural,

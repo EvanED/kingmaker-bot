@@ -14,7 +14,6 @@ Roll Random Event
 
 Ruins (crime and decay for Aryc at 2 each)
 
-Implent +2 circ. to Claim Hex for Expansion Export
 Implement Quick Recovery feat
 Implement unrest features
 
