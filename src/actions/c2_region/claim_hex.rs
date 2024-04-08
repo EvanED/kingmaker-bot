@@ -1,6 +1,6 @@
 use poise::ChoiceParameter;
 
-use crate::{discord::commands::action::next_turn, rolls::{bonus::{self, AppliesTo, AppliesUntil, Bonus, BonusType}, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{attributes::Attribute, skills::Skill, Kingdom}, state::{HexCoordinate, KingdomState}, turns::TurnState};
+use crate::{rolls::{bonus::{self, AppliesTo, AppliesUntil, Bonus, BonusType}, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{attributes::Attribute, skills::Skill, Kingdom}, state::{HexCoordinate, KingdomState}, turns::TurnState};
 
 #[derive(Debug, Clone, Copy, ChoiceParameter)]
 pub enum ClaimHexSkill {

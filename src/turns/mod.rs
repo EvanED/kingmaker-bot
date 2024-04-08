@@ -1,6 +1,6 @@
 use std::cmp;
 
-use enum_map::{EnumMap,enum_map};
+use enum_map::EnumMap;
 use serde::{Serialize, Deserialize};
 use strum::IntoEnumIterator;
 
@@ -279,6 +279,7 @@ mod tests {
 
     use super::*;
     use assert2::assert;
+    use enum_map::enum_map;
 
     #[test]
     fn commodity_income_changes_reflected_in_text() {

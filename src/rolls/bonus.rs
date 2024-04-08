@@ -4,7 +4,7 @@ use strum_macros::AsRefStr;
 use std::{fmt::Write, str::FromStr};
 use strum_macros::EnumString;
 
-use crate::{spec::{attributes, skills, Kingdom}, Markdownable};
+use crate::{spec::{attributes, skills}, Markdownable};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Serialize, Deserialize, ChoiceParameter)]
 pub enum BonusType {
