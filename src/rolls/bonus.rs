@@ -1,20 +1,37 @@
+use poise::ChoiceParameter;
 use serde::{Serialize, Deserialize};
 use strum_macros::AsRefStr;
-use std::fmt::Write;
+use std::{fmt::Write, str::FromStr};
+use strum_macros::EnumString;
 
 use crate::{spec::{attributes, skills}, Markdownable};
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, AsRefStr, Serialize, Deserialize, ChoiceParameter)]
 pub enum BonusType {
     Circumstance,
     Item,
     Status,
 }
 
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, EnumString)]
+#[strum(serialize_all = "kebab-case", ascii_case_insensitive)]
+pub enum KingdomAction {
+    ClaimHex,
+}
+
+impl KingdomAction {
+    fn to_markdown(self) -> &'static str {
+        match self {
+            KingdomAction::ClaimHex => "Claim Hex actions",
+        }
+    }
+}
+
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AppliesTo {
     Attribute(attributes::Attribute),
     Skill(skills::Skill),
+    KingdomAction(KingdomAction),
     RandomEventResolutions,
 }
 
@@ -24,15 +41,40 @@ impl AppliesTo {
             AppliesTo::Attribute(a) => a.to_markdown(),
             AppliesTo::Skill(s)         => s.to_markdown(),
             AppliesTo::RandomEventResolutions  => "random event rolls",
+            AppliesTo::KingdomAction(a) => a.to_markdown(),
         }
+    }
+
+    pub fn from_string(s: &str) -> Option<AppliesTo> {
+        let x = attributes::Attribute::from_str(s);
+        if x.is_ok() {
+            return Some(AppliesTo::Attribute(x.unwrap()))
+        }
+
+        let x = skills::Skill::from_str(s);
+        if x.is_ok() {
+            return Some(AppliesTo::Skill(x.unwrap()))
+        }
+
+        let x = KingdomAction::from_str(s);
+        if x.is_ok() {
+            return Some(AppliesTo::KingdomAction(x.unwrap()))
+        }
+
+        if s == "RandomEventResolutions" {
+            return Some(AppliesTo::RandomEventResolutions)
+        }
+
+        None
     }
 }
 
-#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize, ChoiceParameter)]
 pub enum AppliesUntil {
     NextApplicableRoll,
     StartOfTheNextTurn,
     EndOfTheNextTurn,
+    Forever,
 }
 
 impl AppliesUntil {
@@ -41,6 +83,7 @@ impl AppliesUntil {
             AppliesUntil::NextApplicableRoll => "the next such roll",
             AppliesUntil::StartOfTheNextTurn => "the start of the next kingdom turn",
             AppliesUntil::EndOfTheNextTurn   => "the end of the next kingdom turn",
+            AppliesUntil::Forever            => "the end of the campaign",
         }
     }
 }
@@ -83,6 +126,7 @@ impl Bonus {
         match self.applies_to {
             AppliesTo::Attribute(a) => a == attribute,
             AppliesTo::Skill(s)         => s == skill,
+            AppliesTo::KingdomAction(a) => false, // FIXME... what?
             AppliesTo::RandomEventResolutions  => false,            // TODO... what?
         }
     }
@@ -92,6 +136,7 @@ impl Bonus {
             AppliesUntil::NextApplicableRoll => self.applies(attribute, skill),
             AppliesUntil::StartOfTheNextTurn => false,
             AppliesUntil::EndOfTheNextTurn   => false,
+            AppliesUntil::Forever            => false,
         }
     }
 
@@ -104,6 +149,7 @@ impl Bonus {
                 reason: self.reason.clone(),
                 ..*self
             }),
+            AppliesUntil::Forever            => Some(self.clone()),
         }
     }
 }

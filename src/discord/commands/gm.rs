@@ -1,6 +1,6 @@
 use std::{fs::{OpenOptions, File}, io::BufReader};
 use poise;
-use crate::{discord::{Context, Error}, rolls::roll_context::RollType, tracker::OverallState, turns::TurnState, state::{KingdomState, Commodity}};
+use crate::{discord::{commands::action, Context, Error}, rolls::{bonus, roll_context::RollType, roll_result::{DegreeOfSuccess, DieRoll, NaturalRoll, RollResult, TotalRoll, DC}}, state::{Commodity, KingdomState}, tracker::OverallState, turns::TurnState};
 
 #[poise::command(
     prefix_command,
@@ -12,11 +12,69 @@ use crate::{discord::{Context, Error}, rolls::roll_context::RollType, tracker::O
         "rollback",
         "set",
         "discharge",
+        "add_bonus",
     ),
     subcommand_required
 )]
 pub async fn gm(_: Context<'_>) -> Result<(), Error> {
     Ok(())
+}
+
+#[poise::command(prefix_command, slash_command, rename="add-bonus")]
+async fn add_bonus(
+    ctx: Context<'_>,
+    type_: bonus::BonusType,
+    applies_to: String,
+    applies_until: bonus::AppliesUntil,
+    modifier: i8,
+    reason: String,
+) -> Result<(), Error> {
+
+    println!("add_bonus {applies_to}");
+
+    let applies_to = bonus::AppliesTo::from_string(&applies_to);
+    if applies_to.is_none() {
+        let _ = ctx.reply("Bad value for applies_to").await;
+        println!("  => none");
+        return Ok(())
+    }
+    let applies_to = applies_to.unwrap();
+    println!("  => {applies_to:?}");
+
+    let bonus = bonus::Bonus {
+        type_: type_,
+        applies_to: applies_to,
+        applies_until: applies_until,
+        modifier: modifier,
+        reason: reason.to_string(),
+    };
+
+    ////////////////////////////////////////
+
+    action::make_move(
+        ctx,
+        "GM manually added bonus",
+        |_, turn, kingdom_state, _| {
+            let roll_result = RollResult {
+                die_roll: DieRoll {
+                    natural: NaturalRoll(0),
+                    total: TotalRoll(0),
+                    description: "fake roll".to_string(),
+                },
+                degree: DegreeOfSuccess::Success,
+                dc: DC(0),
+            };
+            let mut turn_state = turn.clone();
+            turn_state.bonuses.push(bonus);
+            (
+                roll_result,
+                turn_state,
+                kingdom_state.clone(),
+            )
+        }
+    ).await;
+
+    Ok({})
 }
 
 #[poise::command(
