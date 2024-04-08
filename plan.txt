@@ -1,7 +1,6 @@
 Clear Hex action
 Build Roads action
 Establish Work Site action
-Unrest penalty to DC -- YES, needs done
 
 All critical successes should give +1 fame
 

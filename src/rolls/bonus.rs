@@ -58,6 +58,7 @@ impl KingdomAction {
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum AppliesTo {
+    Everything,
     Attribute(attributes::Attribute),
     Skill(skills::Skill),
     KingdomAction(KingdomAction),
@@ -67,6 +68,7 @@ pub enum AppliesTo {
 impl AppliesTo {
     fn to_markdown(self) -> &'static str {
         match self {
+            AppliesTo::Everything              => "everything",
             AppliesTo::Attribute(a) => a.to_markdown(),
             AppliesTo::Skill(s)         => s.to_markdown(),
             AppliesTo::RandomEventResolutions  => "random event rolls",
@@ -153,6 +155,7 @@ impl Bonus {
 
     pub fn applies(&self, attribute: attributes::Attribute, skill: skills::Skill, action: KingdomAction) -> bool {
         match self.applies_to {
+            AppliesTo::Everything              => true,
             AppliesTo::Attribute(a) => a == attribute,
             AppliesTo::Skill(s)         => s == skill,
             AppliesTo::KingdomAction(a) => a == action, // FIXME... what?

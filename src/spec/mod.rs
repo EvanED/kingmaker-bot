@@ -5,7 +5,7 @@ use enum_map::{EnumMap, EnumArray};
 use serde::de::{Visitor, MapAccess};
 use serde::{Serialize, Deserialize};
 use strum::IntoEnumIterator;
-use crate::rolls::bonus::KingdomAction;
+use crate::rolls::bonus::{self, KingdomAction};
 use crate::rolls::roll_result::{DieRoll, NaturalRoll, TotalRoll};
 use crate::rolls::roll_context::RollContext;
 use crate::state::KingdomState;
@@ -106,6 +106,27 @@ pub struct Kingdom {
     pub level: i8,
 }
 
+fn make_unrest_penalty(modifier: i8, label: &str) -> bonus::Bonus {
+    bonus::Bonus {
+        type_: bonus::BonusType::Status,
+        applies_to: bonus::AppliesTo::Everything,
+        applies_until: bonus::AppliesUntil::NextApplicableRoll,
+        modifier,
+        reason: format!("{label} unrest"),
+    }
+}
+
+fn get_unrest_penalties(unrest: i8) -> Vec<bonus::Bonus> {
+    match unrest {
+        ..=-1   => panic!("Bad unrest value"),
+        0       => vec![],
+        1..=4   => vec![make_unrest_penalty(-1, "minor")],
+        5..=9   => vec![make_unrest_penalty(-2, "moderate")],
+        10..=15 => vec![make_unrest_penalty(-3, "major")],
+        16..    => vec![make_unrest_penalty(-4, "severe")],
+    }
+}
+
 impl Kingdom {
     fn markdown_uteml(&self, skill: Skill) -> &'static str {
         match self.skills[skill] {
@@ -167,9 +188,10 @@ impl Kingdom {
         let proficiency = self.skills[skill].modifier(self.level);
 
         let applicable_bonuses = &context.bonuses;
+        let unrest_penalties = get_unrest_penalties(state.unrest);
         let mut bonuses_mod: i8 = 0;
         let mut bonuses_desc = String::new();
-        for bonus in applicable_bonuses.iter() {
+        for bonus in applicable_bonuses.iter().chain(unrest_penalties.iter()) {
             if bonus.applies(attribute, skill, action) {
                 bonuses_mod += bonus.modifier;
                 bonuses_desc.push_str(
