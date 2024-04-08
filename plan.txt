@@ -15,8 +15,6 @@ Ruins (crime and decay for Aryc at 2 each)
 Implement Quick Recovery feat
 Implement unrest features
 
-Why does /roll Defense say Culture
-
 Why did +9 bonus RP
 
 Supernatural Solution clearing and using

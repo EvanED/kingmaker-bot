@@ -204,7 +204,7 @@ impl Kingdom {
         let total = TotalRoll(natural + attribute_mod + invested_mod + proficiency + bonuses_mod);
 
         // TODO: the "trained" should be replaced, maybe split up
-        let description = format!("{natural} (nat) + {attribute_mod} (culture) + {invested_mod} (invested) + {proficiency} (training){bonuses_desc}");
+        let description = format!("{natural} (nat) + {attribute_mod} ({attribute:?}) + {invested_mod} (invested) + {proficiency} (training){bonuses_desc}");
 
         DieRoll {
             total,
