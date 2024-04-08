@@ -70,6 +70,7 @@ fn _create_kingdom_state() -> KingdomState {
             Commodity::Ore      => 1,
             Commodity::Stone    => 3,
         },
+        claimed_hexes: vec![],
     }
 }
 
@@ -150,6 +151,25 @@ async fn show(
     Ok(())
 }
 
+#[poise::command(slash_command, prefix_command, rename="show-hexes")]
+async fn show_hexes(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    let markdown = {
+        let state = ctx.data().tracker.lock().unwrap();
+        let kst = &state.turns.last().unwrap().kingdom_state;
+        kst.hexes_to_markdown()
+    };
+
+    println!("{markdown}");
+
+    ctx.say(
+        markdown
+    ).await?;
+
+    Ok(())
+}
+
 #[poise::command(slash_command, prefix_command)]
 async fn history(
     ctx: Context<'_>,
@@ -188,6 +208,7 @@ async fn history_dbg(
     slash_command,
     subcommands(
         "show",
+        "show_hexes",
         "history",
         "history_dbg",
     ),

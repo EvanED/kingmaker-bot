@@ -1,6 +1,6 @@
 use poise::ChoiceParameter;
 
-use crate::{rolls::{bonus::{self, AppliesTo, AppliesUntil, Bonus, BonusType}, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{attributes::Attribute, skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
+use crate::{discord::commands::action::next_turn, rolls::{bonus::{self, AppliesTo, AppliesUntil, Bonus, BonusType}, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{attributes::Attribute, skills::Skill, Kingdom}, state::{HexCoordinate, KingdomState}, turns::TurnState};
 
 #[derive(Debug, Clone, Copy, ChoiceParameter)]
 pub enum ClaimHexSkill {
@@ -11,7 +11,15 @@ pub enum ClaimHexSkill {
 }
 
 // TODO: Require Skill as one of prereqs
-pub fn claim_hex(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, skill: ClaimHexSkill) -> (RollResult, TurnState, KingdomState) {
+pub fn claim_hex(
+    kingdom: &Kingdom,
+    turn: &TurnState,
+    state: &KingdomState,
+    context: &RollContext,
+    skill: ClaimHexSkill,
+    x: i8,
+    y: i8,
+) -> (RollResult, TurnState, KingdomState) {
 
     let skill = match skill {
         ClaimHexSkill::Exploration => Skill::Exploration,
@@ -55,6 +63,11 @@ pub fn claim_hex(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, cont
 
     let mut next_kingdom_state = state.clone();
     next_kingdom_state.resource_points -= 1;
+    if degree.passed() {
+        next_kingdom_state.claimed_hexes.push(
+            HexCoordinate { x, y }
+        )
+    }
 
     let roll_result = RollResult {
         die_roll: the_roll,

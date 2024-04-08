@@ -208,9 +208,11 @@ pub async fn take_charge(
 pub async fn claim_hex(
     ctx: Context<'_>,
     using_skill: ClaimHexSkill,
+    x: i8,
+    y: i8,
 ) -> Result<(), Error> {
     let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
-        claim_hex::claim_hex(kingdom, turn, state, context, using_skill)
+        claim_hex::claim_hex(kingdom, turn, state, context, using_skill, x, y)
     };
 
     make_move(ctx, "Claim Hex", closure).await

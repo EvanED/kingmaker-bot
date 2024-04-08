@@ -70,6 +70,16 @@ impl DegreeOfSuccess {
             CriticalFailure => CriticalFailure,
         }
     }
+
+    pub fn passed(&self) -> bool {
+        use DegreeOfSuccess::*;
+        match self {
+            CriticalSuccess => true,
+            Success         => true,
+            Failure         => false,
+            CriticalFailure => false,
+        }
+    }
 }
 
 #[derive(Debug, Clone, Copy)]

@@ -17,6 +17,12 @@ pub enum Commodity {
 }
 
 #[derive(Debug, Default, Clone, Serialize, Deserialize)]
+pub struct HexCoordinate {
+    pub x: i8,
+    pub y: i8,
+}
+
+#[derive(Debug, Default, Clone, Serialize, Deserialize)]
 pub struct KingdomState {
     #[serde(default)]
     pub size: i8,
@@ -27,6 +33,8 @@ pub struct KingdomState {
     pub fame_points: i8,
     #[serde(with="enum_map_serde")]
     pub commodity_stores: EnumMap<Commodity, i8>,
+    #[serde(default)]
+    pub claimed_hexes: Vec<HexCoordinate>,
 }
 
 fn level_to_raw_control_dc(level: i8) -> i8 {
@@ -130,6 +138,17 @@ impl KingdomState {
         }
 
         diffs
+    }
+
+    pub fn hexes_to_markdown(&self) -> String {
+        let claimed_str = self.claimed_hexes.iter().map(
+            |hex_coord| {
+                format!("* {}, {}", hex_coord.x, hex_coord.y)
+            }
+        )
+        .collect::<Vec<String>>()
+        .join("\n");
+        format!("**Claimed Hexes:**\n{claimed_str}")
     }
 
     pub fn to_markdown(&self) -> String {

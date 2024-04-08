@@ -188,6 +188,8 @@ fn when_i_claim_hex_with_magic(world: &mut TestContext) {
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         ClaimHexSkill::Magic,
+        0,
+        0,
     );
     (_, world.next_turn_state, world.kingdom_state) = triple;
     world.roll_result = Some(triple.0);
