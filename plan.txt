@@ -1,16 +1,28 @@
 Clear Hex action
 Build Roads action
 Establish Work Site action
-Size penalty to DC (?)
+Size penalty to DC -- YES, needs done
+Unrest penalty to DC -- YES, needs done
 
 All critical successes should give +1 fame
 
 Track random event DC turn to turn
 
 Generate RP
-Apply Fame at start of Turn
+Apply Fame and reset at start of Turn
 Roll Random Event
 
+Ruins (crime and decay for Aryc at 2 each)
+
+Implent +2 circ. to Claim Hex for Expansion Export
+Implement Quick Recovery feat
+Implement unrest features
+
+Why does /roll Defense say Culture
+
+Why did +9 bonus RP
+
+Supernatural Solution clearing and using
 
 Next Turn does not clear RP
 
