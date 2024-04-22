@@ -115,6 +115,11 @@ impl KingdomState {
             next_kstate.commodity_stores[commodity] += turn_state.commodity_income[commodity];
         }
 
+        next_kstate.fame_points = 1i8 + turn_state.additional_fame_points_scheduled;
+        if next_kstate.fame_points > 3i8 {
+            next_kstate.fame_points = 3i8;
+        }
+
         next_kstate
     }
 
@@ -196,6 +201,52 @@ mod tests {
         //
         assert!(k2.commodity_stores[Commodity::Food] == 1 + 1);
         assert!(k2.commodity_stores[Commodity::Ore]  == 0 + 3);
+    }
+
+    #[test]
+    fn fame_points_reset_at_start_of_turn_from_0() {
+        let mut k1 = KingdomState::default();
+        k1.fame_points = 0i8;
+
+        let turn_state = TurnState::default();
+        let k2 = k1.next_turn(&turn_state);
+
+        assert!(k2.fame_points == 1i8);
+    }
+
+    #[test]
+    fn fame_points_reset_at_start_of_turn_from_2() {
+        let mut k1 = KingdomState::default();
+        k1.fame_points = 2i8;
+
+        let turn_state = TurnState::default();
+        let k2 = k1.next_turn(&turn_state);
+
+        assert!(k2.fame_points == 1i8);
+    }
+
+    #[test]
+    fn fame_points_reset_at_start_of_turn_increased_by_bonus() {
+        let mut k1 = KingdomState::default();
+        k1.fame_points = 0i8;
+
+        let mut turn_state = TurnState::default();
+        turn_state.additional_fame_points_scheduled = 1i8;
+        let k2 = k1.next_turn(&turn_state);
+
+        assert!(k2.fame_points == 2i8);
+    }
+
+    #[test]
+    fn fame_points_reset_at_start_of_turn_increased_by_bonus_caps_at_3() {
+        let mut k1 = KingdomState::default();
+        k1.fame_points = 0i8;
+
+        let mut turn_state = TurnState::default();
+        turn_state.additional_fame_points_scheduled = 10i8;
+        let k2 = k1.next_turn(&turn_state);
+
+        assert!(k2.fame_points == 3i8);
     }
 
     #[test]

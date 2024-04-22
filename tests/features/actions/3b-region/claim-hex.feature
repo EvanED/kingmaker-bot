@@ -23,7 +23,7 @@ Feature: Activity Phase, Step 2 (Region) -- Claim Hex
         And a die roll of 20
         When I Claim Hex with Magic
         Then there are 3 requirements
-        And "mark the hex as claimed" is a requirement
+        And "mark the hex 0.0 as claimed" is a requirement
         And "gain XP from the claimed hex" is a requirement
         And "you may take another region activity" is a requirement
         And RP went down to 1
@@ -39,7 +39,7 @@ Feature: Activity Phase, Step 2 (Region) -- Claim Hex
         And a die roll of 15
         When I Claim Hex with Magic
         Then there are 2 requirements
-        And "mark the hex as claimed" is a requirement
+        And "mark the hex 0.0 as claimed" is a requirement
         And "gain XP from the claimed hex" is a requirement
         And RP went down to 1
 

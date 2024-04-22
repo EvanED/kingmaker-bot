@@ -10,7 +10,6 @@ All critical successes should give +1 fame
 Track random event DC turn to turn
 
 Generate RP, set bonus RP, RP dice from trade commodities, etc.
-Apply Fame and reset at start of Turn     <--- DO THIS NEXT !!!!!
 Roll Random Event
 
 Ruins (crime and decay for Aryc at 2 each)
@@ -33,10 +32,11 @@ Track Celebrate Holiday for DC
 Celebrate Holiday crit success is... not right
 
 Move `/act next-turn` to a GM command
-
+Move claimed hex record into title so it's saved
 
 
 NOT TESTED
 ==========
 Tracking of claimed hexes
 Unrest status penalty
+Better test of recording x.y coordinates on Claim Hex
