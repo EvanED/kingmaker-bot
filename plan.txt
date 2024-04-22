@@ -1,4 +1,3 @@
-Claim Hex needs to print claimed hex in the response
 Establish Farmland -- record hex
 Bulid Structure -- track settlement
 

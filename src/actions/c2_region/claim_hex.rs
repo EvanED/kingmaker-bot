@@ -37,7 +37,7 @@ pub fn claim_hex(
         dc,
     );
 
-    let new_msg = "mark the hex as claimed".to_string();
+    let new_msg = format!("mark the hex {}.{} as claimed", x, y);
     let xp_msg = "gain XP from the claimed hex".to_string();
     let next = "you may take another region activity".to_string();
     let new_requirements = match degree {
