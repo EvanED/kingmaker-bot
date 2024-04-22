@@ -1,3 +1,7 @@
+Claim Hex needs to print claimed hex in the response
+Establish Farmland -- record hex
+Bulid Structure -- track settlement
+
 Clear Hex action
 Build Roads action
 Establish Work Site action
@@ -6,8 +10,8 @@ All critical successes should give +1 fame
 
 Track random event DC turn to turn
 
-Generate RP
-Apply Fame and reset at start of Turn
+Generate RP, set bonus RP, RP dice from trade commodities, etc.
+Apply Fame and reset at start of Turn     <--- DO THIS NEXT !!!!!
 Roll Random Event
 
 Ruins (crime and decay for Aryc at 2 each)
