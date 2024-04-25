@@ -16,7 +16,7 @@ pub fn claim_second_hex_message(hex_type: HexType) -> String {
     }.to_string()
 }
 
-pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, hex_type: HexType) -> (RollResult, TurnState, KingdomState) {
+pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, hex_type: HexType, x: i8, y: i8) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(state, bonus::KingdomAction::EstablishFarmland, Skill::Agriculture, context);
 
     // TODO: Cucumber tests need enhanced for DC change and RP cost (previously it was zero cost)
@@ -36,7 +36,7 @@ pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSt
         dc,
     );
 
-    let new_msg = "mark the map with the new farmland".to_string();
+    let new_msg = format!("mark hex {x}.{y} with the new farmland");
     let new_requirements = match degree {
         DegreeOfSuccess::CriticalSuccess => vec![new_msg, claim_second_hex_message(hex_type)],
         DegreeOfSuccess::Success         => vec![new_msg],

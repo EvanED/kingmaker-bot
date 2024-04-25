@@ -230,12 +230,16 @@ pub async fn claim_hex(
 pub async fn establish_farmland(
     ctx: Context<'_>,
     hex_type: HexType,
+    x: i8,
+    y: i8
 ) -> Result<(), Error> {
     let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
-        establish_farmland::establish_farmland(kingdom, turn, state, context, hex_type)
+        establish_farmland::establish_farmland(kingdom, turn, state, context, hex_type, x, y)
     };
 
-    make_move(ctx, "Establish Farmland", closure).await
+    let desc = format!("Establish Farmland at {x}.{y}");
+
+    make_move(ctx, &desc, closure).await
 }
 
 

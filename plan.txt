@@ -1,4 +1,3 @@
-Establish Farmland -- record hex
 Bulid Structure -- track settlement
 
 Clear Hex action
