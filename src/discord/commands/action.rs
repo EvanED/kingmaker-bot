@@ -215,7 +215,9 @@ pub async fn claim_hex(
         claim_hex::claim_hex(kingdom, turn, state, context, using_skill, x, y)
     };
 
-    make_move(ctx, "Claim Hex", closure).await
+    let desc = format!("Claim Hex {x}.{y}");
+
+    make_move(ctx, &desc, closure).await
 }
 
 
