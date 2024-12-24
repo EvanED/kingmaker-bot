@@ -162,6 +162,8 @@ fn when_i_establish_farmland_on_plains(world: &mut TestContext) {
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         establish_farmland::HexType::Plains,
+        0i8,
+        0i8,
     );
     (_, world.next_turn_state, world.kingdom_state) = triple;
     world.roll_result = Some(triple.0);
@@ -175,6 +177,8 @@ fn when_i_establish_farmland_on_hills(world: &mut TestContext) {
         &world.kingdom_state,
         &world.roll_context.as_ref().unwrap(),
         establish_farmland::HexType::Hills,
+        0i8,
+        0i8,
     );
     (_, world.next_turn_state, world.kingdom_state) = triple;
     world.roll_result = Some(triple.0);
