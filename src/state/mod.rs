@@ -120,6 +120,8 @@ impl KingdomState {
             next_kstate.fame_points = 3i8;
         }
 
+        next_kstate.resource_points = turn_state.bonus_rp;
+
         next_kstate
     }
 
@@ -185,6 +187,19 @@ impl KingdomState {
 mod tests {
     use super::*;
     use assert2::assert;
+
+    #[test]
+    fn rp_is_set_to_bonus_rp_at_start_of_turn() {
+        let mut k1 = KingdomState::default();
+        k1.resource_points = 7;
+
+        let mut turn_state = TurnState::default();
+        turn_state.bonus_rp = 10;
+
+        let k2 = k1.next_turn(&turn_state);
+
+        assert!(k2.resource_points == 10);
+    }
 
     #[test]
     fn commodity_stores_increase_at_start_of_turn() {

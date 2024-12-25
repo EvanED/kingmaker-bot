@@ -115,7 +115,7 @@ impl TurnState {
             // These will be reset very early in the turn, but not yet:
             collected_taxes: self.collected_taxes,
             traded_commodities: self.traded_commodities,
-            bonus_rp: self.bonus_rp,
+            bonus_rp: 0,
 
             // These could in theory carry forward indefinitely
             can_build_this_structure_for_no_resource_cost: self
@@ -369,6 +369,17 @@ mod tests {
     }
 
     #[test]
+    fn bonus_rp_reset_at_start_of_turn() {
+        let mut turn_state = TurnState::default();
+        turn_state.bonus_rp = 7;
+
+        let turn_state = turn_state; // remove mutability
+        let next_turn_state = turn_state.next_turn(true);
+
+        assert!(next_turn_state.bonus_rp == 0);
+    }
+
+    #[test]
     fn bonus_and_requirement_changes_reflected_in_text() {
         let mut k1 = TurnState::default();
         let mut k2 = TurnState::default();
@@ -488,7 +499,9 @@ mod tests {
         // Stuff from the previous turn that affects this turn still needs to be tracked
         assert!(next_turn.collected_taxes == true); // same
         assert!(next_turn.traded_commodities == true); // same
-        assert!(next_turn.bonus_rp == 5);
+
+        // This gets reset
+        assert!(next_turn.bonus_rp == 0);
 
         // This is applied immediately
         assert!(next_turn.additional_fame_points_scheduled == 0); // CHECK THAT fame == 1 + this
