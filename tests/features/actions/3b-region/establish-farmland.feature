@@ -35,7 +35,7 @@ Feature: Activity Phase, Step 2 (Region) -- Establish Farmland
         And a die roll of 20
         When I Establish Farmland on plains
         Then there are 2 requirements
-        And "mark the map with the new farmland" is a requirement
+        And "mark hex 0.0 with the new farmland" is a requirement
         And "may immediately attempt Establish Farmland again (plains only)" is a requirement
 
     Scenario: Establish Farmland on hills critically succeeds
@@ -43,7 +43,7 @@ Feature: Activity Phase, Step 2 (Region) -- Establish Farmland
         And a die roll of 20
         When I Establish Farmland on hills
         Then there are 2 requirements
-        And "mark the map with the new farmland" is a requirement
+        And "mark hex 0.0 with the new farmland" is a requirement
         And "may immediately attempt Establish Farmland again (plains or hills)" is a requirement
 
     Scenario: Establish Farmland succeeds
@@ -51,7 +51,7 @@ Feature: Activity Phase, Step 2 (Region) -- Establish Farmland
         And a die roll of 19
         When I Establish Farmland on hills
         Then there is 1 requirement
-        And "mark the map with the new farmland" is a requirement
+        And "mark hex 0.0 with the new farmland" is a requirement
 
     Scenario: Establish Farmland fails
         Given the kingdom Aryc at level 1
