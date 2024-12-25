@@ -291,6 +291,7 @@ pub async fn build_structure(
 )]
 pub async fn next_turn(
     ctx: Context<'_>,
+    was_random_event: bool,
 ) -> Result<(), Error> {
     let closure = |_kingdom: &_, turn: &TurnState, state: &KingdomState, _context: &_| {
         let phony_rr = RollResult {
@@ -302,7 +303,7 @@ pub async fn next_turn(
             },
             degree: DegreeOfSuccess::Success,
         };
-        let nt = turn.next_turn();
+        let nt = turn.next_turn(was_random_event);
         let nk = state.next_turn(&nt);
         (
             phony_rr, nt, nk,

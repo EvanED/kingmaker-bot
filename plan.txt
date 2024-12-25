@@ -6,8 +6,6 @@ Establish Work Site action
 
 All critical successes should give +1 fame
 
-Track random event DC turn to turn
-
 Generate RP, set bonus RP, RP dice from trade commodities, etc.
 Roll Random Event
 

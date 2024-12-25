@@ -114,6 +114,8 @@ fn _create_turn_state() -> TurnState {
         additional_fame_points_scheduled: 0,
         supernatural_solution_blocked_for_x_turns: None,
         can_build_this_structure_for_no_resource_cost: Some(Structure::Cemetery),
+
+        random_event_dc: 16,
     }
 }
 

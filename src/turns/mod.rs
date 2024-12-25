@@ -1,10 +1,16 @@
 use std::cmp;
 
 use enum_map::EnumMap;
-use serde::{Serialize, Deserialize};
+use serde::{Deserialize, Serialize};
 use strum::IntoEnumIterator;
 
-use crate::{rolls::bonus::Bonus, actions::c3_civic::build_structure::Structure, diff_utils::{append_bool_change, append_set_change, append_number_change}, state::Commodity, spec::enum_map_serde};
+use crate::{
+    actions::c3_civic::build_structure::Structure,
+    diff_utils::{append_bool_change, append_number_change, append_set_change},
+    rolls::bonus::Bonus,
+    spec::enum_map_serde,
+    state::Commodity,
+};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Serialize, Deserialize)]
 pub enum RandomEventSelectionMethod {
@@ -15,8 +21,12 @@ pub enum RandomEventSelectionMethod {
 impl RandomEventSelectionMethod {
     fn to_markdown(self) -> &'static str {
         match self {
-            RandomEventSelectionMethod::AdvantageGM      => "* A random event is guaranteed. The GM chooses between two random selections",
-            RandomEventSelectionMethod::AdvantagePlayers => "* If a random event happens, the players choose between two random selections",
+            RandomEventSelectionMethod::AdvantageGM => {
+                "* A random event is guaranteed. The GM chooses between two random selections"
+            }
+            RandomEventSelectionMethod::AdvantagePlayers => {
+                "* If a random event happens, the players choose between two random selections"
+            }
         }
     }
 }
@@ -30,7 +40,7 @@ pub struct TurnState {
     // Tracks for this turn
     pub create_a_masterpiece_attempted: bool,
     // Gives 10 XP if still true at end of turn
-    pub supernatural_solution_available: bool,  // TODO: Or count?
+    pub supernatural_solution_available: bool, // TODO: Or count?
 
     // Tracks for event phase of this turn
     pub random_event_selection_method: Option<RandomEventSelectionMethod>,
@@ -45,8 +55,11 @@ pub struct TurnState {
     // FIXME: this should be per-settlement:
     pub can_build_this_structure_for_no_resource_cost: Option<Structure>,
 
-    #[serde(with="enum_map_serde", default)]
+    #[serde(with = "enum_map_serde", default)]
     pub commodity_income: EnumMap<Commodity, i8>,
+
+    #[serde(default)]
+    pub random_event_dc: i8,
 }
 
 fn sub_min_0(x: i8) -> i8 {
@@ -55,21 +68,32 @@ fn sub_min_0(x: i8) -> i8 {
 
 fn sub_option(x: Option<i8>) -> Option<i8> {
     match x {
-        None        => None,
-        Some(1)     => None,
-        Some(x) => Some(x-1),
+        None => None,
+        Some(1) => None,
+        Some(x) => Some(x - 1),
     }
 }
 
 impl TurnState {
+    pub fn next_random_event_dc(&self, was_random_event: bool) -> i8 {
+        if was_random_event {
+            16i8 // back to default
+        }
+        else if self.random_event_dc <= 6 {
+            2i8 // special case: don't decrease the DC below 2
+        }
+        else {
+            self.random_event_dc - 5
+        }
+    }
 
-    pub fn next_turn(&self) -> TurnState {
+    pub fn next_turn(&self, was_random_event: bool) -> TurnState {
         TurnState {
-            bonuses: (
-                self.bonuses.iter()
+            bonuses: (self
+                .bonuses
+                .iter()
                 .filter_map(|bonus| bonus.transform_at_turn_start())
-                .collect()
-            ),
+                .collect()),
             requirements: self.requirements.clone(),
 
             // Information tracked for this turn is (mostly) reset
@@ -78,8 +102,12 @@ impl TurnState {
             random_event_selection_method: None,
 
             // Counters get decremented
-            dc6_crop_failure_potential_for_x_turns: sub_min_0(self.dc6_crop_failure_potential_for_x_turns),
-            supernatural_solution_blocked_for_x_turns: sub_option(self.supernatural_solution_blocked_for_x_turns),
+            dc6_crop_failure_potential_for_x_turns: sub_min_0(
+                self.dc6_crop_failure_potential_for_x_turns,
+            ),
+            supernatural_solution_blocked_for_x_turns: sub_option(
+                self.supernatural_solution_blocked_for_x_turns,
+            ),
 
             // Gets reset right away, but contributes (TODO) to the KingdomState
             additional_fame_points_scheduled: 0,
@@ -90,8 +118,11 @@ impl TurnState {
             bonus_rp: self.bonus_rp,
 
             // These could in theory carry forward indefinitely
-            can_build_this_structure_for_no_resource_cost: self.can_build_this_structure_for_no_resource_cost,
+            can_build_this_structure_for_no_resource_cost: self
+                .can_build_this_structure_for_no_resource_cost,
             commodity_income: self.commodity_income.clone(),
+
+            random_event_dc: self.next_random_event_dc(was_random_event),
         }
     }
 
@@ -99,18 +130,27 @@ impl TurnState {
         let mut diffs = Vec::new();
 
         append_set_change(&mut diffs, "bonus", &self.bonuses, &other.bonuses);
-        append_set_change(&mut diffs, "requirement", &self.requirements, &other.requirements);
-
-        append_bool_change(
+        append_set_change(
             &mut diffs,
-            self.collected_taxes, "'Collected Taxes' was reset",
-            other.collected_taxes, "The kingdom collected taxes this action",
+            "requirement",
+            &self.requirements,
+            &other.requirements,
         );
 
         append_bool_change(
             &mut diffs,
-            self.supernatural_solution_available, "Supernatural Solution's substitution was used",
-            other.supernatural_solution_available, "Supernatural Solution's substitution became available",
+            self.collected_taxes,
+            "'Collected Taxes' was reset",
+            other.collected_taxes,
+            "The kingdom collected taxes this action",
+        );
+
+        append_bool_change(
+            &mut diffs,
+            self.supernatural_solution_available,
+            "Supernatural Solution's substitution was used",
+            other.supernatural_solution_available,
+            "Supernatural Solution's substitution became available",
         );
 
         for commodity in Commodity::iter() {
@@ -122,9 +162,16 @@ impl TurnState {
             );
         }
 
+        append_number_change(
+            &mut diffs,
+            "Random event DC",
+            self.random_event_dc,
+            other.random_event_dc,
+        );
+
         diffs
     }
-    
+
     fn next_turn_info(&self) -> String {
         let mut strings: Vec<String> = Vec::new();
 
@@ -135,25 +182,22 @@ impl TurnState {
             strings.push("* We traded commodities this turn".to_string());
         }
         if self.bonus_rp > 0 {
-            strings.push(
-                format!("* The kingdom will receive {} bonus RP", self.bonus_rp)
-            );
+            strings.push(format!(
+                "* The kingdom will receive {} bonus RP",
+                self.bonus_rp
+            ));
         }
         if self.additional_fame_points_scheduled > 0 {
-            strings.push(
-                format!(
-                    "* The kingdom will receive {} bonus Fame points",
-                    self.additional_fame_points_scheduled,
-                )
-            );
+            strings.push(format!(
+                "* The kingdom will receive {} bonus Fame points",
+                self.additional_fame_points_scheduled,
+            ));
         }
         if self.supernatural_solution_blocked_for_x_turns.is_some() {
-            strings.push(
-                format!(
-                    "* Supernatural Solution is blocked for {} turns",
-                    self.supernatural_solution_blocked_for_x_turns.unwrap(),
-                )
-            );
+            strings.push(format!(
+                "* Supernatural Solution is blocked for {} turns",
+                self.supernatural_solution_blocked_for_x_turns.unwrap(),
+            ));
         }
         if self.can_build_this_structure_for_no_resource_cost.is_some() {
             strings.push(
@@ -166,8 +210,7 @@ impl TurnState {
 
         if strings.is_empty() {
             return "".to_string();
-        }
-        else {
+        } else {
             strings.insert(0, "Information for future turns:".to_string());
             strings.join("\n")
         }
@@ -183,60 +226,58 @@ impl TurnState {
             strings.push("* Supernatural Solution's success condition may be used".to_string())
         }
         if self.random_event_selection_method.is_some() {
-            strings.push(self.random_event_selection_method.unwrap().to_markdown().to_string());
-        }
-        if self.dc6_crop_failure_potential_for_x_turns > 0 {
             strings.push(
-                format!(
-                    "* For {} turns, on a DC 6 flat check failure a Crop Failure event occurs",
-                    self.dc6_crop_failure_potential_for_x_turns,
-                )
+                self.random_event_selection_method
+                    .unwrap()
+                    .to_markdown()
+                    .to_string(),
             );
         }
+        if self.dc6_crop_failure_potential_for_x_turns > 0 {
+            strings.push(format!(
+                "* For {} turns, on a DC 6 flat check failure a Crop Failure event occurs",
+                self.dc6_crop_failure_potential_for_x_turns,
+            ));
+        }
 
-        if strings.is_empty() {
-            return "".to_string();
-        }
-        else {
-            strings.insert(0, "This turn:".to_string());
-            strings.join("\n")
-        }
+        strings.push(
+            format!("* Random kingdom event DC: {}", self.random_event_dc)
+        );
+
+        strings.insert(0, "This turn:".to_string());
+        strings.join("\n")
     }
-
 
     fn bonuses_markdown_yes(&self) -> String {
         let mut s = "Bonuses:".to_string();
         for bonus in &self.bonuses {
             s.push_str("\n1. ");
             bonus.append_markdown(&mut s);
-        };
+        }
         s
     }
 
     fn bonuses_markdown(&self) -> String {
         if self.bonuses.is_empty() {
             "No bonuses/penalties  ".to_string()
-        }
-        else {
+        } else {
             self.bonuses_markdown_yes()
         }
     }
-
 
     fn requirements_markdown_yes(&self) -> String {
         let mut s = "Requirements:".to_string();
         for request in &self.requirements {
             s.push_str("\n1. ");
             s.push_str(request);
-        };
+        }
         s
     }
 
     fn requirements_markdown(&self) -> String {
         if self.bonuses.is_empty() {
             "No requirements  ".to_string()
-        }
-        else {
+        } else {
             self.requirements_markdown_yes()
         }
     }
@@ -275,7 +316,10 @@ impl TurnState {
 
 #[cfg(test)]
 mod tests {
-    use crate::{rolls::bonus::{BonusType, AppliesTo, AppliesUntil}, spec::skills::Skill};
+    use crate::{
+        rolls::bonus::{AppliesTo, AppliesUntil, BonusType},
+        spec::skills::Skill,
+    };
 
     use super::*;
     use assert2::assert;
@@ -284,23 +328,31 @@ mod tests {
     #[test]
     fn commodity_income_changes_reflected_in_text() {
         let mut k1 = TurnState::default();
-        let mut k2 = TurnState ::default();
+        let mut k2 = TurnState::default();
 
         k1.commodity_income[Commodity::Ore] = 4;
         k2.commodity_income[Commodity::Ore] = 2;
 
         let diff = k1.diff(&k2);
-        assert!(
-            diff == vec![
-                "Ore income decreased from 4 to 2",
-            ]
-        );
+        assert!(diff == vec!["Ore income decreased from 4 to 2",]);
+    }
+
+    #[test]
+    fn random_event_dc_change_reflected_in_text() {
+        let mut k1 = TurnState::default();
+        let mut k2 = TurnState::default();
+
+        k1.random_event_dc = 16;
+        k2.random_event_dc = 11;
+
+        let diff = k1.diff(&k2);
+        assert!(diff == vec!["Random event DC decreased from 16 to 11",]);
     }
 
     #[test]
     fn bonus_and_requirement_changes_reflected_in_text() {
         let mut k1 = TurnState::default();
-        let mut k2 = TurnState ::default();
+        let mut k2 = TurnState::default();
 
         k1.bonuses.push(Bonus {
             type_: BonusType::Circumstance,
@@ -334,7 +386,7 @@ mod tests {
     #[test]
     fn current_turn_tracking() {
         let mut k1 = TurnState::default();
-        let mut k2 = TurnState ::default();
+        let mut k2 = TurnState::default();
 
         k1.collected_taxes = false;
         k2.collected_taxes = true;
@@ -354,10 +406,7 @@ mod tests {
     fn create_test_turn_state() -> TurnState {
         TurnState {
             bonuses: vec![],
-            requirements: vec![
-                "requirement #1".to_string(),
-                "requirement #2".to_string(),
-            ],
+            requirements: vec!["requirement #1".to_string(), "requirement #2".to_string()],
             create_a_masterpiece_attempted: true,
             supernatural_solution_available: true,
             dc6_crop_failure_potential_for_x_turns: 0,
@@ -375,14 +424,40 @@ mod tests {
                 Commodity::Ore      => 0,
                 Commodity::Stone    => 0,
             },
+            random_event_dc: 16,
         }
+    }
+
+    #[test]
+    fn check_new_turn_gets_dc_correct() {
+        let mut start_state = create_test_turn_state();
+        start_state.random_event_dc = 11;
+
+        let start_state = start_state; // remove mutation capability
+
+        let next_state_reset_dc = start_state.next_turn(true);
+        let next_state_progressive_dc = start_state.next_turn(false);
+
+        assert!(next_state_reset_dc.random_event_dc == 16);
+        assert!(next_state_progressive_dc.random_event_dc == 6);
+    }
+
+    #[test]
+    fn check_new_turn_does_not_decrease_random_event_dc_below_two() {
+        let mut start_state = create_test_turn_state();
+        start_state.random_event_dc = 6;
+
+        let start_state = start_state; // remove mutation capability
+        let next_state_progressive_dc = start_state.next_turn(false);
+
+        assert!(next_state_progressive_dc.random_event_dc == 2);
     }
 
     #[test]
     fn check_new_turn_gets_basic_stuff_right() {
         let start_state = create_test_turn_state();
-        let next_turn = start_state.next_turn();
-        
+        let next_turn = start_state.next_turn(false);
+
         // Stuff about upcoming turn is reset
         assert!(next_turn.create_a_masterpiece_attempted == false);
         assert!(next_turn.supernatural_solution_available == false);
@@ -402,10 +477,7 @@ mod tests {
         // These just carry forward
         assert!(next_turn.supernatural_solution_blocked_for_x_turns == None); // -1
         assert!(next_turn.can_build_this_structure_for_no_resource_cost == None);
-        assert!(next_turn.requirements == vec![
-            "requirement #1",
-            "requirement #2",
-        ]);
+        assert!(next_turn.requirements == vec!["requirement #1", "requirement #2",]);
     }
 
     #[test]
@@ -414,7 +486,7 @@ mod tests {
             dc6_crop_failure_potential_for_x_turns: 5,
             ..create_test_turn_state()
         };
-        let next_turn = start_state.next_turn();
+        let next_turn = start_state.next_turn(false);
 
         assert!(next_turn.dc6_crop_failure_potential_for_x_turns == 4);
     }
@@ -425,7 +497,7 @@ mod tests {
             supernatural_solution_blocked_for_x_turns: Some(5),
             ..create_test_turn_state()
         };
-        let next_turn = start_state.next_turn();
+        let next_turn = start_state.next_turn(false);
 
         assert!(next_turn.supernatural_solution_blocked_for_x_turns == Some(4));
     }
@@ -436,7 +508,7 @@ mod tests {
             supernatural_solution_blocked_for_x_turns: Some(1),
             ..create_test_turn_state()
         };
-        let next_turn = start_state.next_turn();
+        let next_turn = start_state.next_turn(false);
 
         assert!(next_turn.supernatural_solution_blocked_for_x_turns == None);
     }
@@ -478,7 +550,7 @@ mod tests {
             bonuses,
             ..create_test_turn_state()
         };
-        let next_turn = start_state.next_turn();
+        let next_turn = start_state.next_turn(false);
 
         let expected_bonuses = vec![
             Bonus {

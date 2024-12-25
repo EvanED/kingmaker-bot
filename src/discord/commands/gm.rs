@@ -249,12 +249,24 @@ async fn rollback(ctx: Context<'_>) -> Result<(), Error> {
         // TODO: luxury
         "ore_income",
         "stone_income",
+
+        "random_event_dc",
     ),
     subcommand_required
 )]
 pub async fn set(_: Context<'_>) -> Result<(), Error> {
     Ok(())
 }
+
+fn set_random_event_dc(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let mut next_turn_state = turn_state.clone();
+    let next_kingdom_state = kingdom_state.clone();
+
+    next_turn_state.random_event_dc = changer(next_turn_state.random_event_dc);
+
+    (next_turn_state, next_kingdom_state)
+}
+
 
 fn set_unrest(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
     let next_turn_state = turn_state.clone();
@@ -629,6 +641,18 @@ async fn stone_income(
     change: String,
 ) -> Result<(), Error> {
     do_set(ctx, change, set_stone_income, "GM set Stone income").await
+}
+
+#[poise::command(
+    slash_command,
+    prefix_command,
+    rename="random-event-dc",
+)]
+async fn random_event_dc(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_random_event_dc, "GM set random kingdom event DC").await
 }
 
 
