@@ -169,6 +169,13 @@ impl TurnState {
             other.random_event_dc,
         );
 
+        append_number_change(
+            &mut diffs,
+            "Bonus RP for next turn",
+            self.bonus_rp,
+            other.bonus_rp,
+        );
+
         diffs
     }
 
@@ -347,6 +354,18 @@ mod tests {
 
         let diff = k1.diff(&k2);
         assert!(diff == vec!["Random event DC decreased from 16 to 11",]);
+    }
+
+    #[test]
+    fn bonus_rp_change_reflected_in_text() {
+        let mut k1 = TurnState::default();
+        let mut k2 = TurnState::default();
+
+        k1.bonus_rp = 10;
+        k2.bonus_rp = 15;
+
+        let diff = k1.diff(&k2);
+        assert!(diff == vec!["Bonus RP for next turn increased from 10 to 15",]);
     }
 
     #[test]

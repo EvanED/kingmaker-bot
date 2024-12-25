@@ -236,6 +236,7 @@ async fn rollback(ctx: Context<'_>) -> Result<(), Error> {
         "size",
         "xp",
         "unrest",
+        "bonus_rp",
         "rp",
         "fame",
         "food",
@@ -282,6 +283,15 @@ fn set_rp(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn
     let mut next_kingdom_state = kingdom_state.clone();
 
     next_kingdom_state.resource_points = changer(next_kingdom_state.resource_points);
+
+    (next_turn_state, next_kingdom_state)
+}
+
+fn set_bonus_rp(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let mut next_turn_state = turn_state.clone();
+    let next_kingdom_state = kingdom_state.clone();
+
+    next_turn_state.bonus_rp = changer(turn_state.bonus_rp);
 
     (next_turn_state, next_kingdom_state)
 }
@@ -534,6 +544,16 @@ async fn rp(
 ) -> Result<(), Error> {
     do_set(ctx, change, set_rp, "GM set RP").await
 }
+
+
+#[poise::command(slash_command, prefix_command, rename="bonus-rp")]
+async fn bonus_rp(
+    ctx: Context<'_>,
+    change: String,
+) -> Result<(), Error> {
+    do_set(ctx, change, set_bonus_rp, "GM set next turn's bonus RP").await
+}
+
 
 #[poise::command(slash_command, prefix_command)]
 async fn unrest(
