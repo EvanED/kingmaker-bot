@@ -1,4 +1,4 @@
-use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, RollResult}}, spec::{skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
+use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
 
 #[derive(Clone,Copy,Debug)]
 pub enum TerrainType {
@@ -67,18 +67,26 @@ pub fn build_roads(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, co
     next_turn_state.requirements.push(
         format!("subtract {rp_cost} RP if there is a river crossing the hex")
     );
-    next_turn_state.requirements.push(
-        "mark the map with the new roads".to_string()
-    );
-    next_turn_state.requirements.push(
-        format!(
-            "can mark an adjacent hex with new roads as well, if it is {} or easier",
-            terrain.lowercase_string(),
-        )
-    );
+    if degree.passed() {
+        next_turn_state.requirements.push(
+            "mark the map with the new roads".to_string()
+        );
+    }
+    if degree == DegreeOfSuccess::CriticalSuccess {
+        next_turn_state.requirements.push(
+            format!(
+                "can mark an adjacent hex with new roads as well, if it is {} or easier",
+                terrain.lowercase_string(),
+            )
+        );
+    }
 
     let mut next_kingdom_state = state.clone();
     next_kingdom_state.resource_points -= rp_cost;
+
+    if degree == DegreeOfSuccess::CriticalFailure {
+        next_kingdom_state.unrest += 1;
+    }
 
     (roll_result, next_turn_state, next_kingdom_state)
 }

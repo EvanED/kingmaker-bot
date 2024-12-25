@@ -225,6 +225,9 @@ fn when_i_build_a_bridge(world: &mut TestContext) {
     world.roll_result = Some(triple.0);
 }
 
+// FIXME: Figure out why this doesn't trigger and get rid of the
+//        terrain-specific functions below. (This one is not
+//        currently executed.)
 #[when(expr = "I Build Roads on {string}")]
 fn when_i_build_roads(world: &mut TestContext, terrain: String) {
 
@@ -242,9 +245,73 @@ fn when_i_build_roads(world: &mut TestContext, terrain: String) {
 }
 
 #[when(expr = "I Build Roads on plains")]
-fn when_i_build_roads2(world: &mut TestContext) {
+fn when_i_build_roads_plains(world: &mut TestContext) {
 
     let terrain = build_roads::TerrainType::Plains;
+
+    let triple = build_roads::build_roads(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        terrain,
+    );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
+}
+
+#[when(expr = "I Build Roads on mountains")]
+fn when_i_build_roads_mountains(world: &mut TestContext) {
+
+    let terrain = build_roads::TerrainType::Mountains;
+
+    let triple = build_roads::build_roads(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        terrain,
+    );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
+}
+
+#[when(expr = "I Build Roads on forest")]
+fn when_i_build_roads_forest(world: &mut TestContext) {
+
+    let terrain = build_roads::TerrainType::Forest;
+
+    let triple = build_roads::build_roads(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        terrain,
+    );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
+}
+
+#[when(expr = "I Build Roads on hills")]
+fn when_i_build_roads_hills(world: &mut TestContext) {
+
+    let terrain = build_roads::TerrainType::Hills;
+
+    let triple = build_roads::build_roads(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        terrain,
+    );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
+}
+
+#[when(expr = "I Build Roads on swamp")]
+fn when_i_build_roads_swamp(world: &mut TestContext) {
+
+    let terrain = build_roads::TerrainType::Swamp;
 
     let triple = build_roads::build_roads(
         &world.kingdom.as_ref().unwrap(),
