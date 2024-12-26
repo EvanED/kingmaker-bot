@@ -305,7 +305,7 @@ impl TurnState {
         )
     }
 
-    fn take_charge_markdown(&self, _kingdom: &Kingdom) -> String {
+    fn take_charge_markdown(&self, kingdom: &Kingdom) -> String {
         let mut used: Vec<Skill> = vec![];
         for skill in Skill::iter() {
             if self.take_charge_skills_used[skill] {
@@ -326,7 +326,25 @@ impl TurnState {
                 used_strs.join(", "))
         };
 
-        format!("**Take Charge:** {}", used_str)
+        let mut best = kingdom.skills_sorted_by_modifier();
+        for skill in used {
+            best.retain(
+                |search_skill| skill != search_skill.clone()
+            );
+        }
+        best.truncate(5);
+        let best_str = {
+            let best_strs: Vec<&'static str> = best.iter().map(|skill| {
+                let skill_str: &'static str = skill.into();
+                skill_str
+            })
+            .collect();
+            format!(
+                "best available {}",
+                best_strs.join(", "))
+        };
+
+        format!("**Take Charge:** {}; {}", used_str, best_str)
     }
 
     pub fn to_markdown(&self, kingdom: &Kingdom) -> String {
