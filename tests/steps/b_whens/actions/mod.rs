@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, purchase_commodities, supernatural_solution, take_charge}, c2_region::{build_roads, claim_hex::{self, ClaimHexSkill}, establish_farmland, establish_work_site, go_fishing}, c3_civic::build_structure}, spec::skills::Skill, state::Commodity};
+use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, purchase_commodities, supernatural_solution, take_charge}, c2_region::{build_roads, claim_hex::{self, ClaimHexSkill}, establish_farmland, establish_work_site, go_fishing}, c3_civic::build_structure}, spec::{skills::Skill, terrain}, state::Commodity};
 
 use crate::context::TestContext;
 
@@ -231,7 +231,7 @@ fn when_i_build_a_bridge(world: &mut TestContext) {
 #[when(expr = "I Build Roads on {string}")]
 fn when_i_build_roads(world: &mut TestContext, terrain: String) {
 
-    let terrain = build_roads::TerrainType::from_string(&terrain).unwrap();
+    let terrain = terrain::TerrainType::from_string(&terrain).unwrap();
 
     let triple = build_roads::build_roads(
         &world.kingdom.as_ref().unwrap(),
@@ -247,7 +247,7 @@ fn when_i_build_roads(world: &mut TestContext, terrain: String) {
 #[when(expr = "I Build Roads on plains")]
 fn when_i_build_roads_plains(world: &mut TestContext) {
 
-    let terrain = build_roads::TerrainType::Plains;
+    let terrain = terrain::TerrainType::Plains;
 
     let triple = build_roads::build_roads(
         &world.kingdom.as_ref().unwrap(),
@@ -263,7 +263,7 @@ fn when_i_build_roads_plains(world: &mut TestContext) {
 #[when(expr = "I Build Roads on mountains")]
 fn when_i_build_roads_mountains(world: &mut TestContext) {
 
-    let terrain = build_roads::TerrainType::Mountains;
+    let terrain = terrain::TerrainType::Mountains;
 
     let triple = build_roads::build_roads(
         &world.kingdom.as_ref().unwrap(),
@@ -279,7 +279,7 @@ fn when_i_build_roads_mountains(world: &mut TestContext) {
 #[when(expr = "I Build Roads on forest")]
 fn when_i_build_roads_forest(world: &mut TestContext) {
 
-    let terrain = build_roads::TerrainType::Forest;
+    let terrain = terrain::TerrainType::Forest;
 
     let triple = build_roads::build_roads(
         &world.kingdom.as_ref().unwrap(),
@@ -295,7 +295,7 @@ fn when_i_build_roads_forest(world: &mut TestContext) {
 #[when(expr = "I Build Roads on hills")]
 fn when_i_build_roads_hills(world: &mut TestContext) {
 
-    let terrain = build_roads::TerrainType::Hills;
+    let terrain = terrain::TerrainType::Hills;
 
     let triple = build_roads::build_roads(
         &world.kingdom.as_ref().unwrap(),
@@ -311,7 +311,7 @@ fn when_i_build_roads_hills(world: &mut TestContext) {
 #[when(expr = "I Build Roads on swamp")]
 fn when_i_build_roads_swamp(world: &mut TestContext) {
 
-    let terrain = build_roads::TerrainType::Swamp;
+    let terrain = terrain::TerrainType::Swamp;
 
     let triple = build_roads::build_roads(
         &world.kingdom.as_ref().unwrap(),
@@ -327,7 +327,7 @@ fn when_i_build_roads_swamp(world: &mut TestContext) {
 #[when(expr = "I Establish Work Site on plains")]
 fn when_i_establish_work_site_plains(world: &mut TestContext) {
 
-    let terrain = build_roads::TerrainType::Plains;
+    let terrain = terrain::TerrainType::Plains;
 
     let triple = establish_work_site::establish_work_site(
         &world.kingdom.as_ref().unwrap(),
@@ -343,7 +343,7 @@ fn when_i_establish_work_site_plains(world: &mut TestContext) {
 #[when(expr = "I Establish Work Site on hills")]
 fn when_i_establish_work_site_hills(world: &mut TestContext) {
 
-    let terrain = build_roads::TerrainType::Hills;
+    let terrain = terrain::TerrainType::Hills;
 
     let triple = establish_work_site::establish_work_site(
         &world.kingdom.as_ref().unwrap(),

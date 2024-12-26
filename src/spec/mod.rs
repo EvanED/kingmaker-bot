@@ -17,6 +17,8 @@ use self::attributes::Attribute;
 pub mod skills;
 use self::skills::{Skill, TrainingLevel};
 
+pub mod terrain;
+
 pub type AttributeMap = EnumMap<Attribute, i8>;
 pub type SkillMap = EnumMap<Skill, TrainingLevel>;
 pub use enum_map::enum_map;

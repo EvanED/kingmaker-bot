@@ -1,6 +1,4 @@
-use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
-
-use super::build_roads::TerrainType;
+use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult}}, spec::{skills::Skill, terrain::TerrainType, Kingdom}, state::KingdomState, turns::TurnState};
 
 pub fn establish_work_site(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, context: &RollContext, terrain: TerrainType) -> (RollResult, TurnState, KingdomState) {
     let the_roll = kingdom.roll(state, bonus::KingdomAction::BuildRoads, Skill::Engineering, context);
