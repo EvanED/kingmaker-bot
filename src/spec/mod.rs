@@ -130,6 +130,20 @@ fn get_unrest_penalties(unrest: i8) -> Vec<bonus::Bonus> {
 }
 
 impl Kingdom {
+    pub fn skills_sorted_by_modifier(&self) -> Vec<Skill> {
+        let mut skills: Vec<Skill> = Skill::iter().collect();
+        skills.sort_by_key(
+            |skill| {
+                let skill_str: &'static str = skill.into();
+                skill_str.to_string()
+            }
+        );
+        skills.sort_by_key(
+            |skill| -self.skill_modifier_base(skill.clone())
+        );
+        skills
+    }
+
     fn skill_modifier_base(&self, skill: Skill) -> i8 {
         let teml = self.skills[skill];
         let attribute = skill.attribute();
@@ -225,5 +239,47 @@ impl Kingdom {
             natural: NaturalRoll(natural),
             description,
         }
+    }
+}
+
+#[cfg(test)]
+mod tests
+{
+    use crate::discord::commands::kingdom::create_aryc;
+
+    use assert2::assert;
+
+    use super::skills::Skill;
+
+    #[test]
+    fn skills_get_sorted_by_modifier() {
+        use Skill::*;
+        let k = create_aryc();
+        let skills = k.skills_sorted_by_modifier();
+        let expected = vec![
+            // +7
+            Boating,
+            Industry,
+            Trade,
+            // +5
+            Defense,
+            Engineering,
+            Politics,
+            Warfare,
+            // +4
+            Exploration,
+            // +3
+            Arts,
+            Magic,
+            // +2
+            Agriculture,
+            Intrigue,
+            Statecraft,
+            Wilderness,
+            // +0
+            Folklore,
+            Scholarship,
+        ];
+        assert!(skills == expected);
     }
 }

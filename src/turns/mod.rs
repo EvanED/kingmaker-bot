@@ -306,18 +306,24 @@ impl TurnState {
     }
 
     fn take_charge_markdown(&self, _kingdom: &Kingdom) -> String {
-        let mut used: Vec<String> = vec![];
+        let mut used: Vec<Skill> = vec![];
         for skill in Skill::iter() {
             if self.take_charge_skills_used[skill] {
-                let skill_str: &'static str = skill.into();
-                used.push(skill_str.to_string());
+                used.push(skill);
             }
         }
         let used_str = if used.is_empty() {
             "none used".to_string()
         }
         else {
-            format!("used {}", used.join(", "))
+            let used_strs: Vec<&str> = used.iter().map(|skill| {
+                let skill_str: &'static str = skill.into();
+                skill_str
+            })
+            .collect();
+            format!(
+                "used {}",
+                used_strs.join(", "))
         };
 
         format!("**Take Charge:** {}", used_str)
