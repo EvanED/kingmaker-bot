@@ -695,6 +695,17 @@ fn discharge_requirement(turn_state: &TurnState, kingdom_state: &KingdomState, c
     (next_turn_state, next_kingdom_state)
 }
 
+
+fn discharge_all_requirements(turn_state: &TurnState, kingdom_state: &KingdomState, _changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
+    let mut next_turn_state = turn_state.clone();
+    let next_kingdom_state = kingdom_state.clone();
+
+    next_turn_state.requirements.clear();
+
+    (next_turn_state, next_kingdom_state)
+}
+
+
 fn discharge_bonus(turn_state: &TurnState, kingdom_state: &KingdomState, changer: Box<dyn FnOnce(i8) -> i8>) -> (TurnState, KingdomState) {
     let mut next_turn_state = turn_state.clone();
     let next_kingdom_state = kingdom_state.clone();
@@ -717,6 +728,7 @@ fn discharge_bonus(turn_state: &TurnState, kingdom_state: &KingdomState, changer
     prefix_command,
     slash_command,
     subcommands(
+        "all_requirements",
         "requirement",
         "bonus",
     ),
@@ -733,6 +745,13 @@ async fn requirement(
     change: String,
 ) -> Result<(), Error> {
     do_set(ctx, change, discharge_requirement, "GM discharged Requirement").await
+}
+
+#[poise::command(slash_command, prefix_command, rename="all-requirements")]
+async fn all_requirements(
+    ctx: Context<'_>,
+) -> Result<(), Error> {
+    do_set(ctx, "0".to_string(), discharge_all_requirements, "GM discharged all Requirements").await
 }
 
 #[poise::command(slash_command, prefix_command)]
