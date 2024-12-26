@@ -8,7 +8,7 @@ use crate::{
     actions::c3_civic::build_structure::Structure,
     diff_utils::{append_bool_change, append_number_change, append_set_change},
     rolls::bonus::Bonus,
-    spec::enum_map_serde,
+    spec::{enum_map_serde, skills::Skill},
     state::Commodity,
 };
 
@@ -60,6 +60,9 @@ pub struct TurnState {
 
     #[serde(default)]
     pub random_event_dc: i8,
+
+    #[serde(with="enum_map_serde", default)]
+    pub take_charge_skills_used: EnumMap<Skill, bool>,
 }
 
 fn sub_min_0(x: i8) -> i8 {
@@ -123,6 +126,8 @@ impl TurnState {
             commodity_income: self.commodity_income.clone(),
 
             random_event_dc: self.next_random_event_dc(was_random_event),
+
+            take_charge_skills_used: self.take_charge_skills_used.clone(),  // FIXME
         }
     }
 
@@ -300,11 +305,30 @@ impl TurnState {
         )
     }
 
+    fn take_charge_markdown(&self) -> String {
+        let mut used: Vec<String> = vec![];
+        for skill in Skill::iter() {
+            if self.take_charge_skills_used[skill] {
+                let skill_str: &'static str = skill.into();
+                used.push(skill_str.to_string());
+            }
+        }
+        let used_str = if used.is_empty() {
+            "none used".to_string()
+        }
+        else {
+            format!("used {}", used.join(", "))
+        };
+
+        format!("**Take Charge:** {}", used_str)
+    }
+
     pub fn to_markdown(&self) -> String {
         let commodity_income_string = self.commodity_income_string();
         let bonuses_string = self.bonuses_markdown();
         let requirements_string = self.requirements_markdown();
         let this_turn_string = self.this_turn_info();
+        let take_charge_string = self.take_charge_markdown();
         let next_turn_string = self.next_turn_info();
 
         format!(
@@ -315,6 +339,7 @@ impl TurnState {
 {bonuses_string}
 {requirements_string}
 {this_turn_string}
+{take_charge_string}
 {next_turn_string}
             "
         )
@@ -455,6 +480,24 @@ mod tests {
                 Commodity::Stone    => 0,
             },
             random_event_dc: 16,
+            take_charge_skills_used: enum_map! {
+                Skill::Agriculture => false,
+                Skill::Arts => false,
+                Skill::Boating => false,
+                Skill::Defense => false,
+                Skill::Engineering => false,
+                Skill::Exploration => false,
+                Skill::Folklore => false,
+                Skill::Industry => false,
+                Skill::Intrigue => false,
+                Skill::Magic => false,
+                Skill::Politics => false,
+                Skill::Scholarship => false,
+                Skill::Statecraft => false,
+                Skill::Trade => false,
+                Skill::Warfare => false,
+                Skill::Wilderness => false,
+            },
         }
     }
 

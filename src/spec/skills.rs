@@ -2,7 +2,7 @@ use enum_map::Enum;
 use poise::ChoiceParameter;
 use serde::{Serialize, Deserialize};
 use strum::IntoEnumIterator;
-use strum_macros::{EnumString, IntoStaticStr, EnumIter, EnumCount};
+use strum_macros::{EnumCount, EnumIter, EnumString, IntoStaticStr};
 use super::attributes::Attribute;
 
 // TODO: Can we remove Default?

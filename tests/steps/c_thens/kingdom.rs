@@ -1,6 +1,6 @@
 use cucumber::then;
 use assert2::assert;
-use kingdom::{state::Commodity, turns::RandomEventSelectionMethod, actions::c3_civic::build_structure::Structure};
+use kingdom::{actions::c3_civic::build_structure::Structure, spec::skills::Skill, state::Commodity, turns::RandomEventSelectionMethod};
 use crate::context::TestContext;
 
 #[then(expr = "Unrest is still {int}")]
@@ -122,4 +122,9 @@ fn then_next_turn_can_reattempt_building_an_alchemy_lab_at_no_resource_cost(worl
 #[then("next turn can not re-attempt building anything at no resource cost")]
 fn then_next_turn_can_not_reattempt_building_a_shrine_at_no_resource_cost(world: &mut TestContext) {
     assert!(None == world.next_turn_state.can_build_this_structure_for_no_resource_cost);
+}
+
+#[then("Take Charge (Arts) has been used this turn")]
+fn then_take_charge_arts_has_not_been_used_this_turn(world: &mut TestContext) {
+    assert!(world.next_turn_state.take_charge_skills_used[Skill::Arts]);
 }

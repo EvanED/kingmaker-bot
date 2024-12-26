@@ -123,6 +123,25 @@ fn _create_turn_state() -> TurnState {
         can_build_this_structure_for_no_resource_cost: Some(Structure::Cemetery),
 
         random_event_dc: 16,
+
+        take_charge_skills_used: enum_map! {
+            Skill::Agriculture => false,
+            Skill::Arts => false,
+            Skill::Boating => false,
+            Skill::Defense => false,
+            Skill::Engineering => false,
+            Skill::Exploration => false,
+            Skill::Folklore => false,
+            Skill::Industry => false,
+            Skill::Intrigue => false,
+            Skill::Magic => false,
+            Skill::Politics => false,
+            Skill::Scholarship => false,
+            Skill::Statecraft => false,
+            Skill::Trade => false,
+            Skill::Warfare => false,
+            Skill::Wilderness => false,
+        },
     }
 }
 

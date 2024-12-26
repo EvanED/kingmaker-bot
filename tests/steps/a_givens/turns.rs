@@ -1,4 +1,5 @@
 use cucumber::given;
+use kingdom::spec::skills::Skill;
 use crate::context::TestContext;
 
 
@@ -38,4 +39,9 @@ fn given_random_kingdom_event_selection_will_be_normal(world: &mut TestContext) 
 #[given("the kingdom has not Created a Masterpiece this turn")]
 fn given_the_kingdom_has_not_created_a_masteripiece_this_turn(world: &mut TestContext) {
     world.turn_state.create_a_masterpiece_attempted = false;
+}
+
+#[given("Take Charge (Arts) has not been used this turn")]
+fn given_take_charge_arts_has_not_been_used_this_turn(world: &mut TestContext) {
+    world.turn_state.take_charge_skills_used[Skill::Arts] = false;
 }

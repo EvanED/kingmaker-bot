@@ -42,6 +42,7 @@ pub fn take_charge(kingdom: &Kingdom, turn: &TurnState, state: &KingdomState, co
         DegreeOfSuccess::Failure         => (),
         DegreeOfSuccess::CriticalFailure => next_turn_state.bonuses.push(crit_fail_penalty),
     }
+    next_turn_state.take_charge_skills_used[skill] = true;
 
     let roll_result = RollResult {
         die_roll: the_roll,
