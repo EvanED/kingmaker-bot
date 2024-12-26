@@ -86,4 +86,4 @@ Feature: Activity Phase, Step 2 (Region) -- Establish Work Site
         When I Establish Work Site on hills
         Then there are no requirements
         And RP went down to 13
-        And Unrest went up by 2
+        And Unrest went up to 2
