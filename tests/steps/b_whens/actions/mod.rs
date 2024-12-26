@@ -1,5 +1,5 @@
 use cucumber::when;
-use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{take_charge, purchase_commodities, celebrate_holiday, supernatural_solution, prognostication, create_a_masterpiece}, c2_region::{go_fishing, establish_farmland, claim_hex::{self, ClaimHexSkill}, build_roads}, c3_civic::build_structure}, state::Commodity, spec::skills::Skill};
+use kingdom::{actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, purchase_commodities, supernatural_solution, take_charge}, c2_region::{build_roads, claim_hex::{self, ClaimHexSkill}, establish_farmland, establish_work_site, go_fishing}, c3_civic::build_structure}, spec::skills::Skill, state::Commodity};
 
 use crate::context::TestContext;
 
@@ -314,6 +314,38 @@ fn when_i_build_roads_swamp(world: &mut TestContext) {
     let terrain = build_roads::TerrainType::Swamp;
 
     let triple = build_roads::build_roads(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        terrain,
+    );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
+}
+
+#[when(expr = "I Establish Work Site on plains")]
+fn when_i_establish_work_site_plains(world: &mut TestContext) {
+
+    let terrain = build_roads::TerrainType::Plains;
+
+    let triple = establish_work_site::establish_work_site(
+        &world.kingdom.as_ref().unwrap(),
+        &world.turn_state,
+        &world.kingdom_state,
+        &world.roll_context.as_ref().unwrap(),
+        terrain,
+    );
+    (_, world.next_turn_state, world.kingdom_state) = triple;
+    world.roll_result = Some(triple.0);
+}
+
+#[when(expr = "I Establish Work Site on hills")]
+fn when_i_establish_work_site_hills(world: &mut TestContext) {
+
+    let terrain = build_roads::TerrainType::Hills;
+
+    let triple = establish_work_site::establish_work_site(
         &world.kingdom.as_ref().unwrap(),
         &world.turn_state,
         &world.kingdom_state,
