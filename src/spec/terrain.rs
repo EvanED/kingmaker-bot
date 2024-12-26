@@ -1,4 +1,6 @@
-#[derive(Clone,Copy,Debug)]
+use poise::ChoiceParameter;
+
+#[derive(Clone,Copy,Debug, ChoiceParameter)]
 pub enum TerrainType {
     Plains,
     Hills,

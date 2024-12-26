@@ -2,6 +2,8 @@ use futures::Stream;
 use futures::StreamExt;
 
 use crate::actions::c2_region::claim_hex::ClaimHexSkill;
+use crate::actions::c2_region::establish_work_site;
+use crate::spec::terrain;
 use crate::{discord::{Context, Error}, spec::{Kingdom, skills::Skill}, turns::TurnState, state::{KingdomState, Commodity}, rolls::{roll_context::{RollContext, RollType}, roll_result::{RollResult, DC, DieRoll, NaturalRoll, TotalRoll, DegreeOfSuccess}}, actions::{b_commerce::{collect_taxes, improve_lifestyle, trade_commodities}, c1_leadership::{celebrate_holiday, create_a_masterpiece, prognostication, supernatural_solution, purchase_commodities, take_charge}, c2_region::{go_fishing, claim_hex, establish_farmland::{self, HexType}}, c3_civic::build_structure::{Structure, self}}, tracker::OverallState};
 use std::str::FromStr;
 
@@ -24,6 +26,7 @@ use std::str::FromStr;
         // Action phase, region actions
         "claim_hex",
         "establish_farmland",
+        "establish_work_site",
         "go_fishing",
         // Action phase, civic actions
         "build_structure",
@@ -238,6 +241,25 @@ pub async fn establish_farmland(
     };
 
     let desc = format!("Establish Farmland at {x}.{y}");
+
+    make_move(ctx, &desc, closure).await
+}
+
+
+#[poise::command(
+    prefix_command,
+    slash_command,
+    rename="establish-work-site",
+)]
+pub async fn establish_work_site(
+    ctx: Context<'_>,
+    terrain_type: terrain::TerrainType,
+) -> Result<(), Error> {
+    let closure = |kingdom: &_, turn: &_, state: &_, context: &_| {
+        establish_work_site::establish_work_site(kingdom, turn, state, context, terrain_type)
+    };
+
+    let desc = format!("Establish Work Site on {}", terrain_type);
 
     make_move(ctx, &desc, closure).await
 }
