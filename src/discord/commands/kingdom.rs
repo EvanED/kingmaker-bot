@@ -165,7 +165,7 @@ async fn show(
             "{}{}{}",
             kingdom.to_markdown(),
             kst.to_markdown(),
-            tst.to_markdown(),
+            tst.to_markdown(kingdom),
         );
         markdown
     };

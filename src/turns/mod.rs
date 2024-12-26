@@ -8,7 +8,7 @@ use crate::{
     actions::c3_civic::build_structure::Structure,
     diff_utils::{append_bool_change, append_number_change, append_set_change},
     rolls::bonus::Bonus,
-    spec::{enum_map_serde, skills::Skill},
+    spec::{enum_map_serde, skills::Skill, Kingdom},
     state::Commodity,
 };
 
@@ -305,7 +305,7 @@ impl TurnState {
         )
     }
 
-    fn take_charge_markdown(&self) -> String {
+    fn take_charge_markdown(&self, _kingdom: &Kingdom) -> String {
         let mut used: Vec<String> = vec![];
         for skill in Skill::iter() {
             if self.take_charge_skills_used[skill] {
@@ -323,12 +323,12 @@ impl TurnState {
         format!("**Take Charge:** {}", used_str)
     }
 
-    pub fn to_markdown(&self) -> String {
+    pub fn to_markdown(&self, kingdom: &Kingdom) -> String {
         let commodity_income_string = self.commodity_income_string();
         let bonuses_string = self.bonuses_markdown();
         let requirements_string = self.requirements_markdown();
         let this_turn_string = self.this_turn_info();
-        let take_charge_string = self.take_charge_markdown();
+        let take_charge_string = self.take_charge_markdown(kingdom);
         let next_turn_string = self.next_turn_info();
 
         format!(
