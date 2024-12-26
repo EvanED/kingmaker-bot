@@ -130,14 +130,22 @@ fn get_unrest_penalties(unrest: i8) -> Vec<bonus::Bonus> {
 }
 
 impl Kingdom {
-    fn markdown_uteml(&self, skill: Skill) -> &'static str {
-        match self.skills[skill] {
+    fn markdown_uteml_mod(&self, skill: Skill) -> String {
+        let teml = self.skills[skill];
+        let teml_str = match teml {
             TrainingLevel::Untrained => "",
-            TrainingLevel::Trained   => " [T]",
-            TrainingLevel::Expert    => " [E]",
-            TrainingLevel::Master    => " [M]",
-            TrainingLevel::Legendary => " [L]",
-        }
+            TrainingLevel::Trained   => "T; ",
+            TrainingLevel::Expert    => "E; ",
+            TrainingLevel::Master    => "M; ",
+            TrainingLevel::Legendary => "L; ",
+        };
+
+        let attribute = skill.attribute();
+        let attr_modifier = self.attributes[attribute];
+        let proficiency_modifier  = teml.modifier(self.level);
+        let modifier = attr_modifier + proficiency_modifier;
+
+        format!(" [{}+{}]", teml_str, modifier)
     }
 
     pub fn to_markdown(&self) -> String {
@@ -158,22 +166,22 @@ impl Kingdom {
             self.attributes[Attribute::Economy],
             self.attributes[Attribute::Loyalty],
             self.attributes[Attribute::Stability],
-            self.markdown_uteml(Skill::Arts),
-            self.markdown_uteml(Skill::Folklore),
-            self.markdown_uteml(Skill::Magic),
-            self.markdown_uteml(Skill::Scholarship),
-            self.markdown_uteml(Skill::Boating),
-            self.markdown_uteml(Skill::Exploration),
-            self.markdown_uteml(Skill::Industry),
-            self.markdown_uteml(Skill::Trade),
-            self.markdown_uteml(Skill::Intrigue),
-            self.markdown_uteml(Skill::Politics),
-            self.markdown_uteml(Skill::Statecraft),
-            self.markdown_uteml(Skill::Warfare),
-            self.markdown_uteml(Skill::Agriculture),
-            self.markdown_uteml(Skill::Defense),
-            self.markdown_uteml(Skill::Engineering),
-            self.markdown_uteml(Skill::Wilderness),
+            self.markdown_uteml_mod(Skill::Arts),
+            self.markdown_uteml_mod(Skill::Folklore),
+            self.markdown_uteml_mod(Skill::Magic),
+            self.markdown_uteml_mod(Skill::Scholarship),
+            self.markdown_uteml_mod(Skill::Boating),
+            self.markdown_uteml_mod(Skill::Exploration),
+            self.markdown_uteml_mod(Skill::Industry),
+            self.markdown_uteml_mod(Skill::Trade),
+            self.markdown_uteml_mod(Skill::Intrigue),
+            self.markdown_uteml_mod(Skill::Politics),
+            self.markdown_uteml_mod(Skill::Statecraft),
+            self.markdown_uteml_mod(Skill::Warfare),
+            self.markdown_uteml_mod(Skill::Agriculture),
+            self.markdown_uteml_mod(Skill::Defense),
+            self.markdown_uteml_mod(Skill::Engineering),
+            self.markdown_uteml_mod(Skill::Wilderness),
         )
     }
 
