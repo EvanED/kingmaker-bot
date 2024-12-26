@@ -5,6 +5,7 @@ use crate::rolls::bonus::AppliesTo;
 use crate::rolls::bonus::AppliesUntil;
 use crate::rolls::bonus::Bonus;
 use crate::rolls::bonus::BonusType;
+use crate::spec::attributes::Ruin;
 use crate::spec::Kingdom;
 use crate::spec::attributes::Attribute;
 use crate::spec::skills::Skill;
@@ -71,6 +72,12 @@ fn _create_kingdom_state() -> KingdomState {
             Commodity::Stone    => 3,
         },
         claimed_hexes: vec![],
+        ruins: enum_map! {
+            Ruin::Corruption => 0,
+            Ruin::Crime => 0,
+            Ruin::Decay => 0,
+            Ruin::Strife => 0,
+        },
     }
 }
 

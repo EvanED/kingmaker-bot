@@ -3,7 +3,7 @@ use poise::ChoiceParameter;
 use serde::{Serialize, Deserialize};
 use strum_macros::{EnumIter, AsRefStr};
 use strum::IntoEnumIterator;
-use crate::{diff_utils::append_number_change, spec::{enum_map_serde, Kingdom}, turns::TurnState, rolls::roll_result::DC};
+use crate::{diff_utils::append_number_change, rolls::roll_result::DC, spec::{attributes::Ruin, enum_map_serde, Kingdom}, turns::TurnState};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, Enum, AsRefStr, /*EnumString,*/ EnumIter, Serialize, Deserialize, ChoiceParameter)]
 #[strum(ascii_case_insensitive)]
@@ -34,6 +34,8 @@ pub struct KingdomState {
     pub commodity_stores: EnumMap<Commodity, i8>,
     #[serde(default)]
     pub claimed_hexes: Vec<HexCoordinate>,
+    #[serde(with="enum_map_serde")]
+    pub ruins: EnumMap<Ruin, i8>,
 }
 
 fn level_to_raw_control_dc(level: i8) -> i8 {
@@ -131,6 +133,16 @@ impl KingdomState {
         append_number_change(&mut diffs, "Size", self.size, other.size);
         append_number_change(&mut diffs, "XP", self.xp, other.xp);
         append_number_change(&mut diffs, "Unrest", self.unrest, other.unrest);
+
+        for ruin in Ruin::iter() {
+            append_number_change(
+                &mut diffs,
+                ruin.into(),
+                self.ruins[ruin],
+                other.ruins[ruin],
+            );
+        }
+
         append_number_change(&mut diffs, "RP", self.resource_points, other.resource_points);
         append_number_change(&mut diffs, "Fame", self.fame_points, other.fame_points);
 
@@ -165,6 +177,7 @@ impl KingdomState {
 **Size:** {}  \n\
 **XP:** {}  \n\
 **Unrest:** {}  \n\
+**Ruins:** {}  \n\
 **Resource Points:** {}  \n\
 **Fame Points:** {}
 **Commodities:** Food {}, Lumber {}, Luxuries {}, Ore {}, Stone {}
@@ -172,6 +185,7 @@ impl KingdomState {
             self.size,
             self.xp,
             self.unrest,
+            self.ruins_to_markdown(),
             self.resource_points,
             self.fame_points,
             self.commodity_stores[Commodity::Food],
@@ -179,6 +193,16 @@ impl KingdomState {
             self.commodity_stores[Commodity::Luxuries],
             self.commodity_stores[Commodity::Ore],
             self.commodity_stores[Commodity::Stone],
+        )
+    }
+
+    pub fn ruins_to_markdown(&self) -> String {
+        format!(
+            "Corruption: {}, Crime: {}, Strife: {}, Decay: {}",
+            self.ruins[Ruin::Corruption],
+            self.ruins[Ruin::Crime],
+            self.ruins[Ruin::Strife],
+            self.ruins[Ruin::Decay],
         )
     }
 }
@@ -396,6 +420,24 @@ mod tests {
                 "Food decreased from 2 to 1",
                 "Ore decreased from 5 to 0",
                 "Stone increased from 0 to 7",
+            ]
+        );
+    }
+
+    #[test]
+    fn ruin_changes_reflected_in_diff() {
+        let mut k1 = KingdomState::default();
+        let mut k2 = KingdomState::default();
+
+        k1.ruins[Ruin::Corruption] = 2;
+        k2.ruins[Ruin::Decay] = 2;
+
+        let diff = k1.diff(&k2);
+        assert!(
+            diff == vec![
+                // TODO: capitalize
+                "corruption decreased from 2 to 0",
+                "decay increased from 0 to 2",
             ]
         );
     }
