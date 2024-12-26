@@ -282,7 +282,7 @@ impl TurnState {
     }
 
     fn requirements_markdown(&self) -> String {
-        if self.bonuses.is_empty() {
+        if self.requirements.is_empty() {
             "No requirements  ".to_string()
         } else {
             self.requirements_markdown_yes()
