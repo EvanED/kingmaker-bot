@@ -130,6 +130,15 @@ fn get_unrest_penalties(unrest: i8) -> Vec<bonus::Bonus> {
 }
 
 impl Kingdom {
+    fn skill_modifier_base(&self, skill: Skill) -> i8 {
+        let teml = self.skills[skill];
+        let attribute = skill.attribute();
+        let attr_modifier = self.attributes[attribute];
+        let proficiency_modifier  = teml.modifier(self.level);
+        let modifier = attr_modifier + proficiency_modifier;
+        modifier
+    }
+
     fn markdown_uteml_mod(&self, skill: Skill) -> String {
         let teml = self.skills[skill];
         let teml_str = match teml {
@@ -139,12 +148,7 @@ impl Kingdom {
             TrainingLevel::Master    => "M; ",
             TrainingLevel::Legendary => "L; ",
         };
-
-        let attribute = skill.attribute();
-        let attr_modifier = self.attributes[attribute];
-        let proficiency_modifier  = teml.modifier(self.level);
-        let modifier = attr_modifier + proficiency_modifier;
-
+        let modifier = self.skill_modifier_base(skill);
         format!(" [{}+{}]", teml_str, modifier)
     }
 
