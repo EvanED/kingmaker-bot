@@ -34,7 +34,7 @@ pub struct KingdomState {
     pub commodity_stores: EnumMap<Commodity, i8>,
     #[serde(default)]
     pub claimed_hexes: Vec<HexCoordinate>,
-    #[serde(with="enum_map_serde")]
+    #[serde(with="enum_map_serde", default)]
     pub ruins: EnumMap<Ruin, i8>,
 }
 
