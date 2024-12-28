@@ -128,3 +128,9 @@ fn then_next_turn_can_not_reattempt_building_a_shrine_at_no_resource_cost(world:
 fn then_take_charge_arts_has_not_been_used_this_turn(world: &mut TestContext) {
     assert!(world.next_turn_state.take_charge_skills_used[Skill::Arts]);
 }
+
+#[then(expr="XP went up to {int}")]
+#[then(expr="XP is still {int}")]
+fn given_xp_changed_to(world: &mut TestContext, xp: i32) {
+    assert!(world.kingdom_state.xp as i32 == xp);
+}

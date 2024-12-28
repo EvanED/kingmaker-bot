@@ -10,6 +10,10 @@ pub enum ClaimHexSkill {
     Magic,
 }
 
+fn xp_increase_per_hex(_size: i8) -> i16 {
+    25  // FIXME: parameterize based on size, but test size tracking first
+}
+
 // TODO: Require Skill as one of prereqs
 pub fn claim_hex(
     kingdom: &Kingdom,
@@ -38,11 +42,10 @@ pub fn claim_hex(
     );
 
     let new_msg = format!("mark the hex {}.{} as claimed", x, y);
-    let xp_msg = "gain XP from the claimed hex".to_string();
     let next = "you may take another region activity".to_string();
     let new_requirements = match degree {
-        DegreeOfSuccess::CriticalSuccess => vec![new_msg, xp_msg, next],
-        DegreeOfSuccess::Success         => vec![new_msg, xp_msg],
+        DegreeOfSuccess::CriticalSuccess => vec![new_msg, next],
+        DegreeOfSuccess::Success         => vec![new_msg],
         _                                => vec![],
     };
 
@@ -66,7 +69,8 @@ pub fn claim_hex(
     if degree.passed() {
         next_kingdom_state.claimed_hexes.push(
             HexCoordinate { x, y }
-        )
+        );
+        next_kingdom_state.xp += xp_increase_per_hex(state.size);
     }
 
     let roll_result = RollResult {
