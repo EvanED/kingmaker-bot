@@ -19,6 +19,7 @@ Feature: Activity Phase, Step 2 (Region) -- Claim Hex
 
     Scenario: Claim Hex critically succeeds
         Given the kingdom Aryc at level 1
+        And the kingdom's size is 7
         And the kingdom has 2 RP
         And the kingdom has 100 XP
         And a die roll of 20
@@ -26,6 +27,7 @@ Feature: Activity Phase, Step 2 (Region) -- Claim Hex
         Then there are 2 requirements
         And "mark the hex 0.0 as claimed" is a requirement
         And "you may take another region activity" is a requirement
+        And the kingdom's size went up to 8
         And RP went down to 1
         # FIXME: the XP increase is size-dependent,
         # and this is incorrect for level 1.
@@ -49,12 +51,14 @@ Feature: Activity Phase, Step 2 (Region) -- Claim Hex
 
     Scenario: Claim Hex succeeds
         Given the kingdom Aryc at level 1
+        And the kingdom's size is 7
         And the kingdom has 2 RP
         And a die roll of 15
         And the kingdom has 100 XP
         When I Claim Hex with Magic
         Then there are 1 requirements
         And "mark the hex 0.0 as claimed" is a requirement
+        And the kingdom's size went up to 8
         And RP went down to 1
         # FIXME: see comment on crit success
         And XP went up to 125
@@ -64,11 +68,13 @@ Feature: Activity Phase, Step 2 (Region) -- Claim Hex
 
     Scenario: Claim Hex fails
         Given the kingdom Aryc at level 1
+        And the kingdom's size is 7
         And the kingdom has 2 RP
         And a die roll of 5
         And the kingdom has 100 XP
         When I Claim Hex with Magic
         Then there are no requirements
+        And the kingdom's size is still 7
         And RP went down to 1
         And XP is still 100
 
@@ -80,11 +86,13 @@ Feature: Activity Phase, Step 2 (Region) -- Claim Hex
 
     Scenario: Claim Hex critically fails
         Given the kingdom Aryc at level 1
+        And the kingdom's size is 7
         And the kingdom has 2 RP
         And the kingdom has 100 XP
         And a die roll of 1
         When I Claim Hex with Magic
         Then there are no requirements
+        And the kingdom's size is still 7
         And RP went down to 1
         And XP is still 100
         And there is a -1 circumstance penalty to Stability until the end of the next turn, because "critical failure in Claim Hex"

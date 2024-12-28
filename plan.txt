@@ -1,4 +1,3 @@
-Size tracking
 Claim Hex XP gain based on size
 
 Bulid Structure -- track settlement

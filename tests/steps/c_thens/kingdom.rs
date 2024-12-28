@@ -134,3 +134,9 @@ fn then_take_charge_arts_has_not_been_used_this_turn(world: &mut TestContext) {
 fn given_xp_changed_to(world: &mut TestContext, xp: i32) {
     assert!(world.kingdom_state.xp as i32 == xp);
 }
+
+#[then(expr="the kingdom's size went up to {int}")]
+#[then(expr="the kingdom's size is still {int}")]
+fn given_kingdom_size_is(world: &mut TestContext, size: i32) {
+    assert!(world.kingdom_state.size as i32 == size);
+}

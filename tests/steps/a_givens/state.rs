@@ -54,3 +54,8 @@ fn given_we_have_x_fame(world: &mut TestContext, fame: i32) {
 fn given_we_have_x_xp(world: &mut TestContext, xp: i32) {
     world.kingdom_state.xp = xp as i16;
 }
+
+#[given(expr="the kingdom's size is {int}")]
+fn given_kingdom_size_is(world: &mut TestContext, size: i32) {
+    world.kingdom_state.size = size as i8;
+}

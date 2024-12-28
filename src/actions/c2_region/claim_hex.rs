@@ -71,6 +71,7 @@ pub fn claim_hex(
             HexCoordinate { x, y }
         );
         next_kingdom_state.xp += xp_increase_per_hex(state.size);
+        next_kingdom_state.size += 1;
     }
 
     let roll_result = RollResult {
