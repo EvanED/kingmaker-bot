@@ -315,7 +315,7 @@ pub async fn next_turn(
     ctx: Context<'_>,
     was_random_event: bool,
 ) -> Result<(), Error> {
-    let closure = |_kingdom: &_, turn: &TurnState, state: &KingdomState, _context: &_| {
+    let closure = |kingdom: &_, turn: &TurnState, state: &KingdomState, _context: &_| {
         let phony_rr = RollResult {
             dc: DC(0),
             die_roll: DieRoll {
@@ -326,7 +326,7 @@ pub async fn next_turn(
             degree: DegreeOfSuccess::Success,
         };
         let nt = turn.next_turn(was_random_event);
-        let nk = state.next_turn(&nt);
+        let nk = state.next_turn(&kingdom, &nt);
         (
             phony_rr, nt, nk,
         )

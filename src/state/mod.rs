@@ -110,7 +110,7 @@ impl KingdomState {
         4
     }
 
-    pub fn next_turn(&self, turn_state: &TurnState) -> KingdomState {
+    pub fn next_turn(&self, _kingdom: &Kingdom, turn_state: &TurnState) -> KingdomState {
         let mut next_kstate = self.clone();
 
         for commodity in Commodity::iter() {
@@ -209,24 +209,30 @@ impl KingdomState {
 
 #[cfg(test)]
 mod tests {
+    use crate::discord::commands::kingdom::create_aryc;
+
     use super::*;
     use assert2::assert;
 
     #[test]
     fn rp_is_set_to_bonus_rp_at_start_of_turn() {
+        let aryc = create_aryc();
+
         let mut k1 = KingdomState::default();
         k1.resource_points = 7;
 
         let mut turn_state = TurnState::default();
         turn_state.bonus_rp = 10;
 
-        let k2 = k1.next_turn(&turn_state);
+        let k2 = k1.next_turn(&aryc, &turn_state);
 
         assert!(k2.resource_points == 10);
     }
 
     #[test]
     fn commodity_stores_increase_at_start_of_turn() {
+        let aryc = create_aryc();
+
         let mut k1 = KingdomState::default();
         k1.commodity_stores[Commodity::Food] = 1;
 
@@ -235,7 +241,7 @@ mod tests {
         turn_state.commodity_income[Commodity::Ore] = 3;
 
         //
-        let k2 = k1.next_turn(&turn_state);
+        let k2 = k1.next_turn(&aryc, &turn_state);
 
         //
         assert!(k2.commodity_stores[Commodity::Food] == 1 + 1);
@@ -244,46 +250,54 @@ mod tests {
 
     #[test]
     fn fame_points_reset_at_start_of_turn_from_0() {
+        let aryc = create_aryc();
+
         let mut k1 = KingdomState::default();
         k1.fame_points = 0i8;
 
         let turn_state = TurnState::default();
-        let k2 = k1.next_turn(&turn_state);
+        let k2 = k1.next_turn(&aryc, &turn_state);
 
         assert!(k2.fame_points == 1i8);
     }
 
     #[test]
     fn fame_points_reset_at_start_of_turn_from_2() {
+        let aryc = create_aryc();
+
         let mut k1 = KingdomState::default();
         k1.fame_points = 2i8;
 
         let turn_state = TurnState::default();
-        let k2 = k1.next_turn(&turn_state);
+        let k2 = k1.next_turn(&aryc, &turn_state);
 
         assert!(k2.fame_points == 1i8);
     }
 
     #[test]
     fn fame_points_reset_at_start_of_turn_increased_by_bonus() {
+        let aryc = create_aryc();
+
         let mut k1 = KingdomState::default();
         k1.fame_points = 0i8;
 
         let mut turn_state = TurnState::default();
         turn_state.additional_fame_points_scheduled = 1i8;
-        let k2 = k1.next_turn(&turn_state);
+        let k2 = k1.next_turn(&aryc, &turn_state);
 
         assert!(k2.fame_points == 2i8);
     }
 
     #[test]
     fn fame_points_reset_at_start_of_turn_increased_by_bonus_caps_at_3() {
+        let aryc = create_aryc();
+
         let mut k1 = KingdomState::default();
         k1.fame_points = 0i8;
 
         let mut turn_state = TurnState::default();
         turn_state.additional_fame_points_scheduled = 10i8;
-        let k2 = k1.next_turn(&turn_state);
+        let k2 = k1.next_turn(&aryc, &turn_state);
 
         assert!(k2.fame_points == 3i8);
     }
