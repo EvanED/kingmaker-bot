@@ -1,6 +1,3 @@
-NEXT:
- - XP from RP at end of turn
-
 Size tracking
 Claim Hex XP gain based on size
 

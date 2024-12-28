@@ -1,3 +1,5 @@
+use core::panic;
+
 use enum_map::{EnumMap, Enum};
 use poise::ChoiceParameter;
 use serde::{Serialize, Deserialize};
@@ -96,6 +98,18 @@ fn size_to_control_dc_modifier(size: KingdomSizeCategory) -> i8 {
     }
 }
 
+fn xp_gain_from_rp(kingdom: &Kingdom, rp: i8) -> i16 {
+    let gain_per_rp = match kingdom.level {
+        1..=4   => 10i16,
+        5..=8   =>  7i16,
+        9..=12  =>  5i16,
+        13..=16 =>  2i16,
+        17..=20 =>  1i16,
+        _       => panic!("Bad kingdom level"), 
+    };
+    return gain_per_rp * (rp as i16);
+}
+
 impl KingdomState {
     pub fn control_dc(&self, kingdom: &Kingdom) -> DC {
         let pre_dc = level_to_raw_control_dc(kingdom.level);
@@ -110,7 +124,7 @@ impl KingdomState {
         4
     }
 
-    pub fn next_turn(&self, _kingdom: &Kingdom, turn_state: &TurnState) -> KingdomState {
+    pub fn next_turn(&self, kingdom: &Kingdom, turn_state: &TurnState) -> KingdomState {
         let mut next_kstate = self.clone();
 
         for commodity in Commodity::iter() {
@@ -123,6 +137,8 @@ impl KingdomState {
         }
 
         next_kstate.resource_points = turn_state.bonus_rp;
+
+        next_kstate.xp += xp_gain_from_rp(kingdom, self.resource_points);
 
         next_kstate
     }
@@ -211,6 +227,7 @@ impl KingdomState {
 mod tests {
     use crate::discord::commands::kingdom::create_aryc;
 
+    use core::panic; // deal with some Rust silliness
     use super::*;
     use assert2::assert;
 
@@ -228,6 +245,103 @@ mod tests {
 
         assert!(k2.resource_points == 10);
     }
+
+    #[test]
+    fn xp_is_increased_according_to_rp_levels_1_to_4() {
+        for level in 1..5 {
+            let mut aryc = create_aryc();
+            aryc.level = level;
+
+            let mut k1 = KingdomState::default();
+            k1.xp = 100;
+            k1.resource_points = 7;
+
+            let turn_state = TurnState::default();
+
+            let k2 = k1.next_turn(&aryc, &turn_state);
+
+            // RAW is always 1 XP per RP
+            assert!(k2.xp == 170); // 10 XP per RP
+        }
+    }
+
+    #[test]
+    fn xp_is_increased_according_to_rp_levels_5_to_8() {
+        for level in 5..9 {
+            let mut aryc = create_aryc();
+            aryc.level = level;
+
+            let mut k1 = KingdomState::default();
+            k1.xp = 100;
+            k1.resource_points = 7;
+
+            let turn_state = TurnState::default();
+
+            let k2 = k1.next_turn(&aryc, &turn_state);
+
+            // RAW is always 1 XP per rp
+            assert!(k2.xp == 149); // 7 XP per RP
+        }
+    }
+
+    #[test]
+    fn xp_is_increased_according_to_rp_levels_9_to_12() {
+        for level in 9..13 {
+            let mut aryc = create_aryc();
+            aryc.level = level;
+
+            let mut k1 = KingdomState::default();
+            k1.xp = 100;
+            k1.resource_points = 7;
+
+            let turn_state = TurnState::default();
+
+            let k2 = k1.next_turn(&aryc, &turn_state);
+
+            // RAW is always 1 XP per rp
+            assert!(k2.xp == 135); // 5 XP per RP
+        }
+    }
+
+    #[test]
+    fn xp_is_increased_according_to_rp_levels_13_to_16() {
+        for level in 13..17 {
+            let mut aryc = create_aryc();
+            aryc.level = level;
+
+            let mut k1 = KingdomState::default();
+            k1.xp = 100;
+            k1.resource_points = 7;
+
+            let turn_state = TurnState::default();
+
+            let k2 = k1.next_turn(&aryc, &turn_state);
+
+            // RAW is always 1 XP per rp
+            assert!(k2.xp == 114); // 2 XP per RP
+        }
+    }
+
+    #[test]
+    fn xp_is_increased_according_to_rp_levels_17_to_20() {
+        for level in 17..21 {
+            let mut aryc = create_aryc();
+            aryc.level = level;
+
+            let mut k1 = KingdomState::default();
+            k1.xp = 100;
+            k1.resource_points = 7;
+
+            let turn_state = TurnState::default();
+
+            let k2 = k1.next_turn(&aryc, &turn_state);
+
+            // RAW is always 1 XP per rp
+            assert!(k2.xp == 107); // 1 XP per RP
+        }
+    }
+
+
 
     #[test]
     fn commodity_stores_increase_at_start_of_turn() {
