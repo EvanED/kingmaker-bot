@@ -1,5 +1,4 @@
 NEXT:
- - untrained improv
  - increase income when establish farmland
  - why didn't bonus rp carry over when going to turn 28?
 

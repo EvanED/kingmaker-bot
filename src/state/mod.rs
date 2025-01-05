@@ -225,7 +225,7 @@ impl KingdomState {
 
 #[cfg(test)]
 mod tests {
-    use crate::discord::commands::kingdom::create_aryc;
+    use crate::{discord::commands::kingdom::create_aryc, spec::skills::Skill};
 
     use core::panic; // deal with some Rust silliness
     use super::*;

@@ -17,10 +17,17 @@ pub enum TrainingLevel {
 }
 
 impl TrainingLevel {
+    fn untrained_improvisation_modifier(kingdom_level: i8) -> i8 {
+        match kingdom_level {
+            1..=6  => kingdom_level / 2,
+            7..=20 => kingdom_level,
+            _      => panic!("bad kingdom_level"),
+        }
+    }
     pub fn modifier(self, kingdom_level: i8) -> i8 {
         use TrainingLevel::*;
         match self {
-            Untrained => 0,
+            Untrained => TrainingLevel::untrained_improvisation_modifier(kingdom_level),
             Trained   => 2 + kingdom_level,
             Expert    => 4 + kingdom_level,
             Master    => 6 + kingdom_level,
@@ -103,8 +110,39 @@ impl Skill {
 #[cfg(test)]
 pub mod tests {
     use assert2::assert;
+
+    use super::TrainingLevel;
     #[test]
-    fn foo() {
-        assert!(1 == 1);
+    fn test_trained_proficiencies_for_level_1_are_correct() {
+        assert!(TrainingLevel::Trained  .modifier(1) == 1 + 2);
+        assert!(TrainingLevel::Expert   .modifier(1) == 1 + 4);
+        assert!(TrainingLevel::Master   .modifier(1) == 1 + 6);
+        assert!(TrainingLevel::Legendary.modifier(1) == 1 + 8);
+    }
+
+    #[test]
+    fn test_trained_proficiencies_for_level_20_are_correct() {
+        assert!(TrainingLevel::Trained  .modifier(20) == 20 + 2);
+        assert!(TrainingLevel::Expert   .modifier(20) == 20 + 4);
+        assert!(TrainingLevel::Master   .modifier(20) == 20 + 6);
+        assert!(TrainingLevel::Legendary.modifier(20) == 20 + 8);
+    }
+
+    #[test]
+    fn test_untrained_improvisation_applies_at_half_level() {
+        let untrained = TrainingLevel::Untrained;
+        assert!(untrained.modifier(1) == 0);
+        assert!(untrained.modifier(2) == 1);
+        assert!(untrained.modifier(3) == 1);
+        assert!(untrained.modifier(4) == 2);
+        assert!(untrained.modifier(5) == 2);
+        assert!(untrained.modifier(6) == 3);
+    }
+
+    #[test]
+    fn test_untrained_improvisation_applies_at_full_level() {
+        let untrained = TrainingLevel::Untrained;
+        assert!(untrained.modifier(7)  ==  7);
+        assert!(untrained.modifier(20) == 20);
     }
 }
