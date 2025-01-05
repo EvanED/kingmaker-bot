@@ -1,3 +1,10 @@
+NEXT:
+ - untrained improv
+ - increase income when establish farmland
+ - why didn't bonus rp carry over when going to turn 28?
+
+Repair Reputation action
+
 Claim Hex XP gain based on size
 
 Bulid Structure -- track settlement
