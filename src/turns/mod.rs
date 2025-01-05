@@ -61,7 +61,7 @@ pub struct TurnState {
     #[serde(default)]
     pub random_event_dc: i8,
 
-    #[serde(with="enum_map_serde", default)]
+    #[serde(with = "enum_map_serde", default)]
     pub take_charge_skills_used: EnumMap<Skill, bool>,
 }
 
@@ -81,11 +81,9 @@ impl TurnState {
     pub fn next_random_event_dc(&self, was_random_event: bool) -> i8 {
         if was_random_event {
             16i8 // back to default
-        }
-        else if self.random_event_dc <= 6 {
+        } else if self.random_event_dc <= 6 {
             2i8 // special case: don't decrease the DC below 2
-        }
-        else {
+        } else {
             self.random_event_dc - 5
         }
     }
@@ -255,9 +253,10 @@ impl TurnState {
             ));
         }
 
-        strings.push(
-            format!("* Random kingdom event DC: {}", self.random_event_dc)
-        );
+        strings.push(format!(
+            "* Random kingdom event DC: {}",
+            self.random_event_dc
+        ));
 
         strings.insert(0, "This turn:".to_string());
         strings.join("\n")
@@ -317,34 +316,31 @@ impl TurnState {
         }
         let used_str = if used.is_empty() {
             "none used".to_string()
-        }
-        else {
-            let used_strs: Vec<&str> = used.iter().map(|skill| {
-                let skill_str: &'static str = skill.into();
-                skill_str
-            })
-            .collect();
-            format!(
-                "used {}",
-                used_strs.join(", "))
+        } else {
+            let used_strs: Vec<&str> = used
+                .iter()
+                .map(|skill| {
+                    let skill_str: &'static str = skill.into();
+                    skill_str
+                })
+                .collect();
+            format!("used {}", used_strs.join(", "))
         };
 
         let mut best = kingdom.skills_sorted_by_modifier();
         for skill in used {
-            best.retain(
-                |search_skill| skill != search_skill.clone()
-            );
+            best.retain(|search_skill| skill != search_skill.clone());
         }
         best.truncate(5);
         let best_str = {
-            let best_strs: Vec<&'static str> = best.iter().map(|skill| {
-                let skill_str: &'static str = skill.into();
-                skill_str
-            })
-            .collect();
-            format!(
-                "best available {}",
-                best_strs.join(", "))
+            let best_strs: Vec<&'static str> = best
+                .iter()
+                .map(|skill| {
+                    let skill_str: &'static str = skill.into();
+                    skill_str
+                })
+                .collect();
+            format!("best available {}", best_strs.join(", "))
         };
 
         format!("**Take Charge:** {}; {}", used_str, best_str)
