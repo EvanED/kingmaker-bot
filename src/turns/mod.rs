@@ -91,6 +91,9 @@ impl TurnState {
     }
 
     pub fn next_turn(&self, was_random_event: bool) -> TurnState {
+        let mut take_charge_skils_used = self.take_charge_skills_used.clone();
+        take_charge_skils_used.clear();
+
         TurnState {
             bonuses: (self
                 .bonuses
@@ -127,7 +130,7 @@ impl TurnState {
 
             random_event_dc: self.next_random_event_dc(was_random_event),
 
-            take_charge_skills_used: self.take_charge_skills_used.clone(),  // FIXME
+            take_charge_skills_used: take_charge_skils_used,
         }
     }
 
@@ -537,6 +540,18 @@ mod tests {
 
         assert!(next_state_reset_dc.random_event_dc == 16);
         assert!(next_state_progressive_dc.random_event_dc == 6);
+    }
+
+    #[test]
+    fn check_next_turn_resets_take_charge_skills() {
+        let mut start_state = create_test_turn_state();
+        start_state.take_charge_skills_used[Skill::Arts] = true;
+
+        let start_state = start_state; // remove mutation capability
+
+        let next_state = start_state.next_turn(true);
+
+        assert!(next_state.take_charge_skills_used[Skill::Arts] == false);
     }
 
     #[test]
