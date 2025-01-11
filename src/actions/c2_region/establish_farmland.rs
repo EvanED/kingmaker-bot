@@ -1,6 +1,6 @@
 use poise::ChoiceParameter;
 
-use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult, DC}}, spec::{skills::Skill, Kingdom}, state::KingdomState, turns::TurnState};
+use crate::{rolls::{bonus, roll_context::RollContext, roll_result::{self, DegreeOfSuccess, RollResult, DC}}, spec::{skills::Skill, Kingdom}, state::{Commodity, KingdomState}, turns::TurnState};
 
 #[derive(Debug, Clone, Copy, PartialEq, Eq, ChoiceParameter)]
 pub enum HexType {
@@ -45,8 +45,12 @@ pub fn establish_farmland(kingdom: &Kingdom, turn: &TurnState, state: &KingdomSt
 
     let mut next_turn_state = turn.clone();
     next_turn_state.requirements.extend(new_requirements);
+    if degree.passed() {
+        next_turn_state.commodity_income[Commodity::Food] += 1;
+    }
     if degree == DegreeOfSuccess::CriticalFailure {
         next_turn_state.dc6_crop_failure_potential_for_x_turns = 2;
+
     }
 
     let mut next_kingdom_state = state.clone();

@@ -33,35 +33,45 @@ Feature: Activity Phase, Step 2 (Region) -- Establish Farmland
     Scenario: Establish Farmland on plains critically succeeds
         Given the kingdom Aryc at level 1
         And a die roll of 20
+        And current farm income is 1/turn
         When I Establish Farmland on plains
         Then there are 2 requirements
         And "mark hex 0.0 with the new farmland" is a requirement
         And "may immediately attempt Establish Farmland again (plains only)" is a requirement
+        And current farm income went up to 2/turn
 
     Scenario: Establish Farmland on hills critically succeeds
         Given the kingdom Aryc at level 1
         And a die roll of 20
+        And current farm income is 1/turn
         When I Establish Farmland on hills
         Then there are 2 requirements
         And "mark hex 0.0 with the new farmland" is a requirement
         And "may immediately attempt Establish Farmland again (plains or hills)" is a requirement
+        And current farm income went up to 2/turn
 
     Scenario: Establish Farmland succeeds
         Given the kingdom Aryc at level 1
         And a die roll of 19
+        And current farm income is 1/turn
         When I Establish Farmland on hills
         Then there is 1 requirement
         And "mark hex 0.0 with the new farmland" is a requirement
+        And current farm income went up to 2/turn
 
     Scenario: Establish Farmland fails
         Given the kingdom Aryc at level 1
         And a die roll of 5
+        And current farm income is 1/turn
         When I Establish Farmland on hills
         Then there are no requirements
+        And current farm income is still 1/turn
 
     Scenario: Establish Farmland critically fails
         Given the kingdom Aryc at level 1
         And a die roll of 1
+        And current farm income is 1/turn
         When I Establish Farmland on hills
         Then there are no requirements
         And there is a Crop Failure potential for next 2 turns
+        And current farm income is still 1/turn

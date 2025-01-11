@@ -59,3 +59,8 @@ fn given_we_have_x_xp(world: &mut TestContext, xp: i32) {
 fn given_kingdom_size_is(world: &mut TestContext, size: i32) {
     world.kingdom_state.size = size as i8;
 }
+
+#[given(expr="current farm income is {int}\\/turn")]
+fn current_farm_income_is(world: &mut TestContext, income: i32) {
+    world.turn_state.commodity_income[Commodity::Food] = income as i8;
+}

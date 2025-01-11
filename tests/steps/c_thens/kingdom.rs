@@ -140,3 +140,9 @@ fn given_xp_changed_to(world: &mut TestContext, xp: i32) {
 fn given_kingdom_size_is(world: &mut TestContext, size: i32) {
     assert!(world.kingdom_state.size as i32 == size);
 }
+
+#[then(expr="current farm income went up to {int}\\/turn")]
+#[then(expr="current farm income is still {int}\\/turn")]
+fn then_current_farm_income_is(world: &mut TestContext, income: i32) {
+    assert!(world.next_turn_state.commodity_income[Commodity::Food] as i32 == income);
+}
